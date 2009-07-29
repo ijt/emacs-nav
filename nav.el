@@ -101,7 +101,7 @@ This is used if only one window besides the Nav window is visible."
 (defun nav-make-mode-map ()
   "Creates and returns a mode map with nav's key bindings."
   (let ((keymap (make-sparse-keymap)))
-    (define-key keymap [tab] 'forward-button)
+    (define-key keymap "\t" 'forward-button)
     (define-key keymap "\n" 'nav-open-file-under-cursor)
     (define-key keymap "\r" 'nav-open-file-under-cursor)
     (define-key keymap "1" 'nav-open-file-other-window-1)
