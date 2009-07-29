@@ -3,7 +3,7 @@
 ;; Copyright 2009 Google Inc. All Rights Reserved.
 ;;
 ;; Author: issactrotts@google.com (Issac Trotts)
-;; Version: 53
+;; Version: 51
 ;;
 
 ;;; License:
@@ -52,16 +52,23 @@
   "A lightweight file/directory navigator."
   :group 'applications)
 
-(defcustom nav-width 30
+(defcustom nav-width 20
   "*Initial width of the Nav window."
   :type 'integer
   :group 'nav)
 
 (defcustom nav-bookmark-list
-  (list "~" "~/.emacs.d" "/tmp" "/")
+  (list "~/.emacs.d" "/tmp" "~")
   "*Nav bookmark list. Fill this with your most frequently visited directories."
   :type '(repeat string)
   :group 'nav)
+
+(defcustom nav-quickfile-list
+  (list "~/.emacs.d/nav.el" "~/.emacs" "~/.bashrc")
+  "*Nav quick file list. Fill this with your most frequently visited files."
+  :type '(repeat string)
+  :group 'nav)
+
 
 (defcustom nav-no-hidden-boring-file-regexps
   (list "\\.pyc$" "\\.o$" "~$" "\\.bak$"
@@ -94,19 +101,22 @@ This is used if only one window besides the Nav window is visible."
 (defun nav-make-mode-map ()
   "Creates and returns a mode map with nav's key bindings."
   (let ((keymap (make-sparse-keymap)))
+    (define-key keymap [tab] 'forward-button)
     (define-key keymap "\n" 'nav-open-file-under-cursor)
     (define-key keymap "\r" 'nav-open-file-under-cursor)
     (define-key keymap "1" 'nav-open-file-other-window-1)
     (define-key keymap "2" 'nav-open-file-other-window-2)
-    (define-key keymap "7" (lambda nil (interactive) (nav-bookmark-jump 0)))
-    (define-key keymap "8" (lambda nil (interactive) (nav-bookmark-jump 1)))   
-    (define-key keymap "9" (lambda nil (interactive) (nav-bookmark-jump 2)))
-    (define-key keymap "0" (lambda nil (interactive) (nav-bookmark-jump 3)))
+    (define-key keymap "5" (lambda nil (interactive) (nav-quickfile-jump 0)))   
+    (define-key keymap "6" (lambda nil (interactive) (nav-quickfile-jump 1)))
+    (define-key keymap "7" (lambda nil (interactive) (nav-quickfile-jump 2)))
+    (define-key keymap "8" (lambda nil (interactive) (nav-bookmark-jump 0)))   
+    (define-key keymap "9" (lambda nil (interactive) (nav-bookmark-jump 1)))
+    (define-key keymap "0" (lambda nil (interactive) (nav-bookmark-jump 2)))
     (define-key keymap "a" 'nav-make-new-file)
     (define-key keymap "b" 'nav-customize)
     (define-key keymap "c" 'nav-copy-file-or-dir)
     (define-key keymap "d" 'nav-delete-file-or-dir-on-this-line)
-    (define-key keymap "e" 'nav-invoke-dired)
+    (define-key keymap "e" 'nav-invoke-dired)  
     (define-key keymap "f" 'nav-find-files)
     (define-key keymap "g" 'nav-recursive-grep)
     (define-key keymap "h" 'nav-jump-to-home)
@@ -141,18 +151,29 @@ This is used if only one window besides the Nav window is visible."
 
 (defvar nav-filter-regexps nav-boring-file-regexps)
 
+(defvar nav-button-face nil)
+
 (defconst nav-shell-buffer-name "*nav-shell*"
   "Name of the buffer used for the command line shell spawned by
   nav on the 's' key.")
-
-(defconst nav-button-face nil
-  "Face to use for files displayed as buttons in Nav.")
 
 (defconst nav-buffer-name "*nav*"
   "Name of the buffer where nav shows directory contents.")
 
 (defconst nav-buffer-name-for-find-results "*nav-find*"
   "Name of the buffer where nav shows results of its find command ('f' key).")
+
+(define-button-type 'bookmark-jump-button
+  'action 'nav-bookmark-jump-button-action
+  'follow-link t
+  'face nil
+  'help-echo "bookmark")
+
+(define-button-type 'quickfile-jump-button
+  'action 'nav-quickfile-jump-button-action
+  'follow-link t
+  'face nil
+  'help-echo "quickfile")
 
 
 (defun nav-join (sep string-list)
@@ -275,6 +296,18 @@ This works like a web browser's back button."
           (setq line-num (+ line-num 1))))))
 
 
+(defun nav-bookmark-jump-button-action (button)
+  (setq num (string-to-number (substring (button-label button) 1 2)))
+  (setq num (- num 1))
+  (nav-bookmark-jump num))
+
+
+(defun nav-quickfile-jump-button-action (button)
+  (setq num (string-to-number (substring (button-label button) 1 2)))
+  (setq num (- num 1))
+  (nav-quickfile-jump num))
+
+
 (defun nav-replace-buffer-contents (new-contents should-make-filenames-clickable)
   (let ((saved-line-number (nav-line-number-at-pos (point)))
         ;; Setting inhibit-read-only to t here lets us edit the buffer
@@ -282,30 +315,50 @@ This works like a web browser's back button."
         (inhibit-read-only t))
     (erase-buffer)
     (insert new-contents)
+    (nav-insert-jump-buttons)
     (font-lock-fontify-buffer)
     (if should-make-filenames-clickable
         (nav-make-filenames-clickable))
     (goto-line saved-line-number)))
 
 
+(defun nav-insert-jump-buttons ()
+  ;; Make bookmark buttons.
+  (insert "\n\n")
+  (insert-text-button "D1" :type 'bookmark-jump-button)
+  (insert " ")
+  (insert-text-button "D2" :type 'bookmark-jump-button)
+  (insert " ")
+  (insert-text-button "D3" :type 'bookmark-jump-button)
+  (insert "   ")
+  (insert-text-button "F1" :type 'quickfile-jump-button)
+  (insert " ")
+  (insert-text-button "F2" :type 'quickfile-jump-button)
+  (insert " ")
+  (insert-text-button "F3" :type 'quickfile-jump-button))
+
+
 (defun nav-make-filenames-clickable ()
-  (condition-case err
-      (save-excursion
-        (goto-line 1)
-        (dotimes (i (count-lines 1 (point-max)))
-          (let ((start (line-beginning-position))
-                (end (line-end-position)))
-            (make-button start end
-                         'action (lambda (button)
-                                   (nav-open-file (button-label button)))
-                         'follow-link t
-                         'help-echo nil
-                         'face nav-button-face))
-          (forward-line 1)))
-    (error 
-     ;; This can happen for versions of emacs that don't have
-     ;; make-button defined.
-     'failed)))
+  ;; In terminals, this function would only add a bunch of underlines,
+  ;; so return before that happens.
+  (when window-system
+    (condition-case err
+        (save-excursion
+          (goto-line 3)
+          (dotimes (i (count-lines 1 (point-max)))
+            (let ((start (line-beginning-position))
+                  (end (line-end-position)))
+              (make-button start end
+                           'action (lambda (button)
+                                     (nav-open-file (button-label button)))
+                           'follow-link t
+                           'face nav-button-face
+			   'help-echo ""))
+            (forward-line 1)))
+      (error 
+       ;; This can happen for versions of emacs that don't have
+       ;; make-button defined.
+       'failed))))
 
 
 (defun nav-string< (s1 s2)
@@ -451,6 +504,10 @@ If there is no second other window, Nav will create one."
 
 (defun nav-toggle ()
   "Toggles whether Nav is active.
+;;; Key Bindings
+;;
+;; Press ? in the Nav window to display a list of key bindings.
+;;
 
 Synonymous with the (nav) function."
   (interactive)
@@ -483,6 +540,12 @@ Synonymous with the (nav) function."
   "Show home directory in Nav."
   (interactive)
   (nav-push-dir "~"))
+
+
+(defun nav-quickfile-jump (quickfile-num)
+  "Jumps to directory from custom bookmark list."
+  (interactive)
+  (nav-open-file (nth quickfile-num nav-quickfile-list)))
 
 
 (defun nav-bookmark-jump (bookmark-num)
@@ -563,6 +626,10 @@ directory, or if the user says it's ok."
   "Moves a file or directory."
   (interactive "FMove to: ")
   (let ((filename (nav-get-cur-line-str)))
+;;; Key Bindings
+;;
+;; Press ? in the Nav window to display a list of key bindings.
+;;
     (if (nav-this-is-a-microsoft-os)
 	(rename-file filename target-name)
       (if (nav-ok-to-overwrite target-name)
@@ -667,6 +734,10 @@ If there is already a *terminal* buffer then it is reused."
       (setq cur-window (next-window cur-window)))
     (reverse result)))
 
+;;; Key Bindings
+;;
+;; Press ? in the Nav window to display a list of key bindings.
+;;
 
 (defun nav-rotate-windows-cw ()
   "Cyclically permutes the windows other than the nav window, clockwise."
@@ -750,18 +821,32 @@ depending on the passed-in function next-i."
   (setq cursor-type nil 
 	display-hourglass nil
 	buffer-undo-list t)    
-  (insert "Help for nav mode\n
+  (insert "\
+Help for nav mode
+=================
+
+The letters at the bottom are shortcuts.  D1 takes you to the
+first bookmarked directory and so on.  F1 goes to the first
+bookmarked file (or 'quickfile') and so on.  These directories
+and files can be changed by pressing the 'b' key and using the
+Emacs customization page that appears.
+
 Key Bindings
+============
 
 Enter/Return: Open file or directory under cursor.
+Tab: To move through buttons
 
 1\t Open file under cursor in 1st other window.
 2\t Open file under cursor in 2nd other window.
 
-7\t Jump to 1st bookmark.
-8\t Jump to 2nd bookmark.
-9\t Jump to 3rd bookmark.
-0\t Jump to 4th bookmark.
+5\t Jump to 1st quick file.
+6\t Jump to 2nd quick file.
+7\t Jump to 3rd quick file.
+
+8\t Jump to 1st bookmark.
+9\t Jump to 2nd bookmark.
+0\t Jump to 3rd bookmark.
 
 a\t Make a new file.
 b\t Customize Nav settings and bookmarks.
@@ -787,7 +872,7 @@ u\t Go up to parent directory.
 .\t Toggle hidden files.
 ?\t Show this help screen.
 
-                Press 'q' or click mouse to quit help.
+                Press 'q' or click mouse to quit help
 
 ")
   (goto-line 1)
@@ -806,6 +891,7 @@ u\t Go up to parent directory.
   (font-lock-add-keywords 'nav-mode '(("^.*/$" . font-lock-type-face)))
   (font-lock-add-keywords 'nav-mode '(("^[.].*" . font-lock-comment-face)))
   (font-lock-add-keywords 'nav-mode '(("^[.].*/$" . font-lock-string-face)))
+  (font-lock-add-keywords 'nav-mode '(("D[1-3]\\|F[1-3]" . font-lock-warning-face)))
   (setq buffer-read-only t)
   (nav-refresh))
 
