@@ -3,7 +3,7 @@
 ;; Copyright 2009 Google Inc. All Rights Reserved.
 ;;
 ;; Author: issactrotts@google.com (Issac Trotts)
-;; Version: 51
+;; Version: 52
 ;;
 
 ;;; License:
@@ -57,7 +57,7 @@
   :type 'integer
   :group 'nav)
 
-(defcustom nav-bookmark-list
+(defcustom nav-quickdir-list
   (list "~/.emacs.d" "/tmp" "~")
   "*Nav bookmark list. Fill this with your most frequently visited directories."
   :type '(repeat string)
@@ -109,9 +109,9 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "5" (lambda nil (interactive) (nav-quickfile-jump 0)))   
     (define-key keymap "6" (lambda nil (interactive) (nav-quickfile-jump 1)))
     (define-key keymap "7" (lambda nil (interactive) (nav-quickfile-jump 2)))
-    (define-key keymap "8" (lambda nil (interactive) (nav-bookmark-jump 0)))   
-    (define-key keymap "9" (lambda nil (interactive) (nav-bookmark-jump 1)))
-    (define-key keymap "0" (lambda nil (interactive) (nav-bookmark-jump 2)))
+    (define-key keymap "8" (lambda nil (interactive) (nav-quickdir-jump 0)))   
+    (define-key keymap "9" (lambda nil (interactive) (nav-quickdir-jump 1)))
+    (define-key keymap "0" (lambda nil (interactive) (nav-quickdir-jump 2)))
     (define-key keymap "a" 'nav-make-new-file)
     (define-key keymap "b" 'nav-customize)
     (define-key keymap "c" 'nav-copy-file-or-dir)
@@ -164,10 +164,10 @@ This is used if only one window besides the Nav window is visible."
   "Name of the buffer where nav shows results of its find command ('f' key).")
 
 (define-button-type 'bookmark-jump-button
-  'action 'nav-bookmark-jump-button-action
+  'action 'nav-quickdir-jump-button-action
   'follow-link t
   'face nil
-  'help-echo "bookmark")
+  'help-echo "quickdir")
 
 (define-button-type 'quickfile-jump-button
   'action 'nav-quickfile-jump-button-action
@@ -296,10 +296,10 @@ This works like a web browser's back button."
           (setq line-num (+ line-num 1))))))
 
 
-(defun nav-bookmark-jump-button-action (button)
+(defun nav-quickdir-jump-button-action (button)
   (setq num (string-to-number (substring (button-label button) 1 2)))
   (setq num (- num 1))
-  (nav-bookmark-jump num))
+  (nav-quickdir-jump num))
 
 
 (defun nav-quickfile-jump-button-action (button)
@@ -307,7 +307,7 @@ This works like a web browser's back button."
   (setq num (- num 1))
   (nav-quickfile-jump num))
 
-
+;;matt
 (defun nav-replace-buffer-contents (new-contents should-make-filenames-clickable)
   (let ((saved-line-number (nav-line-number-at-pos (point)))
         ;; Setting inhibit-read-only to t here lets us edit the buffer
@@ -315,10 +315,10 @@ This works like a web browser's back button."
         (inhibit-read-only t))
     (erase-buffer)
     (insert new-contents)
-    (nav-insert-jump-buttons)
     (font-lock-fontify-buffer)
     (if should-make-filenames-clickable
         (nav-make-filenames-clickable))
+    (nav-insert-jump-buttons)
     (goto-line saved-line-number)))
 
 
@@ -344,7 +344,7 @@ This works like a web browser's back button."
   (when window-system
     (condition-case err
         (save-excursion
-          (goto-line 3)
+          (goto-line 1)
           (dotimes (i (count-lines 1 (point-max)))
             (let ((start (line-beginning-position))
                   (end (line-end-position)))
@@ -504,10 +504,6 @@ If there is no second other window, Nav will create one."
 
 (defun nav-toggle ()
   "Toggles whether Nav is active.
-;;; Key Bindings
-;;
-;; Press ? in the Nav window to display a list of key bindings.
-;;
 
 Synonymous with the (nav) function."
   (interactive)
@@ -548,10 +544,10 @@ Synonymous with the (nav) function."
   (nav-open-file (nth quickfile-num nav-quickfile-list)))
 
 
-(defun nav-bookmark-jump (bookmark-num)
+(defun nav-quickdir-jump (bookmark-num)
   "Jumps to directory from custom bookmark list."
   (interactive)
-  (nav-push-dir (nth bookmark-num nav-bookmark-list)))
+  (nav-push-dir (nth bookmark-num nav-quickdir-list)))
 
 
 (defun nav-jump-to-dir (dirname)
@@ -626,10 +622,6 @@ directory, or if the user says it's ok."
   "Moves a file or directory."
   (interactive "FMove to: ")
   (let ((filename (nav-get-cur-line-str)))
-;;; Key Bindings
-;;
-;; Press ? in the Nav window to display a list of key bindings.
-;;
     (if (nav-this-is-a-microsoft-os)
 	(rename-file filename target-name)
       (if (nav-ok-to-overwrite target-name)
@@ -734,10 +726,6 @@ If there is already a *terminal* buffer then it is reused."
       (setq cur-window (next-window cur-window)))
     (reverse result)))
 
-;;; Key Bindings
-;;
-;; Press ? in the Nav window to display a list of key bindings.
-;;
 
 (defun nav-rotate-windows-cw ()
   "Cyclically permutes the windows other than the nav window, clockwise."
@@ -826,7 +814,7 @@ Help for nav mode
 =================
 
 The letters at the bottom are shortcuts.  D1 takes you to the
-first bookmarked directory and so on.  F1 goes to the first
+first bookmarked directory (or 'quickdir') and so on.  F1 goes to the first
 bookmarked file (or 'quickfile') and so on.  These directories
 and files can be changed by pressing the 'b' key and using the
 Emacs customization page that appears.
@@ -844,9 +832,9 @@ Tab: To move through buttons
 6\t Jump to 2nd quick file.
 7\t Jump to 3rd quick file.
 
-8\t Jump to 1st bookmark.
-9\t Jump to 2nd bookmark.
-0\t Jump to 3rd bookmark.
+8\t Jump to 1st quick dir.
+9\t Jump to 2nd quick dir.
+0\t Jump to 3rd quick dir.
 
 a\t Make a new file.
 b\t Customize Nav settings and bookmarks.
