@@ -303,11 +303,12 @@ This works like a web browser's back button."
 
 
 (defun nav-quickfile-jump-button-action (button)
+  (select-window (nav-get-window nav-buffer-name))
   (setq num (string-to-number (substring (button-label button) 1 2)))
   (setq num (- num 1))
   (nav-quickfile-jump num))
 
-;;matt
+
 (defun nav-replace-buffer-contents (new-contents should-make-filenames-clickable)
   (let ((saved-line-number (nav-line-number-at-pos (point)))
         ;; Setting inhibit-read-only to t here lets us edit the buffer
@@ -330,7 +331,7 @@ This works like a web browser's back button."
   (insert-text-button "D2" :type 'bookmark-jump-button)
   (insert " ")
   (insert-text-button "D3" :type 'bookmark-jump-button)
-  (insert "   ")
+  (insert "  ")
   (insert-text-button "F1" :type 'quickfile-jump-button)
   (insert " ")
   (insert-text-button "F2" :type 'quickfile-jump-button)
