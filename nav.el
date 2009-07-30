@@ -189,10 +189,12 @@ This is used if only one window besides the Nav window is visible."
   (interactive)
   (select-window (nav-get-window nav-buffer-name))
   (if (eq nav-mode-toggle 0)
-      (progn 
+      (progn
+	(font-lock-mode -1)
 	(nav-show-buffers)
 	(setq nav-mode-toggle 1))
     (progn
+      (turn-on-font-lock)
       (nav-refresh)
       (setq nav-mode-toggle 0))))
 
@@ -202,13 +204,28 @@ This is used if only one window besides the Nav window is visible."
   (let ((inhibit-read-only t))
     (erase-buffer)
     (setq blist (mapcar (function buffer-name) (buffer-list)))
-    (insert "Buffer List:\n")
+    (insert (propertize "Active Buffers:     " 
+			 'face
+			 '( :background "navy" :foreground "white")))
+    (insert "\n")
     (dolist (b blist)
-      (or (string-equal "*" (substring b 0 1)) (string-equal "*" (substring b -1)) 
+      (if (string-match "^[ *]" b)
 	  ()
 	  (progn
 	    (insert-text-button b :type 'buffer-jump-button)
 	    (insert "\n"))))
+    (insert "\n")
+    (insert (propertize "Scratch Buffers:    " 
+			 'face
+			 '( :background "navy" :foreground "white")))
+    (insert "\n")
+    (dolist (b blist)
+      (if (not (string-match "^\\*" b))
+	  ()
+	  (progn
+	    (insert-text-button b :type 'buffer-jump-button)
+	    (insert "\n"))))
+
 	(setq mode-line-format "nav: Buffer list")
 	(force-mode-line-update)))
 
@@ -407,11 +424,6 @@ This works like a web browser's back button."
 (defun nav-string< (s1 s2)
   "Tells whether S1 comes lexically before S2, ignoring case."
   (string< (downcase s1) (downcase s2)))
-
-
-(defun nav-show-tags ()
-;  (select-window (nav-get-window nav-buffer-name))
-  )
 
 
 (defun nav-show-dir (dir)
