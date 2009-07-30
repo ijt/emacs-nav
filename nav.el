@@ -3,7 +3,7 @@
 ;; Copyright 2009 Google Inc. All Rights Reserved.
 ;;
 ;; Author: issactrotts@google.com (Issac Trotts)
-;; Version: 53
+;; Version: 54
 ;;
 
 ;;; License:
@@ -167,17 +167,35 @@ This is used if only one window besides the Nav window is visible."
 (defconst nav-buffer-name-for-find-results "*nav-find*"
   "Name of the buffer where nav shows results of its find command ('f' key).")
 
-(define-button-type 'quickdir-jump-button
+(define-button-type 'quickdir-jump-button-1
   'action 'nav-quickdir-jump-button-action
   'follow-link t
-  'face nil
-  'help-echo "quickdir")
+  'face nil)
 
-(define-button-type 'quickfile-jump-button
+(define-button-type 'quickdir-jump-button-2
+  'action 'nav-quickdir-jump-button-action
+  'follow-link t
+  'face nil)
+
+(define-button-type 'quickdir-jump-button-3
+  'action 'nav-quickdir-jump-button-action
+  'follow-link t
+  'face nil)
+
+(define-button-type 'quickfile-jump-button-1
   'action 'nav-quickfile-jump-button-action
   'follow-link t
-  'face nil
-  'help-echo "quickfile")
+  'face nil)
+
+(define-button-type 'quickfile-jump-button-2
+  'action 'nav-quickfile-jump-button-action
+  'follow-link t
+  'face nil)
+
+(define-button-type 'quickfile-jump-button-3
+  'action 'nav-quickfile-jump-button-action
+  'follow-link t
+  'face nil)
 
 (define-button-type 'buffer-jump-button
   'action 'nav-buffer-jump-button-action
@@ -385,17 +403,23 @@ This works like a web browser's back button."
 (defun nav-insert-jump-buttons ()
   ;; Make bookmark buttons.
   (insert "\n\n")
-  (insert-text-button "D1" :type 'quickdir-jump-button)
+  (button-type-put 'quickdir-jump-button-1 'help-echo (nth 0 nav-quickdir-list))
+  (insert-text-button "D1" :type 'quickdir-jump-button-1)
   (insert " ")
-  (insert-text-button "D2" :type 'quickdir-jump-button)
+  (button-type-put 'quickdir-jump-button-2 'help-echo (nth 1 nav-quickdir-list))
+  (insert-text-button "D2" :type 'quickdir-jump-button-2)
   (insert " ")
-  (insert-text-button "D3" :type 'quickdir-jump-button)
+  (button-type-put 'quickdir-jump-button-3 'help-echo (nth 2 nav-quickdir-list))
+  (insert-text-button "D3" :type 'quickdir-jump-button-3)
   (insert "  ")
-  (insert-text-button "F1" :type 'quickfile-jump-button)
+  (button-type-put 'quickfile-jump-button-1 'help-echo (nth 0 nav-quickfile-list))
+  (insert-text-button "F1" :type 'quickfile-jump-button-1)
   (insert " ")
-  (insert-text-button "F2" :type 'quickfile-jump-button)
+  (button-type-put 'quickfile-jump-button-2 'help-echo (nth 1 nav-quickfile-list))
+  (insert-text-button "F2" :type 'quickfile-jump-button-2)
   (insert " ")
-  (insert-text-button "F3" :type 'quickfile-jump-button))
+  (button-type-put 'quickfile-jump-button-3 'help-echo (nth 2 nav-quickfile-list))
+  (insert-text-button "F3" :type 'quickfile-jump-button-3))
 
 
 (defun nav-make-filenames-clickable ()
@@ -403,7 +427,7 @@ This works like a web browser's back button."
   ;; so return before that happens.
   (when window-system
     (condition-case err
-        (save-excursion
+	(save-excursion
           (goto-line 1)
           (dotimes (i (count-lines 1 (point-max)))
             (let ((start (line-beginning-position))
