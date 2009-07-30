@@ -3,7 +3,7 @@
 ;; Copyright 2009 Google Inc. All Rights Reserved.
 ;;
 ;; Author: issactrotts@google.com (Issac Trotts)
-;; Version: 52
+;; Version: 53
 ;;
 
 ;;; License:
@@ -135,6 +135,8 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap ":" 'nav-turn-off-keys-and-be-writable)
     (define-key keymap "." 'nav-toggle-hidden-files)
     (define-key keymap "?" 'nav-help-screen)
+    (define-key keymap "`" 'nav-mode-change)
+    (define-key keymap [S-down-mouse-3] 'nav-mode-change)
     (define-key keymap [(control ?x) (control ?f)] 'find-file-other-window)
     keymap))
 
@@ -145,6 +147,8 @@ This is used if only one window besides the Nav window is visible."
 (setq nav-mode-map (nav-make-mode-map))
 
 (defvar nav-dir-stack '())
+
+(defvar nav-mode-toggle 0)
 
 (defvar nav-map-dir-to-line-number (make-hash-table :test 'equal)
   "Hash table from dir paths to most recent cursor pos in them.")
@@ -163,7 +167,7 @@ This is used if only one window besides the Nav window is visible."
 (defconst nav-buffer-name-for-find-results "*nav-find*"
   "Name of the buffer where nav shows results of its find command ('f' key).")
 
-(define-button-type 'bookmark-jump-button
+(define-button-type 'quickdir-jump-button
   'action 'nav-quickdir-jump-button-action
   'follow-link t
   'face nil
@@ -174,6 +178,39 @@ This is used if only one window besides the Nav window is visible."
   'follow-link t
   'face nil
   'help-echo "quickfile")
+
+(define-button-type 'buffer-jump-button
+  'action 'nav-buffer-jump-button-action
+  'follow-link t
+  'face nil
+  'help-echo nil)
+
+(defun nav-mode-change ()
+  (interactive)
+  (select-window (nav-get-window nav-buffer-name))
+  (if (eq nav-mode-toggle 0)
+      (progn 
+	(nav-show-buffers)
+	(setq nav-mode-toggle 1))
+    (progn
+      (nav-refresh)
+      (setq nav-mode-toggle 0))))
+
+
+(defun nav-show-buffers ()
+  (interactive)
+  (let ((inhibit-read-only t))
+    (erase-buffer)
+    (setq blist (mapcar (function buffer-name) (buffer-list)))
+    (insert "Buffer List:\n")
+    (dolist (b blist)
+      (or (string-equal "*" (substring b 0 1)) (string-equal "*" (substring b -1)) 
+	  ()
+	  (progn
+	    (insert-text-button b :type 'buffer-jump-button)
+	    (insert "\n"))))
+	(setq mode-line-format "nav: Buffer list")
+	(force-mode-line-update)))
 
 
 (defun nav-join (sep string-list)
@@ -296,6 +333,11 @@ This works like a web browser's back button."
           (setq line-num (+ line-num 1))))))
 
 
+(defun nav-buffer-jump-button-action (button)
+  (setq num (button-label button))
+  (nav-buffer-jump num))
+
+
 (defun nav-quickdir-jump-button-action (button)
   (setq num (string-to-number (substring (button-label button) 1 2)))
   (setq num (- num 1))
@@ -326,11 +368,11 @@ This works like a web browser's back button."
 (defun nav-insert-jump-buttons ()
   ;; Make bookmark buttons.
   (insert "\n\n")
-  (insert-text-button "D1" :type 'bookmark-jump-button)
+  (insert-text-button "D1" :type 'quickdir-jump-button)
   (insert " ")
-  (insert-text-button "D2" :type 'bookmark-jump-button)
+  (insert-text-button "D2" :type 'quickdir-jump-button)
   (insert " ")
-  (insert-text-button "D3" :type 'bookmark-jump-button)
+  (insert-text-button "D3" :type 'quickdir-jump-button)
   (insert "  ")
   (insert-text-button "F1" :type 'quickfile-jump-button)
   (insert " ")
@@ -365,6 +407,11 @@ This works like a web browser's back button."
 (defun nav-string< (s1 s2)
   "Tells whether S1 comes lexically before S2, ignoring case."
   (string< (downcase s1) (downcase s2)))
+
+
+(defun nav-show-tags ()
+;  (select-window (nav-get-window nav-buffer-name))
+  )
 
 
 (defun nav-show-dir (dir)
@@ -539,16 +586,25 @@ Synonymous with the (nav) function."
   (nav-push-dir "~"))
 
 
+(defun nav-buffer-jump (buf-name)
+  "Jumps to selected buffer"
+  (interactive)
+  (other-window 1)
+  (get-buffer-create buf-name)
+  (switch-to-buffer buf-name)
+  (get-buffer buf-name))
+
+
 (defun nav-quickfile-jump (quickfile-num)
   "Jumps to directory from custom bookmark list."
   (interactive)
   (nav-open-file (nth quickfile-num nav-quickfile-list)))
 
 
-(defun nav-quickdir-jump (bookmark-num)
+(defun nav-quickdir-jump (quickdir-num)
   "Jumps to directory from custom bookmark list."
   (interactive)
-  (nav-push-dir (nth bookmark-num nav-quickdir-list)))
+  (nav-push-dir (nth quickdir-num nav-quickdir-list)))
 
 
 (defun nav-jump-to-dir (dirname)
@@ -815,10 +871,10 @@ Help for nav mode
 =================
 
 The letters at the bottom are shortcuts.  D1 takes you to the
-first bookmarked directory (or 'quickdir') and so on.  F1 goes to the first
-bookmarked file (or 'quickfile') and so on.  These directories
-and files can be changed by pressing the 'b' key and using the
-Emacs customization page that appears.
+first bookmarked directory (or 'quickdir') and so on.  F1 goes 
+to the first bookmarked file (or 'quickfile') and so on.  These
+directories and files can be changed by pressing the 'b' key and
+using the Emacs customization page that appears.
 
 Key Bindings
 ============
@@ -859,7 +915,9 @@ u\t Go up to parent directory.
 [\t Rotate non-nav windows counter clockwise.
 ]\t Rotate non-nav windows clockwise.
 .\t Toggle hidden files.
+`\t Toggle file/buffer browser (or Shift-Left-Mouse)
 ?\t Show this help screen.
+
 
                 Press 'q' or click mouse to quit help
 
