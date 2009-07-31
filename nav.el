@@ -884,8 +884,8 @@ Key Bindings
 Enter/Return: Open file or directory under cursor.
 Tab: To move through buttons
 
-1\t Open file under cursor in 1st other window.
-2\t Open file under cursor in 2nd other window.
+1\t Open file/buffer under cursor in 1st other window.
+2\t Open file/buffer under cursor in 2nd other window.
 
 5\t Jump to 1st quick file.
 6\t Jump to 2nd quick file.

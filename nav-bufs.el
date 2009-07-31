@@ -24,6 +24,8 @@
   "Creates and returns a mode map with bufs's key bindings."
   (let ((keymap (make-sparse-keymap)))
     (define-key keymap "\t" 'forward-button)
+    (define-key keymap "1" 'nav-open-buf-other-window-1)
+    (define-key keymap "2" 'nav-open-buf-other-window-2)
     (define-key keymap "5" (lambda nil (interactive) (nav-quickfile-jump 0)))   
     (define-key keymap "6" (lambda nil (interactive) (nav-quickfile-jump 1)))
     (define-key keymap "7" (lambda nil (interactive) (nav-quickfile-jump 2)))
@@ -36,6 +38,42 @@
     keymap))
 
 (setq nav-bufs-mode-map (nav-bufs-make-mode-map))
+
+(defun nav-open-buf-other-window (k)
+  (let ((filename (nav-get-cur-line-str))
+        (dirname (nav-get-working-dir)))
+    (other-window k)
+    (nav-buffer-jump filename)))
+
+
+(defun nav-open-buf-other-window-1 ()
+  "Opens the file under the cursor in the first other window.
+
+This is equivalent to just pressing the [enter] key. 
+See nav-open-file-other-window-2."
+  (interactive)
+  (nav-open-buf-other-window 1))
+
+
+(defun nav-ensure-second-window-exists ()
+  "Makes sure there is a second file-editing area on the right.
+
+Jumps back to nav window when done."
+  (when (= 2 (length (window-list)))
+    (other-window 1)
+    (if (eq nav-split-window-direction 'horizontal)
+        (split-window-horizontally)
+      (split-window-vertically))
+    (select-window (nav-get-window nav-buffer-name))))
+
+
+(defun nav-open-buf-other-window-2 ()
+  "Opens the file under the cursor in the second other window.
+
+If there is no second other window, Nav will create one."
+  (interactive)
+  (nav-ensure-second-window-exists)
+  (nav-open-buf-other-window 2))
 
 
 (defun nav-bufs-show-buffers ()
