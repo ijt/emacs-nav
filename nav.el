@@ -3,7 +3,7 @@
 ;; Copyright 2009 Google Inc. All Rights Reserved.
 ;;
 ;; Author: issactrotts@google.com (Issac Trotts)
-;; Version: 54
+;; Version: 55
 ;;
 
 ;;; License:
@@ -46,7 +46,7 @@
 ;;; Code:
 
 (require 'cl)
-
+(require 'nav-bufs)
 
 (defgroup nav nil
   "A lightweight file/directory navigator."
@@ -150,8 +150,8 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap ":" 'nav-turn-off-keys-and-be-writable)
     (define-key keymap "." 'nav-toggle-hidden-files)
     (define-key keymap "?" 'nav-help-screen)
-    ;(define-key keymap "`" 'nav-start-bufs-mode)
-    ;(define-key keymap [S-down-mouse-3] 'nav-start-bufs-mode)
+    (define-key keymap "`" 'nav-bufs)
+    (define-key keymap [S-down-mouse-3] 'nav-bufs)
     (define-key keymap [(control ?x) (control ?f)] 'find-file-other-window)
     keymap))
 
@@ -219,12 +219,6 @@ This is used if only one window besides the Nav window is visible."
 
 (defun turn-off-font-lock ()
   (font-lock-mode -1))
-
-
-(defun nav-make-buffers-header (text)
-  (propertize text
-              'face
-              '( :background "navy" :foreground "white")))
 
 
 (defun nav-join (sep string-list)
@@ -346,12 +340,6 @@ This works like a web browser's back button."
           (setq line-num (+ line-num 1))))))
 
 
-(defun nav-buffer-jump-button-action (button)
-  (setq num (button-label button))
-  (other-window 1)
-  (nav-buffer-jump num))
-
-
 (defun nav-quickdir-jump-button-action (button)
   (setq num (string-to-number (substring (button-label button) 1 2)))
   (setq num (- num 1))
@@ -400,7 +388,7 @@ This works like a web browser's back button."
   (button-type-put 'quickfile-jump-button-3 'help-echo (nth 2 nav-quickfile-list))
   (insert-text-button "F3" :type 'quickfile-jump-button-3))
 
-
+;;matt
 (defun nav-make-filenames-clickable ()
   ;; In terminals, this function would only add a bunch of underlines,
   ;; so return before that happens.
@@ -413,6 +401,7 @@ This works like a web browser's back button."
                   (end (line-end-position)))
               (make-button start end
                            'action (lambda (button)
+				     (select-window (nav-get-window nav-buffer-name))
                                      (nav-open-file (button-label button)))
                            'follow-link t
                            'face nav-button-face
@@ -606,14 +595,6 @@ Synonymous with the (nav) function."
   "Show home directory in Nav."
   (interactive)
   (nav-push-dir "~"))
-
-
-(defun nav-buffer-jump (buf-name)
-  "Jumps to selected buffer."
-  (interactive)
-  (get-buffer-create buf-name)
-  (switch-to-buffer buf-name)
-  (get-buffer buf-name))
 
 
 (defun nav-quickfile-jump (quickfile-num)
