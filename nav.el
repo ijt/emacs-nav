@@ -244,14 +244,12 @@ This is used if only one window besides the Nav window is visible."
     (insert (nav-make-buffers-header "Scratch Buffers:    "))
     (insert "\n")
     (dolist (b blist)
-      (if (not (string-match "^\\*" b))
-          ()
-          (progn
-            (insert-text-button b :type 'buffer-jump-button)
-            (insert "\n"))))
+      (when (string-match "^\\*" b)
+        (insert-text-button b :type 'buffer-jump-button)
+        (insert "\n")))
 
-        (setq mode-line-format "nav: Buffer list")
-        (force-mode-line-update))
+    (setq mode-line-format "nav: Buffer list")
+    (force-mode-line-update))
   (goto-line 2))
 
 
@@ -310,8 +308,7 @@ If DIRNAME is not a directory or is not accessible, returns nil."
     
     ;; Remember what line we were on last time we visited this directory.
     (let ((line-num (nav-get-line-for-cur-dir)))
-      (when line-num
-        (goto-line line-num)))))
+      (goto-line (if line-num line-num 2)))))
 
 
 (defun nav-open-file (filename)
@@ -377,6 +374,7 @@ This works like a web browser's back button."
 
 (defun nav-buffer-jump-button-action (button)
   (setq num (button-label button))
+  (other-window 1)
   (nav-buffer-jump num))
 
 
@@ -503,7 +501,9 @@ This works like a web browser's back button."
   (let ((filename (nav-get-cur-line-str))
         (dirname (nav-get-working-dir)))
     (other-window k)
-    (find-file (concat dirname "/" filename))))
+    (if (eq nav-view 'dir)
+        (find-file (concat dirname "/" filename))
+        (nav-buffer-jump filename))))
 
 
 (defun nav-open-file-other-window-1 ()
@@ -630,9 +630,8 @@ Synonymous with the (nav) function."
 
 
 (defun nav-buffer-jump (buf-name)
-  "Jumps to selected buffer"
+  "Jumps to selected buffer."
   (interactive)
-  (other-window 1)
   (get-buffer-create buf-name)
   (switch-to-buffer buf-name)
   (get-buffer buf-name))
