@@ -437,7 +437,7 @@ This works like a web browser's back button."
                                      (nav-open-file (button-label button)))
                            'follow-link t
                            'face nav-button-face
-			   'help-echo ""))
+			   'help-echo nil))
             (forward-line 1)))
       (error 
        ;; This can happen for versions of emacs that don't have
