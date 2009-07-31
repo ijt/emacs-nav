@@ -204,18 +204,29 @@ This is used if only one window besides the Nav window is visible."
   'face nil
   'help-echo nil)
 
+
+(defun turn-off-font-lock ()
+  (font-lock-mode -1))
+
+
 (defun nav-view-change ()
   (interactive)
   (select-window (nav-get-window nav-buffer-name))
   (if (eq nav-view 'dir)
       (progn
-        (font-lock-mode nil)
+        (turn-off-font-lock)
         (nav-show-buffers)
         (setq nav-view 'buffers))
     (progn
-      (font-lock-mode t)
+      (turn-on-font-lock)
       (nav-refresh)
       (setq nav-view 'dir))))
+
+
+(defun nav-make-buffers-header (text)
+  (propertize text
+              'face
+              '( :background "navy" :foreground "white")))
 
 
 (defun nav-show-buffers ()
@@ -223,20 +234,14 @@ This is used if only one window besides the Nav window is visible."
   (let ((inhibit-read-only t))
     (erase-buffer)
     (setq blist (mapcar (function buffer-name) (buffer-list)))
-    (insert (propertize "Active Buffers:     " 
-                         'face
-                         '( :background "navy" :foreground "white")))
+    (insert (nav-make-buffers-header "Active Buffers:     " ))
     (insert "\n")
     (dolist (b blist)
-      (if (string-match "^[ *]" b)
-          ()
-          (progn
+      (when (not (string-match "^[ *]" b))
             (insert-text-button b :type 'buffer-jump-button)
-            (insert "\n"))))
+            (insert "\n")))
     (insert "\n")
-    (insert (propertize "Scratch Buffers:    " 
-                         'face
-                         '( :background "navy" :foreground "white")))
+    (insert (nav-make-buffers-header "Scratch Buffers:    "))
     (insert "\n")
     (dolist (b blist)
       (if (not (string-match "^\\*" b))
@@ -246,7 +251,8 @@ This is used if only one window besides the Nav window is visible."
             (insert "\n"))))
 
         (setq mode-line-format "nav: Buffer list")
-        (force-mode-line-update)))
+        (force-mode-line-update))
+  (goto-line 2))
 
 
 (defun nav-join (sep string-list)
