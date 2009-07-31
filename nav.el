@@ -135,8 +135,8 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap ":" 'nav-turn-off-keys-and-be-writable)
     (define-key keymap "." 'nav-toggle-hidden-files)
     (define-key keymap "?" 'nav-help-screen)
-    (define-key keymap "`" 'nav-mode-change)
-    (define-key keymap [S-down-mouse-3] 'nav-mode-change)
+    (define-key keymap "`" 'nav-view-change)
+    (define-key keymap [S-down-mouse-3] 'nav-view-change)
     (define-key keymap [(control ?x) (control ?f)] 'find-file-other-window)
     keymap))
 
@@ -148,7 +148,8 @@ This is used if only one window besides the Nav window is visible."
 
 (defvar nav-dir-stack '())
 
-(defvar nav-mode-toggle 0)
+(defvar nav-view 'dir
+  "Decides whether files or buffers are in view. Either 'dir or 'buffers.")
 
 (defvar nav-map-dir-to-line-number (make-hash-table :test 'equal)
   "Hash table from dir paths to most recent cursor pos in them.")
@@ -203,18 +204,18 @@ This is used if only one window besides the Nav window is visible."
   'face nil
   'help-echo nil)
 
-(defun nav-mode-change ()
+(defun nav-view-change ()
   (interactive)
   (select-window (nav-get-window nav-buffer-name))
-  (if (eq nav-mode-toggle 0)
+  (if (eq nav-view 'dir)
       (progn
-	(font-lock-mode -1)
-	(nav-show-buffers)
-	(setq nav-mode-toggle 1))
+        (font-lock-mode nil)
+        (nav-show-buffers)
+        (setq nav-view 'buffers))
     (progn
-      (turn-on-font-lock)
+      (font-lock-mode t)
       (nav-refresh)
-      (setq nav-mode-toggle 0))))
+      (setq nav-view 'dir))))
 
 
 (defun nav-show-buffers ()
@@ -223,29 +224,29 @@ This is used if only one window besides the Nav window is visible."
     (erase-buffer)
     (setq blist (mapcar (function buffer-name) (buffer-list)))
     (insert (propertize "Active Buffers:     " 
-			 'face
-			 '( :background "navy" :foreground "white")))
+                         'face
+                         '( :background "navy" :foreground "white")))
     (insert "\n")
     (dolist (b blist)
       (if (string-match "^[ *]" b)
-	  ()
-	  (progn
-	    (insert-text-button b :type 'buffer-jump-button)
-	    (insert "\n"))))
+          ()
+          (progn
+            (insert-text-button b :type 'buffer-jump-button)
+            (insert "\n"))))
     (insert "\n")
     (insert (propertize "Scratch Buffers:    " 
-			 'face
-			 '( :background "navy" :foreground "white")))
+                         'face
+                         '( :background "navy" :foreground "white")))
     (insert "\n")
     (dolist (b blist)
       (if (not (string-match "^\\*" b))
-	  ()
-	  (progn
-	    (insert-text-button b :type 'buffer-jump-button)
-	    (insert "\n"))))
+          ()
+          (progn
+            (insert-text-button b :type 'buffer-jump-button)
+            (insert "\n"))))
 
-	(setq mode-line-format "nav: Buffer list")
-	(force-mode-line-update)))
+        (setq mode-line-format "nav: Buffer list")
+        (force-mode-line-update)))
 
 
 (defun nav-join (sep string-list)
@@ -427,7 +428,7 @@ This works like a web browser's back button."
   ;; so return before that happens.
   (when window-system
     (condition-case err
-	(save-excursion
+        (save-excursion
           (goto-line 1)
           (dotimes (i (count-lines 1 (point-max)))
             (let ((start (line-beginning-position))
@@ -437,7 +438,7 @@ This works like a web browser's back button."
                                      (nav-open-file (button-label button)))
                            'follow-link t
                            'face nav-button-face
-			   'help-echo nil))
+                           'help-echo nil))
             (forward-line 1)))
       (error 
        ;; This can happen for versions of emacs that don't have
@@ -571,7 +572,7 @@ If there is no second other window, Nav will create one."
 (defun nav-quit ()
   "Exits Nav."
   (interactive)
-  (let ((window	(get-buffer-window nav-buffer-name)))
+  (let ((window (get-buffer-window nav-buffer-name)))
     (when window
       (when nav-resize-frame-p
         (set-frame-width (selected-frame) 
@@ -695,11 +696,11 @@ directory, or if the user says it's ok."
   (interactive "FCopy to: ")
   (let ((filename (nav-get-cur-line-str)))
     (if (nav-this-is-a-microsoft-os)
-	(copy-file filename target-name)
+        (copy-file filename target-name)
       (if (nav-ok-to-overwrite target-name)
-	  (let ((maybe-dash-r (if (file-directory-p filename) "-r" "")))
-	    (shell-command (format "cp %s '%s' '%s'" maybe-dash-r
-				   (expand-file-name filename)
+          (let ((maybe-dash-r (if (file-directory-p filename) "-r" "")))
+            (shell-command (format "cp %s '%s' '%s'" maybe-dash-r
+                                   (expand-file-name filename)
                                    (expand-file-name target-name)))))))
   (nav-refresh))
 
@@ -716,11 +717,11 @@ directory, or if the user says it's ok."
   (interactive "FMove to: ")
   (let ((filename (nav-get-cur-line-str)))
     (if (nav-this-is-a-microsoft-os)
-	(rename-file filename target-name)
+        (rename-file filename target-name)
       (if (nav-ok-to-overwrite target-name)
-	  (shell-command (format "mv '%s' '%s'"
-				 (expand-file-name filename)
-				 (expand-file-name target-name))))))
+          (shell-command (format "mv '%s' '%s'"
+                                 (expand-file-name filename)
+                                 (expand-file-name target-name))))))
   (nav-refresh))
 
 
@@ -746,7 +747,7 @@ directory, or if the user says it's ok."
           (remove-if-not (lambda (name) (string-match pattern name)) filenames))
          (names-matching-pattern
           (nav-append-slashes-to-dir-names names-matching-pattern))
-	 (saved-directory default-directory))
+         (saved-directory default-directory))
     (pop-to-buffer nav-buffer-name-for-find-results nil)
     (setq default-directory saved-directory)
     (if names-matching-pattern
@@ -900,8 +901,8 @@ depending on the passed-in function next-i."
   (define-key map [mouse-2] 'nav-help-screen-kill) 
   (define-key map "q" 'nav-help-screen-kill)
   (setq cursor-type nil 
-	display-hourglass nil
-	buffer-undo-list t)    
+        display-hourglass nil
+        buffer-undo-list t)    
   (insert "\
 Help for nav mode
 =================
