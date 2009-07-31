@@ -98,6 +98,12 @@ This is used if only one window besides the Nav window is visible."
   :group 'nav)
 
 
+(defun nav-buffer-menu-window-2 ()
+  (interactive)
+  (other-window 2)
+  (buffer-menu))
+
+
 (defun nav-make-mode-map ()
   "Creates and returns a mode map with nav's key bindings."
   (let ((keymap (make-sparse-keymap)))
@@ -113,8 +119,10 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "9" (lambda nil (interactive) (nav-quickdir-jump 1)))
     (define-key keymap "0" (lambda nil (interactive) (nav-quickdir-jump 2)))
     (define-key keymap "a" 'nav-make-new-file)
-    (define-key keymap "b" 'nav-customize)
+    (define-key keymap "b" 'buffer-menu)
+    (define-key keymap "B" 'nav-buffer-menu-window-2)
     (define-key keymap "c" 'nav-copy-file-or-dir)
+    (define-key keymap "C" 'nav-customize)
     (define-key keymap "d" 'nav-delete-file-or-dir-on-this-line)
     (define-key keymap "e" 'nav-invoke-dired)  
     (define-key keymap "f" 'nav-find-files)
@@ -135,8 +143,8 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap ":" 'nav-turn-off-keys-and-be-writable)
     (define-key keymap "." 'nav-toggle-hidden-files)
     (define-key keymap "?" 'nav-help-screen)
-    (define-key keymap "`" 'nav-view-change)
-    (define-key keymap [S-down-mouse-3] 'nav-view-change)
+    ;(define-key keymap "`" 'nav-start-bufs-mode)
+    ;(define-key keymap [S-down-mouse-3] 'nav-start-bufs-mode)
     (define-key keymap [(control ?x) (control ?f)] 'find-file-other-window)
     keymap))
 
@@ -147,9 +155,6 @@ This is used if only one window besides the Nav window is visible."
 (setq nav-mode-map (nav-make-mode-map))
 
 (defvar nav-dir-stack '())
-
-(defvar nav-view 'dir
-  "Decides whether files or buffers are in view. Either 'dir or 'buffers.")
 
 (defvar nav-map-dir-to-line-number (make-hash-table :test 'equal)
   "Hash table from dir paths to most recent cursor pos in them.")
@@ -209,48 +214,10 @@ This is used if only one window besides the Nav window is visible."
   (font-lock-mode -1))
 
 
-(defun nav-view-change ()
-  (interactive)
-  (select-window (nav-get-window nav-buffer-name))
-  (if (eq nav-view 'dir)
-      (progn
-        (turn-off-font-lock)
-        (nav-show-buffers)
-        (setq nav-view 'buffers))
-    (progn
-      (turn-on-font-lock)
-      (nav-refresh)
-      (setq nav-view 'dir))))
-
-
 (defun nav-make-buffers-header (text)
   (propertize text
               'face
               '( :background "navy" :foreground "white")))
-
-
-(defun nav-show-buffers ()
-  (interactive)
-  (let ((inhibit-read-only t))
-    (erase-buffer)
-    (setq blist (mapcar (function buffer-name) (buffer-list)))
-    (insert (nav-make-buffers-header "Active Buffers:     " ))
-    (insert "\n")
-    (dolist (b blist)
-      (when (not (string-match "^[ *]" b))
-            (insert-text-button b :type 'buffer-jump-button)
-            (insert "\n")))
-    (insert "\n")
-    (insert (nav-make-buffers-header "Scratch Buffers:    "))
-    (insert "\n")
-    (dolist (b blist)
-      (when (string-match "^\\*" b)
-        (insert-text-button b :type 'buffer-jump-button)
-        (insert "\n")))
-
-    (setq mode-line-format "nav: Buffer list")
-    (force-mode-line-update))
-  (goto-line 2))
 
 
 (defun nav-join (sep string-list)
@@ -501,9 +468,7 @@ This works like a web browser's back button."
   (let ((filename (nav-get-cur-line-str))
         (dirname (nav-get-working-dir)))
     (other-window k)
-    (if (eq nav-view 'dir)
-        (find-file (concat dirname "/" filename))
-        (nav-buffer-jump filename))))
+    (find-file (concat dirname "/" filename))))
 
 
 (defun nav-open-file-other-window-1 ()
@@ -936,8 +901,8 @@ Tab: To move through buttons
 0\t Jump to 3rd quick dir.
 
 a\t Make a new file.
-b\t Customize Nav settings and bookmarks.
 c\t Copy file or directory under cursor.
+C\t Customize Nav settings and bookmarks.
 d\t Delete file or directory under cursor (asks to confirm first).
 e\t Edit current directory in dired.
 f\t Recursively find files whose names or contents match some regexp.
