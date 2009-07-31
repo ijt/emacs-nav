@@ -98,8 +98,15 @@ This is used if only one window besides the Nav window is visible."
   :group 'nav)
 
 
+(defun nav-buffer-menu-window-1 ()
+  (interactive)
+  (other-window 1)
+  (buffer-menu))
+
+
 (defun nav-buffer-menu-window-2 ()
   (interactive)
+  (nav-ensure-second-window-exists)
   (other-window 2)
   (buffer-menu))
 
@@ -119,7 +126,7 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "9" (lambda nil (interactive) (nav-quickdir-jump 1)))
     (define-key keymap "0" (lambda nil (interactive) (nav-quickdir-jump 2)))
     (define-key keymap "a" 'nav-make-new-file)
-    (define-key keymap "b" 'buffer-menu)
+    (define-key keymap "b" 'nav-buffer-menu-window-1)
     (define-key keymap "B" 'nav-buffer-menu-window-2)
     (define-key keymap "c" 'nav-copy-file-or-dir)
     (define-key keymap "C" 'nav-customize)
@@ -480,17 +487,24 @@ See nav-open-file-other-window-2."
   (nav-open-file-other-window 1))
 
 
-(defun nav-open-file-other-window-2 ()
-  "Opens the file under the cursor in the second other window.
+(defun nav-ensure-second-window-exists ()
+  "Makes sure there is a second file-editing area on the right.
 
-If there is no second other window, Nav will create one."
-  (interactive)
+Jumps back to nav window when done."
   (when (= 2 (length (window-list)))
     (other-window 1)
     (if (eq nav-split-window-direction 'horizontal)
         (split-window-horizontally)
       (split-window-vertically))
-    (select-window (nav-get-window nav-buffer-name)))
+    (select-window (nav-get-window nav-buffer-name))))
+
+
+(defun nav-open-file-other-window-2 ()
+  "Opens the file under the cursor in the second other window.
+
+If there is no second other window, Nav will create one."
+  (interactive)
+  (nav-ensure-second-window-exists)
   (nav-open-file-other-window 2))
 
 
@@ -901,6 +915,8 @@ Tab: To move through buttons
 0\t Jump to 3rd quick dir.
 
 a\t Make a new file.
+b\t Open buffer menu in first window.
+B\t Open buffer menu in second window.
 c\t Copy file or directory under cursor.
 C\t Customize Nav settings and bookmarks.
 d\t Delete file or directory under cursor (asks to confirm first).
