@@ -70,7 +70,6 @@
 
 (define-derived-mode nav-bufs-mode fundamental-mode 
   "Nav-buf-mode is displaying and switching buffers."
-  (nav-set-window-width nav-width)
   (setq mode-name "Nav buffers")
   (use-local-map nav-bufs-mode-map)
   (turn-on-font-lock)

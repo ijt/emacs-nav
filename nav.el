@@ -388,7 +388,7 @@ This works like a web browser's back button."
   (button-type-put 'quickfile-jump-button-3 'help-echo (nth 2 nav-quickfile-list))
   (insert-text-button "F3" :type 'quickfile-jump-button-3))
 
-;;matt
+
 (defun nav-make-filenames-clickable ()
   ;; In terminals, this function would only add a bunch of underlines,
   ;; so return before that happens.
