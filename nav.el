@@ -58,13 +58,13 @@
   :group 'nav)
 
 (defcustom nav-quickdir-list
-  (list "~/.emacs.d" "/tmp" "~")
+  (list "~" "~/.emacs.d" "/tmp")
   "*Nav bookmark list. Fill this with your most frequently visited directories."
   :type '(repeat string)
   :group 'nav)
 
 (defcustom nav-quickfile-list
-  (list "~/.emacs.d/nav.el" "~/.emacs" "~/.bashrc")
+  (list "~/.emacs.d/nav.el" "~/.emacs.d/nav-bufs.el" "~/.emacs")
   "*Nav quick file list. Fill this with your most frequently visited files."
   :type '(repeat string)
   :group 'nav)
@@ -180,35 +180,17 @@ This is used if only one window besides the Nav window is visible."
 (defconst nav-buffer-name-for-find-results "*nav-find*"
   "Name of the buffer where nav shows results of its find command ('f' key).")
 
-(define-button-type 'quickdir-jump-button-1
+(define-button-type 'quickdir-jump-button
   'action 'nav-quickdir-jump-button-action
   'follow-link t
-  'face nil)
+  'face nil
+  'help-echo nil)
 
-(define-button-type 'quickdir-jump-button-2
-  'action 'nav-quickdir-jump-button-action
-  'follow-link t
-  'face nil)
-
-(define-button-type 'quickdir-jump-button-3
-  'action 'nav-quickdir-jump-button-action
-  'follow-link t
-  'face nil)
-
-(define-button-type 'quickfile-jump-button-1
+(define-button-type 'quickfile-jump-button
   'action 'nav-quickfile-jump-button-action
   'follow-link t
-  'face nil)
-
-(define-button-type 'quickfile-jump-button-2
-  'action 'nav-quickfile-jump-button-action
-  'follow-link t
-  'face nil)
-
-(define-button-type 'quickfile-jump-button-3
-  'action 'nav-quickfile-jump-button-action
-  'follow-link t
-  'face nil)
+  'face nil
+  'help-echo nil)
 
 (define-button-type 'buffer-jump-button
   'action 'nav-buffer-jump-button-action
@@ -359,6 +341,8 @@ This works like a web browser's back button."
         ;; in this let-block.
         (inhibit-read-only t))
     (erase-buffer)
+    (insert "Directory listing:  " )
+    (insert "\n")
     (insert new-contents)
     (font-lock-fontify-buffer)
     (if should-make-filenames-clickable
@@ -370,23 +354,22 @@ This works like a web browser's back button."
 (defun nav-insert-jump-buttons ()
   ;; Make bookmark buttons.
   (insert "\n\n")
-  (button-type-put 'quickdir-jump-button-1 'help-echo (nth 0 nav-quickdir-list))
-  (insert-text-button "D1" :type 'quickdir-jump-button-1)
-  (insert " ")
-  (button-type-put 'quickdir-jump-button-2 'help-echo (nth 1 nav-quickdir-list))
-  (insert-text-button "D2" :type 'quickdir-jump-button-2)
-  (insert " ")
-  (button-type-put 'quickdir-jump-button-3 'help-echo (nth 2 nav-quickdir-list))
-  (insert-text-button "D3" :type 'quickdir-jump-button-3)
-  (insert "  ")
-  (button-type-put 'quickfile-jump-button-1 'help-echo (nth 0 nav-quickfile-list))
-  (insert-text-button "F1" :type 'quickfile-jump-button-1)
-  (insert " ")
-  (button-type-put 'quickfile-jump-button-2 'help-echo (nth 1 nav-quickfile-list))
-  (insert-text-button "F2" :type 'quickfile-jump-button-2)
-  (insert " ")
-  (button-type-put 'quickfile-jump-button-3 'help-echo (nth 2 nav-quickfile-list))
-  (insert-text-button "F3" :type 'quickfile-jump-button-3))
+  (insert "Quickjump list:     ")
+  (insert "\n")
+  (insert-text-button (concat "D1 " (nth 0 nav-quickdir-list)) :type 'quickdir-jump-button)
+  (insert "\n")
+  (insert-text-button (concat "D2 " (nth 1 nav-quickdir-list)) :type 'quickdir-jump-button)
+  (insert "\n")
+  (insert-text-button (concat "D3 " (nth 2 nav-quickdir-list)) :type 'quickdir-jump-button)
+  (insert "\n")
+  (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 0 nav-quickfile-list)))
+  (insert-text-button (concat "F1 " qfilename) :type 'quickfile-jump-button)
+  (insert "\n")
+  (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 1 nav-quickfile-list)))
+  (insert-text-button (concat "F2 " qfilename) :type 'quickfile-jump-button)
+  (insert "\n")
+  (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 2 nav-quickfile-list)))
+  (insert-text-button (concat "F3 " qfilename) :type 'quickfile-jump-button))
 
 
 (defun nav-make-filenames-clickable ()
@@ -395,7 +378,7 @@ This works like a web browser's back button."
   (when window-system
     (condition-case err
         (save-excursion
-          (goto-line 1)
+          (goto-line 2)
           (dotimes (i (count-lines 1 (point-max)))
             (let ((start (line-beginning-position))
                   (end (line-end-position)))
@@ -939,10 +922,15 @@ u\t Go up to parent directory.
   (setq mode-name "Navigation")
   (use-local-map nav-mode-map)
   (turn-on-font-lock)
+  (set-face-attribute
+   'font-lock-variable-name-face nil
+   :foreground "white"
+   :background "navy")
   (font-lock-add-keywords 'nav-mode '(("^.*/$" . font-lock-type-face)))
   (font-lock-add-keywords 'nav-mode '(("^[.].*" . font-lock-comment-face)))
   (font-lock-add-keywords 'nav-mode '(("^[.].*/$" . font-lock-string-face)))
   (font-lock-add-keywords 'nav-mode '(("D[1-3]\\|F[1-3]" . font-lock-warning-face)))
+  (font-lock-add-keywords 'nav-mode '(("Directory listing:  \\|Quickjump list:     " . font-lock-variable-name-face)))
   (setq buffer-read-only t)
   (nav-refresh))
 
