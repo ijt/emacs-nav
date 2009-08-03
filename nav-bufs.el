@@ -1,6 +1,6 @@
 ;; This file will contain Bufs mode.
 
-(defun nav-make-buffers-header (text)
+(defun nav-make-header (text)
   (propertize text
               'face
               '( :background "navy" :foreground "white")))
@@ -82,14 +82,14 @@ If there is no second other window, Nav will create one."
   (let ((inhibit-read-only t))
     (erase-buffer)
     (setq blist (mapcar (function buffer-name) (buffer-list)))
-    (insert (nav-make-buffers-header "Active Buffers:     " ))
+    (insert (nav-make-header "Active Buffers:     " ))
     (insert "\n")
     (dolist (b blist)
       (when (not (string-match "^[ *]" b))
 	(insert-text-button b :type 'buffer-jump-button)
 	(insert "\n")))
     (insert "\n")
-    (insert (nav-make-buffers-header "Scratch Buffers:    "))
+    (insert (nav-make-header "Scratch Buffers:    "))
     (insert "\n")
     (dolist (b blist)
       (when (string-match "^\\*" b)

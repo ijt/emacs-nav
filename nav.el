@@ -341,20 +341,20 @@ This works like a web browser's back button."
         ;; in this let-block.
         (inhibit-read-only t))
     (erase-buffer)
-    (insert "Directory listing:  " )
+    (insert "Directory listing: ")
     (insert "\n")
     (insert new-contents)
-    (font-lock-fontify-buffer)
     (if should-make-filenames-clickable
         (nav-make-filenames-clickable))
     (nav-insert-jump-buttons)
+    (font-lock-fontify-buffer)
     (goto-line saved-line-number)))
 
 
 (defun nav-insert-jump-buttons ()
   ;; Make bookmark buttons.
   (insert "\n\n")
-  (insert "Quickjump list:     ")
+  (insert "Quickjump list:    ")
   (insert "\n")
   (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 0 nav-quickfile-list)))
   (insert-text-button (concat "5 " qfilename) :type 'quickfile-jump-button)
@@ -917,7 +917,7 @@ u\t Go up to parent directory.
 (define-derived-mode nav-mode fundamental-mode 
   "Nav-mode is for IDE-like navigation of directories.
 
- It's more IDEish than dired, not as heavy weight as speedbar."
+Nav is more IDEish than dired, and lighter weight than speedbar."
   (nav-set-window-width nav-width)
   (setq mode-name "Navigation")
   (use-local-map nav-mode-map)
@@ -929,8 +929,7 @@ u\t Go up to parent directory.
   (font-lock-add-keywords 'nav-mode '(("^.*/$" . font-lock-type-face)))
   (font-lock-add-keywords 'nav-mode '(("^[.].*" . font-lock-comment-face)))
   (font-lock-add-keywords 'nav-mode '(("^[.].*/$" . font-lock-string-face)))
-  (font-lock-add-keywords 'nav-mode '(("D[1-3]\\|F[1-3]" . font-lock-warning-face)))
-  (font-lock-add-keywords 'nav-mode '(("Directory listing:  \\|Quickjump list:     " . font-lock-variable-name-face)))
+  (font-lock-add-keywords 'nav-mode '(("Directory listing: *\\|Quickjump list: *" . font-lock-variable-name-face)))
   (setq buffer-read-only t)
   (nav-refresh))
 
