@@ -848,9 +848,8 @@ depending on the passed-in function next-i."
   (define-key map [mouse-3] 'nav-help-screen-kill) 
   (define-key map [mouse-2] 'nav-help-screen-kill) 
   (define-key map "q" 'nav-help-screen-kill)
-  (setq cursor-type nil 
-        display-hourglass nil
-        buffer-undo-list t)    
+  (setq display-hourglass nil
+        buffer-undo-list t)  
   (insert "\
 Help for nav mode
 =================
