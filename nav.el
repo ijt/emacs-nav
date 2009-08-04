@@ -144,7 +144,7 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "s" 'nav-shell)
     (define-key keymap "t" 'nav-term)
     (define-key keymap "u" 'nav-go-up-one-dir)
-    (define-key keymap "w" 'nav-print-working-dir)
+    (define-key keymap "w" 'nav-print-current-dir)
     (define-key keymap "[" 'nav-rotate-windows-ccw)
     (define-key keymap "]" 'nav-rotate-windows-cw)
     (define-key keymap "!" 'nav-shell-command)
