@@ -144,6 +144,7 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "s" 'nav-shell)
     (define-key keymap "t" 'nav-term)
     (define-key keymap "u" 'nav-go-up-one-dir)
+    (define-key keymap "w" 'nav-print-working-dir)
     (define-key keymap "[" 'nav-rotate-windows-ccw)
     (define-key keymap "]" 'nav-rotate-windows-cw)
     (define-key keymap "!" 'nav-shell-command)
@@ -323,15 +324,17 @@ This works like a web browser's back button."
 
 
 (defun nav-quickdir-jump-button-action (button)
-  (setq num (string-to-number (substring (button-label button) 1 2)))
-  (setq num (- num 1))
+  (setq num (string-to-number (substring (button-label button) 0 1)))
+  (if (= num 0) (setq num 2))
+  (if (= num 9) (setq num 1))
+  (if (= num 8) (setq num 0))  
   (nav-quickdir-jump num))
 
 
 (defun nav-quickfile-jump-button-action (button)
   (select-window (nav-get-window nav-buffer-name))
-  (setq num (string-to-number (substring (button-label button) 1 2)))
-  (setq num (- num 1))
+  (setq num (string-to-number (substring (button-label button) 0 1)))
+  (setq num (- num 5))
   (nav-quickfile-jump num))
 
 
@@ -827,6 +830,12 @@ depending on the passed-in function next-i."
   (nav-set-window-width nav-width))
 
 
+(defun nav-print-current-dir ()
+  "Shows the full path that nav is currently displaying"
+  (interactive)
+  (print default-directory))
+
+
 (defun nav-help-screen-kill ()
   "Kills the help screen."
   (interactive)
@@ -897,6 +906,7 @@ s\t Start a shell in an emacs window in the current directory.
 t\t Start a terminal in an emacs window in the current directory.
  \t This allows programs like vi and less to run. Exit with C-d C-d.
 u\t Go up to parent directory.
+w\t Print full path of current displayed directory.
 !\t Run shell command.
 [\t Rotate non-nav windows counter clockwise.
 ]\t Rotate non-nav windows clockwise.
