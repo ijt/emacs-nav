@@ -864,14 +864,14 @@ depending on the passed-in function next-i."
   (setq display-hourglass nil
         buffer-undo-list t)  
   (insert "\
-Help for nav mode
+Help for nav directory listing mode
 =================
 
-The letters at the bottom are shortcuts.  D1 takes you to the
-first bookmarked directory (or 'quickdir') and so on.  F1 goes 
-to the first bookmarked file (or 'quickfile') and so on.  These
-directories and files can be changed by pressing the 'b' key and
-using the Emacs customization page that appears.
+The numbers at the bottom are shortcuts.  5 opens the first 
+bookmarked file (or 'quickfile') and so on. 8 takes you to the
+first bookmarked directory (or 'quickdir') and so on. These 
+directories and files can be changed by pressing the 'C' key 
+and using the Emacs customization page that appears.
 
 Key Bindings
 ============
@@ -942,6 +942,7 @@ Nav is more IDEish than dired, and lighter weight than speedbar."
   (font-lock-add-keywords 'nav-mode '(("^.*/$" . font-lock-type-face)))
   (font-lock-add-keywords 'nav-mode '(("^[.].*" . font-lock-comment-face)))
   (font-lock-add-keywords 'nav-mode '(("^[.].*/$" . font-lock-string-face)))
+  (font-lock-add-keywords 'nav-mode '(("^[0-9] " . font-lock-string-face)))
   (font-lock-add-keywords 'nav-mode '(("Directory listing: *\\|Quickjump list: *" . font-lock-variable-name-face)))
   (setq buffer-read-only t)
   (nav-refresh))
