@@ -3,7 +3,7 @@
 ;; Copyright 2009 Google Inc. All Rights Reserved.
 ;;
 ;; Author: issactrotts@google.com (Issac Trotts)
-;; Version: 55
+;; Version: 56
 ;;
 
 ;;; License:
@@ -69,6 +69,10 @@
   :type '(repeat string)
   :group 'nav)
 
+(defcustom nav-quickjump-show t
+  "*If t, nav will show quickjump buttons."
+  :type 'boolean
+  :group 'nav)
 
 (defcustom nav-no-hidden-boring-file-regexps
   (list "\\.pyc$" "\\.o$" "~$" "\\.bak$"
@@ -349,7 +353,7 @@ This works like a web browser's back button."
     (insert new-contents)
     (if should-make-filenames-clickable
         (nav-make-filenames-clickable))
-    (nav-insert-jump-buttons)
+    (if nav-quickjump-show (nav-insert-jump-buttons))
     (font-lock-fontify-buffer)
     (goto-line saved-line-number)))
 
