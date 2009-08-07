@@ -156,6 +156,7 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "." 'nav-toggle-hidden-files)
     (define-key keymap "?" 'nav-help-screen)
     (define-key keymap "`" 'nav-bufs)
+    (define-key keymap " " 'nav-jump-to-name)
     (define-key keymap [S-down-mouse-3] 'nav-bufs)
     (define-key keymap [(tab)] 'forward-button)
     (define-key keymap [(shift tab)] 'backward-button)
@@ -593,6 +594,11 @@ Synonymous with the (nav) function."
   (interactive)
   (nav-push-dir "~"))
 
+(defun nav-jump-to-name (arg)
+ (interactive "K")
+ (goto-line 2)
+ (setq nav-search-string (concat "^" arg))
+ (search-forward-regexp nav-search-string))
 
 (defun nav-quickfile-jump (quickfile-num)
   "Jumps to directory from custom bookmark list."
@@ -884,7 +890,11 @@ Key Bindings
 ============
 
 Enter/Return: Open file or directory under cursor.
-Tab: To move through buttons
+Tab: To move forward through buttons.
+Shift-Tab: To move backward through buttons.
+
+Space: Press then space then any other letter to jump to
+       filename that starts with that letter.
 
 1\t Open file/buffer under cursor in 1st other window.
 2\t Open file/buffer under cursor in 2nd other window.
