@@ -328,7 +328,7 @@ This works like a web browser's back button."
 
 
 (defun nav-quickdir-jump-button-action (button)
-  (setq num (string-to-number (substring (button-label button) 0 1)))
+  (setq num (string-to-number (substring (button-label button) 1 2)))
   (if (= num 0) (setq num 2))
   (if (= num 9) (setq num 1))
   (if (= num 8) (setq num 0))  
@@ -337,7 +337,7 @@ This works like a web browser's back button."
 
 (defun nav-quickfile-jump-button-action (button)
   (select-window (nav-get-window nav-buffer-name))
-  (setq num (string-to-number (substring (button-label button) 0 1)))
+  (setq num (string-to-number (substring (button-label button) 1 2)))
   (setq num (- num 5))
   (nav-quickfile-jump num))
 
@@ -364,19 +364,19 @@ This works like a web browser's back button."
   (insert "Quickjump list:    ")
   (insert "\n")
   (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 0 nav-quickfile-list)))
-  (insert-text-button (concat "5 " qfilename) :type 'quickfile-jump-button)
+  (insert-text-button (concat "[5] " qfilename) :type 'quickfile-jump-button)
   (insert "\n")
   (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 1 nav-quickfile-list)))
-  (insert-text-button (concat "6 " qfilename) :type 'quickfile-jump-button)
+  (insert-text-button (concat "[6] " qfilename) :type 'quickfile-jump-button)
   (insert "\n")
   (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 2 nav-quickfile-list)))
-  (insert-text-button (concat "7 " qfilename) :type 'quickfile-jump-button)
+  (insert-text-button (concat "[7] " qfilename) :type 'quickfile-jump-button)
   (insert "\n")
-  (insert-text-button (concat "8 " (nth 0 nav-quickdir-list)) :type 'quickdir-jump-button)
+  (insert-text-button (concat "[8] " (nth 0 nav-quickdir-list)) :type 'quickdir-jump-button)
   (insert "\n")
-  (insert-text-button (concat "9 " (nth 1 nav-quickdir-list)) :type 'quickdir-jump-button)
+  (insert-text-button (concat "[9] " (nth 1 nav-quickdir-list)) :type 'quickdir-jump-button)
   (insert "\n")
-  (insert-text-button (concat "0 " (nth 2 nav-quickdir-list)) :type 'quickdir-jump-button))
+  (insert-text-button (concat "[0] " (nth 2 nav-quickdir-list)) :type 'quickdir-jump-button))
 
 
 (defun nav-make-filenames-clickable ()
@@ -942,7 +942,7 @@ Nav is more IDEish than dired, and lighter weight than speedbar."
   (font-lock-add-keywords 'nav-mode '(("^.*/$" . font-lock-type-face)))
   (font-lock-add-keywords 'nav-mode '(("^[.].*" . font-lock-comment-face)))
   (font-lock-add-keywords 'nav-mode '(("^[.].*/$" . font-lock-string-face)))
-  (font-lock-add-keywords 'nav-mode '(("^[0-9] " . font-lock-string-face)))
+  (font-lock-add-keywords 'nav-mode '(("^\\[[0-9]\\] " . font-lock-string-face)))
   (font-lock-add-keywords 'nav-mode '(("Directory listing: *\\|Quickjump list: *" . font-lock-variable-name-face)))
   (setq buffer-read-only t)
   (nav-refresh))
