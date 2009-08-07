@@ -118,7 +118,6 @@ This is used if only one window besides the Nav window is visible."
 (defun nav-make-mode-map ()
   "Creates and returns a mode map with nav's key bindings."
   (let ((keymap (make-sparse-keymap)))
-    (define-key keymap "\t" 'forward-button)
     (define-key keymap "\n" 'nav-open-file-under-cursor)
     (define-key keymap "\r" 'nav-open-file-under-cursor)
     (define-key keymap "1" 'nav-open-file-other-window-1)
@@ -143,6 +142,7 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "m" 'nav-move-file-or-dir)
     (define-key keymap "n" 'nav-make-new-directory)
     (define-key keymap "p" 'nav-pop-dir)
+    (define-key keymap "o" (lambda nil (interactive) (other-window 1)))
     (define-key keymap "q" 'nav-quit)
     (define-key keymap "r" 'nav-refresh)
     (define-key keymap "s" 'nav-shell)
@@ -157,6 +157,12 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "?" 'nav-help-screen)
     (define-key keymap "`" 'nav-bufs)
     (define-key keymap [S-down-mouse-3] 'nav-bufs)
+    (define-key keymap [(tab)] 'forward-button)
+    (define-key keymap [(shift tab)] 'backward-button)
+    (define-key keymap [(down)] 'forward-button)
+    (define-key keymap [(up)] 'backward-button)
+    (define-key keymap [(control ?n)] 'forward-button)
+    (define-key keymap [(control ?p)] 'backward-button)
     (define-key keymap [(control ?x) (control ?f)] 'find-file-other-window)
     keymap))
 
@@ -507,7 +513,8 @@ If there is no second other window, Nav will create one."
   "Resizes Nav window to original size, updates its contents."
   (interactive)
   (nav-set-window-width nav-width)
-  (nav-show-dir "."))
+  (nav-show-dir ".")
+  (goto-line 2))
 
 
 (defun nav-equalize-window-widths ()
@@ -903,6 +910,7 @@ h\t Jump to home (~).
 j\t Jump to another directory.
 m\t Move or rename file or directory.
 n\t Make a new directory.
+o\t Switch to other window.
 p\t Pop directory stack to go back to the directory where you just were.
 q\t Quit nav.
 r\t Refresh.
