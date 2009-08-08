@@ -158,8 +158,13 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "`" 'nav-bufs)
     (define-key keymap " " 'nav-jump-to-name)
     (define-key keymap [S-down-mouse-3] 'nav-bufs)
-    (define-key keymap [(tab)] 'forward-button)
-    (define-key keymap [(shift tab)] 'backward-button)
+
+    ;; Please do not use [(tab)] as it doesn't work on Issac's setup.
+    (define-key keymap "\t" 'forward-button)
+
+    ;; Avoid [(shift tab)] as it fails on Issac's setup.
+    (define-key keymap [backtab] 'backward-button)
+
     (define-key keymap [(down)] 'forward-button)
     (define-key keymap [(up)] 'backward-button)
     (define-key keymap [(control ?n)] 'forward-button)
@@ -387,27 +392,24 @@ This works like a web browser's back button."
 
 
 (defun nav-make-filenames-clickable ()
-  ;; In terminals, this function would only add a bunch of underlines,
-  ;; so return before that happens.
-  (when window-system
-    (condition-case err
-        (save-excursion
-          (goto-line 2)
-          (dotimes (i (count-lines 1 (point-max)))
-            (let ((start (line-beginning-position))
-                  (end (line-end-position)))
-              (make-button start end
-                           'action (lambda (button)
-				     (select-window (nav-get-window nav-buffer-name))
-                                     (nav-open-file (button-label button)))
-                           'follow-link t
-                           'face nav-button-face
-                           'help-echo nil))
-            (forward-line 1)))
-      (error 
-       ;; This can happen for versions of emacs that don't have
-       ;; make-button defined.
-       'failed))))
+  (condition-case err
+      (save-excursion
+	(goto-line 2)
+	(dotimes (i (count-lines 1 (point-max)))
+	  (let ((start (line-beginning-position))
+		(end (line-end-position)))
+	    (make-button start end
+			 'action (lambda (button)
+				   (select-window (nav-get-window nav-buffer-name))
+				   (nav-open-file (button-label button)))
+			 'follow-link t
+			 'face nav-button-face
+			 'help-echo nil))
+	  (forward-line 1)))
+    (error 
+     ;; This can happen for versions of emacs that don't have
+     ;; make-button defined.
+     'failed)))
 
 
 (defun nav-string< (s1 s2)
