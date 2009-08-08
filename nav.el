@@ -320,8 +320,10 @@ This works like a web browser's back button."
 
 
 (defun nav-get-cur-line-str ()
-  (buffer-substring-no-properties (point-at-bol)
-                                  (point-at-eol)))
+  (let ((str (buffer-substring-no-properties (point-at-bol)
+					     (point-at-eol))))
+    ;; Filter out button junk such as [5], [6], and so on.
+    (replace-regexp-in-string "^\\[[0-9]\\] " "" str)))
 
 
 (defun nav-non-boring-directory-files (dir)
