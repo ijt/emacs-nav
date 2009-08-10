@@ -52,7 +52,7 @@
   "A lightweight file/directory navigator."
   :group 'applications)
 
-(defcustom nav-width 20
+(defcustom nav-default-width 20
   "*Initial width of the Nav window."
   :type 'integer
   :group 'nav)
@@ -149,7 +149,8 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "s" 'nav-shell)
     (define-key keymap "t" 'nav-term)
     (define-key keymap "u" 'nav-go-up-one-dir)
-    (define-key keymap "w" 'nav-shrink-wrap-toggle)
+    (define-key keymap "w" 'nav-shrink-wrap)
+    (define-key keymap "W" 'nav-set-width-to-default)
     (define-key keymap "[" 'nav-rotate-windows-ccw)
     (define-key keymap "]" 'nav-rotate-windows-cw)
     (define-key keymap "!" 'nav-shell-command)
@@ -160,12 +161,10 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap " " 'nav-jump-to-name)
     (define-key keymap [S-down-mouse-3] 'nav-bufs)
 
-    ;; Please do not use [(tab)] as it doesn't work on Issac's setup.
+    ;; Avoid [(tab)] and [(shift tab)] because they fail on Issac's setup.
     (define-key keymap "\t" 'forward-button)
-
-    ;; Avoid [(shift tab)] as it fails on Issac's setup.
     (define-key keymap [backtab] 'backward-button)
-
+    
     (define-key keymap [(down)] 'forward-button)
     (define-key keymap [(up)] 'backward-button)
     (define-key keymap [(control ?n)] 'forward-button)
@@ -179,6 +178,8 @@ This is used if only one window besides the Nav window is visible."
 ;; changing the nav mode map.
 (setq nav-mode-map (nav-make-mode-map))
 
+(defvar nav-width nav-default-width)
+
 (defvar nav-dir-stack '())
 
 (defvar nav-map-dir-to-line-number (make-hash-table :test 'equal)
@@ -187,6 +188,9 @@ This is used if only one window besides the Nav window is visible."
 (defvar nav-filter-regexps nav-boring-file-regexps)
 
 (defvar nav-button-face nil)
+
+(defvar nav-other-width nav-width
+  "Used for toggling on w key.")
 
 (defconst nav-shell-buffer-name "*nav-shell*"
   "Name of the buffer used for the command line shell spawned by
@@ -301,20 +305,25 @@ If DIRNAME is not a directory or is not accessible, returns nil."
   (nav-push-dir ".."))
 
 
-(defun nav-shrink-wrap-toggle ()
+(defun nav-shrink-wrap ()
   "Updates the width of the Nav window to fit the longest filename in the
-current directory. If that is already the width of the window, the width
-defaults back to nav-width, so repeated calls will toggle."
+current directory. Updates the global variable nav-width as a side effect."
   (interactive)
   (let* ((lines (split-string (buffer-string) "\n" t))
 	 (num-lines (length lines))
 	 (maxlen (apply 'max (mapcar 'length lines)))
 	 (max-width (/ (frame-width) 2))
-	 (new-width (min (+ maxlen 1) max-width))
-	 (new-width (if (= (window-width) new-width)
-			nav-width
-		      new-width)))
+	 (new-width (min (+ maxlen 1) max-width)))
+    (setq nav-width new-width)
     (nav-set-window-width new-width)))
+
+
+(defun nav-set-width-to-default ()
+  "Sets the width of the Nav window to nav-default-width, and
+updates the nav-width global variable as a side effect."
+  (interactive)
+  (setq nav-width nav-default-width)
+  (nav-set-window-width nav-width))
 
 
 (defun nav-push-dir (dirname)
@@ -379,7 +388,7 @@ This works like a web browser's back button."
         ;; in this let-block.
         (inhibit-read-only t))
     (erase-buffer)
-    (insert "Directory listing: ")
+    (insert "Directory:")
     (insert "\n")
     (insert new-contents)
     (if should-make-filenames-clickable
@@ -392,7 +401,7 @@ This works like a web browser's back button."
 (defun nav-insert-jump-buttons ()
   ;; Make bookmark buttons.
   (insert "\n\n")
-  (insert "Quickjump list:    ")
+  (insert "Quickjumps:")
   (insert "\n")
   (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 0 nav-quickfile-list)))
   (insert-text-button (concat "[5] " qfilename) :type 'quickfile-jump-button)
@@ -951,6 +960,7 @@ t\t Start a terminal in an emacs window in the current directory.
  \t This allows programs like vi and less to run. Exit with C-d C-d.
 u\t Go up to parent directory.
 w\t Shrink-wrap Nav's window to fit the longest filename in the current directory.
+W\t Set the window width to its default value.
 !\t Run shell command.
 [\t Rotate non-nav windows counter clockwise.
 ]\t Rotate non-nav windows clockwise.
@@ -983,12 +993,12 @@ Nav is more IDEish than dired, and lighter weight than speedbar."
   (font-lock-add-keywords 'nav-mode '(("^[.].*" . font-lock-comment-face)))
   (font-lock-add-keywords 'nav-mode '(("^[.].*/$" . font-lock-string-face)))
   (font-lock-add-keywords 'nav-mode '(("^\\[[0-9]\\] " . font-lock-string-face)))
-  (font-lock-add-keywords 'nav-mode '(("Directory listing: *\\|Quickjump list: *" . font-lock-variable-name-face)))
+  (font-lock-add-keywords 'nav-mode '(("Directory: *\\|Quickjumps: *" . font-lock-variable-name-face)))
   (setq buffer-read-only t)
   (nav-refresh))
 
 
-;; For ELPA, the Emacs Lisp Package Archive
+;; The next line is for ELPA, the Emacs Lisp Package Archive.
 ;;;###autoload
 (defun nav ()
   "Run nav-mode in a narrow window on the left side."
