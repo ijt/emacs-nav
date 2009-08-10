@@ -7,6 +7,8 @@
 (defun nav-tags-make-mode-map ()
   "Creates and returns a mode map with tags's key bindings."
   (let ((keymap (make-sparse-keymap)))
+    (define-key keymap "w" 'nav-shrink-wrap)
+    (define-key keymap "W" 'nav-set-width-to-default)
     (define-key keymap "q" 'nav-quit)
     (define-key keymap "?" 'nav-help-screen)
     (define-key keymap "`" 'nav-tags-quit)
