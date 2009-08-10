@@ -964,7 +964,7 @@ r\t Refresh.
 s\t Start a shell in an emacs window in the current directory.
 t\t Start a terminal in an emacs window in the current directory.
  \t This allows programs like vi and less to run. Exit with C-d C-d.
-T\t Expand tags on selected file.
+T\t Expand tags on selected file. Press T again to sort tags by name.
 u\t Go up to parent directory.
 w\t Shrink-wrap Nav's window to fit the longest filename in the current directory.
 W\t Set the window width to its default value.

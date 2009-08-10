@@ -7,6 +7,7 @@
 (defun nav-tags-make-mode-map ()
   "Creates and returns a mode map with tags's key bindings."
   (let ((keymap (make-sparse-keymap)))
+    (define-key keymap "T" 'nav-tags-sort)
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
     (define-key keymap "q" 'nav-quit)
@@ -23,13 +24,20 @@
 
 (setq nav-tags-mode-map (nav-tags-make-mode-map))
 
+;; copied imenu internal functions to handle sort.
+(defun imenu--sort-by-name (item1 item2)
+  (string-lessp (car item1) (car item2)))
 
 (defun nav-tags-fetch-imenu (file)
+  "Generates the tag index from selected file."
   (require 'imenu)
+  (setq nav-tags-current-file file)
   (set-buffer (find-file-noselect file))
   (switch-to-buffer file)
   (setq imenu--index-alist nil)
   (setq index-alist (imenu--make-index-alist t))
+  (if imenu-sort-function
+      (setq index-alist (sort index-alist imenu-sort-function)))
   (set-buffer nav-buffer-name)
   (other-window 1)
   (setq nav-tags-filename file)
@@ -70,6 +78,14 @@
     (force-mode-line-update)
     (goto-line 2)))
 
+
+(defun nav-tags-sort ()
+  "Toggles sort to by name/position and re-displays tags"
+  (interactive)
+  (if (eq imenu-sort-function 'imenu--sort-by-name)
+      (setq imenu-sort-function nil)
+    (setq imenu-sort-function 'imenu--sort-by-name))
+  (nav-tags-fetch-imenu nav-tags-current-file))
 
 (defun nav-tags-quit ()
   "Kill nav-tags."
