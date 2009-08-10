@@ -142,13 +142,14 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "m" 'nav-move-file-or-dir)
     (define-key keymap "n" 'nav-make-new-directory)
     (define-key keymap "p" 'nav-pop-dir)
+    (define-key keymap "P" 'nav-print-current-dir)
     (define-key keymap "o" (lambda nil (interactive) (other-window 1)))
     (define-key keymap "q" 'nav-quit)
     (define-key keymap "r" 'nav-refresh)
     (define-key keymap "s" 'nav-shell)
     (define-key keymap "t" 'nav-term)
     (define-key keymap "u" 'nav-go-up-one-dir)
-    (define-key keymap "w" 'nav-print-current-dir)
+    (define-key keymap "w" 'nav-shrink-wrap-toggle)
     (define-key keymap "[" 'nav-rotate-windows-ccw)
     (define-key keymap "]" 'nav-rotate-windows-cw)
     (define-key keymap "!" 'nav-shell-command)
@@ -298,6 +299,22 @@ If DIRNAME is not a directory or is not accessible, returns nil."
   "Points Nav to ../."
   (interactive)
   (nav-push-dir ".."))
+
+
+(defun nav-shrink-wrap-toggle ()
+  "Updates the width of the Nav window to fit the longest filename in the
+current directory. If that is already the width of the window, the width
+defaults back to nav-width, so repeated calls will toggle."
+  (interactive)
+  (let* ((lines (split-string (buffer-string) "\n" t))
+	 (num-lines (length lines))
+	 (maxlen (apply 'max (mapcar 'length lines)))
+	 (max-width (/ (frame-width) 2))
+	 (new-width (min (+ maxlen 1) max-width))
+	 (new-width (if (= (window-width) new-width)
+			nav-width
+		      new-width)))
+    (nav-set-window-width new-width)))
 
 
 (defun nav-push-dir (dirname)
@@ -926,13 +943,14 @@ m\t Move or rename file or directory.
 n\t Make a new directory.
 o\t Switch to other window.
 p\t Pop directory stack to go back to the directory where you just were.
+P\t Print full path of current displayed directory.
 q\t Quit nav.
 r\t Refresh.
 s\t Start a shell in an emacs window in the current directory.
 t\t Start a terminal in an emacs window in the current directory.
  \t This allows programs like vi and less to run. Exit with C-d C-d.
 u\t Go up to parent directory.
-w\t Print full path of current displayed directory.
+w\t Shrink-wrap Nav's window to fit the longest filename in the current directory.
 !\t Run shell command.
 [\t Rotate non-nav windows counter clockwise.
 ]\t Rotate non-nav windows clockwise.
