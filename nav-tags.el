@@ -31,7 +31,7 @@
 (defun nav-tags-fetch-imenu (file)
   "Generates the tag index from selected file."
   (require 'imenu)
-  (setq nav-tags-current-file file)
+  (setq nav-tags-filename file)
   (set-buffer (find-file-noselect file))
   (switch-to-buffer file)
   (setq imenu--index-alist nil)
@@ -84,7 +84,7 @@
   (if (eq imenu-sort-function 'imenu--sort-by-name)
       (setq imenu-sort-function nil)
     (setq imenu-sort-function 'imenu--sort-by-name))
-  (nav-tags-fetch-imenu nav-tags-current-file))
+  (nav-tags-fetch-imenu nav-tags-filename))
 
 (defun nav-tags-quit ()
   "Kill nav-tags."
