@@ -148,8 +148,8 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "q" 'nav-quit)
     (define-key keymap "r" 'nav-refresh)
     (define-key keymap "s" 'nav-shell)
-    (define-key keymap "t" 'nav-term)
-    (define-key keymap "T" 'nav-tags-expand)
+    (define-key keymap "t" 'nav-tags-expand)
+    (define-key keymap "T" 'nav-term)
     (define-key keymap "u" 'nav-go-up-one-dir)
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
@@ -962,9 +962,7 @@ P\t Print full path of current displayed directory.
 q\t Quit nav.
 r\t Refresh.
 s\t Start a shell in an emacs window in the current directory.
-t\t Start a terminal in an emacs window in the current directory.
- \t This allows programs like vi and less to run. Exit with C-d C-d.
-T\t Expand tags on selected file. Press T again to sort tags by name.
+t\t Expand tags on selected file. Press t again to go back to the directory view.
 u\t Go up to parent directory.
 w\t Shrink-wrap Nav's window to fit the longest filename in the current directory.
 W\t Set the window width to its default value.
