@@ -40,7 +40,6 @@
       (setq index-alist (sort index-alist imenu-sort-function)))
   (set-buffer nav-buffer-name)
   (other-window 1)
-  (setq nav-tags-filename file)
   (nav-tags))
 
 
