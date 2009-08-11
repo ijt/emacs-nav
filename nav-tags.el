@@ -39,7 +39,7 @@
   (if imenu-sort-function
       (setq index-alist (sort index-alist imenu-sort-function)))
   (set-buffer nav-buffer-name)
-  (other-window 1)
+  (select-window (nav-get-window nav-buffer-name))
   (nav-tags))
 
 
