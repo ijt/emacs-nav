@@ -32,7 +32,8 @@
   "Generates the tag index from selected file."
   (require 'imenu)
   (setq nav-tags-filename file)
-  (set-buffer (find-file-noselect file))
+  (nav-open-file file)
+  (set-buffer file)
   (switch-to-buffer file)
   (setq imenu--index-alist nil)
   (setq index-alist (imenu--make-index-alist t))
