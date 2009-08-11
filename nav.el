@@ -130,8 +130,7 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "9" (lambda nil (interactive) (nav-quickdir-jump 1)))
     (define-key keymap "0" (lambda nil (interactive) (nav-quickdir-jump 2)))
     (define-key keymap "a" 'nav-make-new-file)
-    (define-key keymap "b" 'nav-buffer-menu-window-1)
-    (define-key keymap "B" 'nav-buffer-menu-window-2)
+    (define-key keymap "b" 'nav-bufs)
     (define-key keymap "c" 'nav-copy-file-or-dir)
     (define-key keymap "C" 'nav-customize)
     (define-key keymap "d" 'nav-delete-file-or-dir-on-this-line)
@@ -944,8 +943,7 @@ Space: Press then space then any other letter to jump to
 0\t Jump to 3rd quick dir.
 
 a\t Make a new file.
-b\t Open buffer menu in first window.
-B\t Open buffer menu in second window.
+b\t Toggle file/buffer browser (or Shift-Left-Mouse)
 c\t Copy file or directory under cursor.
 C\t Customize Nav settings and bookmarks.
 d\t Delete file or directory under cursor (asks to confirm first).
