@@ -28,13 +28,12 @@
 (defun imenu--sort-by-name (item1 item2)
   (string-lessp (car item1) (car item2)))
 
+
 (defun nav-tags-fetch-imenu (file)
   "Generates the tag index from selected file."
   (require 'imenu)
   (setq nav-tags-filename file)
   (nav-open-file file)
-  (set-buffer file)
-  (switch-to-buffer file)
   (setq imenu--index-alist nil)
   (setq index-alist (imenu--make-index-alist t))
   (if imenu-sort-function
@@ -86,6 +85,7 @@
       (setq imenu-sort-function nil)
     (setq imenu-sort-function 'imenu--sort-by-name))
   (nav-tags-fetch-imenu nav-tags-filename))
+
 
 (defun nav-tags-quit ()
   "Kill nav-tags."
