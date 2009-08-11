@@ -12,7 +12,7 @@
     (define-key keymap "W" 'nav-set-width-to-default)
     (define-key keymap "q" 'nav-quit)
     (define-key keymap "?" 'nav-help-screen)
-    (define-key keymap "`" 'nav-tags-quit)
+    (define-key keymap "t" 'nav-tags-quit)
     (define-key keymap [S-down-mouse-3] 'nav-tags-quit)
     (define-key keymap [(tab)] 'forward-button)
     (define-key keymap [(shift tab)] 'backward-button)
@@ -75,6 +75,7 @@
       (setq nav-vars (cdr nav-vars)))
     (setq mode-line-format "nav: Tag list")
     (force-mode-line-update)
+    (setq truncate-lines t)
     (goto-line 2)))
 
 

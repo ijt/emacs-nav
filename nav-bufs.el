@@ -105,6 +105,7 @@ If there is no second other window, Nav will create one."
         (insert "\n")))
     (setq mode-line-format "nav: Buffer list")
     (force-mode-line-update))
+  (setq truncate-lines t)
   (goto-line 2))
 
 

@@ -1000,6 +1000,7 @@ Nav is more IDEish than dired, and lighter weight than speedbar."
   (font-lock-add-keywords 'nav-mode '(("^\\[[0-9]\\] " . font-lock-string-face)))
   (font-lock-add-keywords 'nav-mode '(("Directory: *\\|Quickjumps: *" . font-lock-variable-name-face)))
   (setq buffer-read-only t)
+  (setq truncate-lines t)
   (nav-refresh))
 
 
