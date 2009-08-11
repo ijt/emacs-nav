@@ -1005,6 +1005,13 @@ Nav is more IDEish than dired, and lighter weight than speedbar."
   (nav-refresh))
 
 
+(defun nav-disable-annoying-emacs23-window-splitting ()
+  "Effectively turns off the unfortunate new feature where Emacs 23
+automatically splits windows when opening files in a large frame."
+  (setq split-width-threshold most-positive-fixnum)
+  (setq split-height-threshold most-positive-fixnum))
+
+
 ;; The next line is for ELPA, the Emacs Lisp Package Archive.
 ;;;###autoload
 (defun nav ()
@@ -1012,6 +1019,7 @@ Nav is more IDEish than dired, and lighter weight than speedbar."
   (interactive)
   (if (nav-is-open)
       (nav-quit)
+    (nav-disable-annoying-emacs23-window-splitting)
     (delete-other-windows)
     (split-window-horizontally)
     (other-window 1)
