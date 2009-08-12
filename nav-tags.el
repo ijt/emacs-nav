@@ -21,8 +21,9 @@
     (define-key keymap "W" 'nav-set-width-to-default)
     (define-key keymap "q" 'nav-quit)
     (define-key keymap "t" 'nav-tags-quit)
-    (define-key keymap "T" 'nav-tags-sort)
-    (define-key keymap "?" 'nav-help-screen)
+    (define-key keymap "u" 'nav-tags-quit)
+    (define-key keymap "s" 'nav-tags-sort)
+    (define-key keymap "?" 'nav-tags-help-screen)
     (define-key keymap [S-down-mouse-3] 'nav-tags-quit)
     (define-key keymap [(tab)] 'forward-button)
     (define-key keymap [(shift tab)] 'backward-button)
@@ -79,8 +80,7 @@
 		    (sort alist imenu-sort-function)
 		  alist))
 	 (alists (mapcar 'nav-tags-flatten alist))
-	 (alist (apply 'append alists))
-	 )
+	 (alist (apply 'append alists)))
     alist))
 
 
@@ -160,6 +160,47 @@
   "Run nav-tags-mode on top of nav."
   (interactive)
   (nav-tags-mode))
+
+
+(defun nav-tags-help-screen ()
+  "Displays the help screen outside the Nav window."
+  (interactive)
+  (other-window 1)
+  (get-buffer-create "nav-help")
+  (switch-to-buffer "nav-help")
+  (get-buffer "nav-help")
+  (setq map (make-sparse-keymap))
+  (use-local-map map)
+  (define-key map [mouse-1] 'nav-help-screen-kill)
+  (define-key map [mouse-3] 'nav-help-screen-kill) 
+  (define-key map [mouse-2] 'nav-help-screen-kill) 
+  (define-key map "q" 'nav-help-screen-kill)
+  (setq display-hourglass nil
+        buffer-undo-list t)  
+  (insert "\
+Help for Nav tags mode
+======================
+
+Key Bindings
+============
+
+Enter/Return: Jump to tag under cursor
+
+q\t Quit Nav.
+s\t Sort tags into alphabetical order.
+t\t Exit tags mode and go back to directory view
+u\t Same as t. I.e., go up to view the file and other contents of the directory.
+w\t Shrink-wrap Nav's window to fit the longest filename in the current directory.
+W\t Set the window width to its default value.
+?\t Show this help screen.
+
+
+                Press 'q' or click mouse to quit help
+
+")
+  (goto-line 1)
+  (view-mode -1)
+  (toggle-read-only 1))
 
 
 (provide 'nav-tags)
