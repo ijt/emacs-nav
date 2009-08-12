@@ -78,8 +78,8 @@
 	 (alist (if imenu-sort-function
 		    (sort alist imenu-sort-function)
 		  alist))
-	 ;;(alists (mapcar 'nav-tags-flatten alist))
-	 ;;(alist (apply 'append alists))
+	 (alists (mapcar 'nav-tags-flatten alist))
+	 (alist (apply 'append alists))
 	 )
     alist))
 
