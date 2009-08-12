@@ -271,16 +271,22 @@ If DIRNAME is not a directory or is not accessible, returns nil."
 (defun nav-cd (dirname)
   "Changes to a different directory and pushes it onto the stack."
   (let ((dirname (file-name-as-directory (file-truename dirname))))
-    ;; Update line number hash table.
-    (let ((line-num (nav-line-number-at-pos (point))))
-      (puthash (nav-get-working-dir) line-num nav-map-dir-to-line-number))
-
+    (nav-save-cursor-line)
     (setq default-directory dirname)
     (nav-show-dir dirname)
-    
-    ;; Remember what line we were on last time we visited this directory.
-    (let ((line-num (nav-get-line-for-cur-dir)))
-      (goto-line (if line-num line-num 2)))))
+    (nav-restore-cursor-line)))
+
+
+(defun nav-save-cursor-line ()
+  "Updates line number hash table."
+  (let ((line-num (nav-line-number-at-pos (point))))
+    (puthash (nav-get-working-dir) line-num nav-map-dir-to-line-number)))
+
+
+(defun nav-restore-cursor-line ()
+  "Remembers what line we were on last time we visited this directory."
+  (let ((line-num (nav-get-line-for-cur-dir)))
+    (goto-line (if line-num line-num 2))))
 
 
 (defun nav-open-file (filename)
@@ -660,6 +666,7 @@ Synonymous with the (nav) function."
 
 
 (defun nav-delete-file-or-dir (filename)
+  (nav-save-cursor-line)
   (if (and (file-directory-p filename)
            (not (file-symlink-p (directory-file-name filename))))
       (when (yes-or-no-p (format "Really delete directory %s ?" filename))
@@ -670,7 +677,8 @@ Synonymous with the (nav) function."
       (let ((filename (directory-file-name filename)))
         (when (y-or-n-p (format "Really delete file %s ? " filename))
           (delete-file filename)
-          (nav-refresh)))))
+          (nav-refresh))))
+  (nav-restore-cursor-line))
 
 
 (defun nav-delete-file-or-dir-on-this-line ()
