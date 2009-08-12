@@ -751,7 +751,7 @@ directory, or if the user says it's ok."
 
 (defun nav-find-files (pattern)
   "Finds files whose names match a regular expression, in '.' and all subdirs."
-  (interactive "sPattern: ")
+  (interactive "sFilename regex: ")
   (let* ((filenames (nav-get-non-boring-filenames-recursively "."))
          (names-matching-pattern
           (remove-if-not (lambda (name) (string-match pattern name)) filenames))
@@ -768,12 +768,14 @@ directory, or if the user says it's ok."
 
 
 (defun nav-show-find-results (paths)
-  (nav-replace-buffer-contents
-   (nav-join "\n" names-matching-pattern)
-   t)
-  ;; Enable nav keyboard shortcuts, mainly so hitting enter will open
-  ;; files.
-  (use-local-map nav-mode-map))
+  "Displays the results when the user hits the 'f' key."
+  (setq buffer-read-only nil)
+  (erase-buffer)
+  (let ((lines (mapcar (lambda (name)
+			 (concat name ":1:"))
+		       names-matching-pattern)))
+    (insert (nav-join "\n" lines)))
+  (grep-mode))
 
 
 (defun nav-make-new-file (name)
