@@ -47,6 +47,23 @@
     maybe-marker))
 
 
+(defun nav-tags-flatten (name-and-info)
+  "Converts class tags into flat names of class methods."
+  (let ((name (car name-and-info))
+	(info (cdr name-and-info)))
+    (if (string-match "^class [a-zA-Z0-9_]+$" name)
+	(let ((class-pos (cdr (car info)))
+	      (class-name (substring name (length "class ") (length name))))
+	  (cons (cons name class-pos)
+		(mapcar (lambda (method-name-and-pos)
+			  (let ((method-name (car method-name-and-pos))
+				(pos (cdr method-name-and-pos)))
+			    (cons (concat class-name "." method-name)
+				  pos)))
+			(cddr name-and-info))))
+      (list name-and-info))))
+
+
 (defun nav-marker-to-pos-in-pair (name-and-maybe-marker)
   (let ((name (car name-and-maybe-marker))
 	(maybe-marker (cdr name-and-maybe-marker)))
@@ -59,9 +76,10 @@
 	 ;; Maybe sort.
 	 (alist (if imenu-sort-function
 		    (sort alist imenu-sort-function)
-		  alist)))
-    ;; Convert markers to positions.
-    ;;(mapcar 'nav-marker-to-pos-in-pair alist))))
+		  alist))
+	 ;;(alists (mapcar 'nav-tags-flatten alist))
+	 ;;(alist (apply 'append alists))
+	 )
     alist))
 
 
