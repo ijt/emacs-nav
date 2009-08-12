@@ -40,6 +40,9 @@
 
 (nav-deftest "nav-tags-flatten"
 	     (nav-assert (equal '(("f" . 123)) (nav-tags-flatten '("f" . 123))))
+	     (nav-assert (equal '(("class BadZipFile" . 123))
+				(nav-tags-flatten 
+				 '("class BadZipFile" . 123))))
 	     (nav-assert (equal '(("class PyZipFile" . 46255)
 				  ("PyZipFile._get_codename" . 49560)
 				  ("PyZipFile.writepy" . 46361))

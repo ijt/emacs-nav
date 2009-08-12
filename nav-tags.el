@@ -51,7 +51,8 @@
   "Converts class tags into flat names of class methods."
   (let ((name (car name-and-info))
 	(info (cdr name-and-info)))
-    (if (string-match "^class [a-zA-Z0-9_]+$" name)
+    (if (and (string-match "^class [a-zA-Z0-9_]+$" name)
+	     (listp info))
 	(let ((class-pos (cdr (car info)))
 	      (class-name (substring name (length "class ") (length name))))
 	  (cons (cons name class-pos)
