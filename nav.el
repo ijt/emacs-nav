@@ -148,7 +148,6 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "r" 'nav-refresh)
     (define-key keymap "s" 'nav-shell)
     (define-key keymap "t" 'nav-tags-expand)
-    (define-key keymap "T" 'nav-term)
     (define-key keymap "u" 'nav-go-up-one-dir)
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
@@ -894,6 +893,12 @@ depending on the passed-in function next-i."
   (setq buf (get-buffer "nav-help"))
   (kill-buffer buf)
   (other-window 1))
+
+
+;; http://www.emacswiki.org/emacs/ElispCookbook#toc41
+(defun nav-filter (condp lst)
+  (delq nil
+	(mapcar (lambda (x) (and (funcall condp x) x)) lst)))
 
 
 (defun nav-help-screen ()
