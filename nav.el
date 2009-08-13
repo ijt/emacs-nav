@@ -189,7 +189,6 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap ":" 'nav-turn-off-keys-and-be-writable)
     (define-key keymap "." 'nav-toggle-hidden-files)
     (define-key keymap "?" 'nav-help-screen)
-    (define-key keymap "`" 'nav-bufs)
     (define-key keymap " " 'nav-jump-to-name)
     (define-key keymap [S-down-mouse-3] 'nav-bufs)
 
@@ -406,7 +405,7 @@ This works like a web browser's back button."
 
 
 (defun nav-quickdir-jump-button-action (button)
-  (setq num (string-to-number (substring (button-label button) 1 2)))
+  (setq num (string-to-number (substring (button-label button) 0 1)))
   (if (= num 0) (setq num 2))
   (if (= num 9) (setq num 1))
   (if (= num 8) (setq num 0))  
@@ -415,7 +414,7 @@ This works like a web browser's back button."
 
 (defun nav-quickfile-jump-button-action (button)
   (select-window (nav-get-window nav-buffer-name))
-  (setq num (string-to-number (substring (button-label button) 1 2)))
+  (setq num (string-to-number (substring (button-label button) 0 1)))
   (setq num (- num 5))
   (nav-quickfile-jump num))
 
@@ -442,24 +441,24 @@ This works like a web browser's back button."
   (nav-insert-text "Quickjumps:" nav-face-heading)
   (insert "\n")
   (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 0 nav-quickfile-list)))
-  (insert-text-button (concat (propertize "[5]" 'face nav-face-button-num) " "
+  (insert-text-button (concat (propertize "5." 'face nav-face-button-num) " "
 			      qfilename) :type 'quickfile-jump-button)
   (insert "\n")
   (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 1 nav-quickfile-list)))
-  (insert-text-button (concat (propertize "[6]" 'face nav-face-button-num) " " 
+  (insert-text-button (concat (propertize "6." 'face nav-face-button-num) " " 
 			      qfilename) :type 'quickfile-jump-button)
   (insert "\n")
   (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 2 nav-quickfile-list)))
-  (insert-text-button (concat (propertize "[7]" 'face nav-face-button-num) " " 
+  (insert-text-button (concat (propertize "7." 'face nav-face-button-num) " " 
 			      qfilename) :type 'quickfile-jump-button)
   (insert "\n")
-  (insert-text-button (concat (propertize "[8]" 'face nav-face-button-num) " " 
+  (insert-text-button (concat (propertize "8." 'face nav-face-button-num) " " 
 			      (nth 0 nav-quickdir-list)) :type 'quickdir-jump-button)
   (insert "\n")
-  (insert-text-button (concat (propertize "[9]" 'face nav-face-button-num) " "  
+  (insert-text-button (concat (propertize "9." 'face nav-face-button-num) " "  
 			      (nth 1 nav-quickdir-list)) :type 'quickdir-jump-button)
   (insert "\n")
-  (insert-text-button (concat (propertize "[0]" 'face nav-face-button-num) " "  
+  (insert-text-button (concat (propertize "0." 'face nav-face-button-num) " "  
 			      (nth 2 nav-quickdir-list)) :type 'quickdir-jump-button))
 
 
