@@ -29,11 +29,13 @@
     (define-key keymap "o" (lambda nil (interactive) (other-window 1)))
     (define-key keymap "r" 'nav-bufs-show-buffers)
     (define-key keymap "q" 'nav-quit)
+    (define-key keymap "t" 'nav-bufs-expand-tags)
     (define-key keymap "u" 'nav-bufs-quit)
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
     (define-key keymap "?" 'nav-bufs-help-screen)
     (define-key keymap [mouse-3] 'nav-bufs-quit)
+    (define-key keymap [S-down-mouse-3] 'nav-mouse-tags-expand)
     (define-key keymap [(tab)] 'forward-button)
     (define-key keymap [(shift tab)] 'backward-button)
     (define-key keymap [(down)] 'forward-button)
@@ -138,6 +140,17 @@ If there is no second other window, Nav will create one."
   (interactive)
   (nav-ensure-second-window-exists)
   (nav-open-buf-other-window 2))
+
+
+(defun nav-bufs-expand-tags ()
+  "Show tags for highlighted buffer."
+  (interactive)
+  (let ((buffer (nav-get-cur-line-str)))
+    (switch-to-buffer buffer))
+  (setq nav-tags-filename (buffer-name))
+  (setq nav-tags-alist (nav-make-tags-alist))
+  (select-window (nav-get-window nav-buffer-name))
+  (nav-tags))
 
 
 (defun nav-bufs-show-buffers ()
