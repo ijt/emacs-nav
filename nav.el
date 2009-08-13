@@ -115,7 +115,7 @@ This is used if only one window besides the Nav window is visible."
 (modify-face 'nav-face-button-num "LightSalmon" nil nil nil nil nil nil)
 (modify-face 'nav-face-dir "lime green" nil nil nil nil nil nil)
 (modify-face 'nav-face-hdir "red" nil nil nil nil nil nil)
-(modify-face 'nav-face-file "white" nil nil nil nil nil nil)
+(modify-face 'nav-face-file nil nil nil nil nil nil nil)
 (modify-face 'nav-face-hfile "pink" nil nil nil nil nil nil)
 
 (setq nav-face-heading 'nav-face-heading)
