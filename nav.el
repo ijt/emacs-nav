@@ -946,8 +946,8 @@ Shift-Tab: To move backward through buttons.
 Space: Press then space then any other letter to jump to
        filename that starts with that letter.
 
-1\t Open file/buffer under cursor in 1st other window.
-2\t Open file/buffer under cursor in 2nd other window.
+1\t Open file under cursor in 1st other window.
+2\t Open file under cursor in 2nd other window.
 
 5\t Jump to 1st quick file.
 6\t Jump to 2nd quick file.

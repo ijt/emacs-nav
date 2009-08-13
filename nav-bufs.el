@@ -29,13 +29,14 @@
     (define-key keymap "6" (lambda nil (interactive) (nav-quickfile-jump 1)))
     (define-key keymap "7" (lambda nil (interactive) (nav-quickfile-jump 2)))
     (define-key keymap "b" 'nav-bufs-quit)
+    (define-key keymap "d" 'nav-bufs-delete)
     (define-key keymap "o" (lambda nil (interactive) (other-window 1)))
     (define-key keymap "r" 'nav-bufs-show-buffers)
     (define-key keymap "q" 'nav-quit)
     (define-key keymap "u" 'nav-bufs-quit)
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
-    (define-key keymap "?" 'nav-help-screen)  ;; FIXME: Bufs mode needs its own help screen.
+    (define-key keymap "?" 'nav-bufs-help-screen)
     (define-key keymap [S-down-mouse-3] 'nav-bufs-quit)
     (define-key keymap [(tab)] 'forward-button)
     (define-key keymap [(shift tab)] 'backward-button)
@@ -48,11 +49,69 @@
 
 (setq nav-bufs-mode-map (nav-bufs-make-mode-map))
 
+
+(defun nav-bufs-help-screen ()
+  "Displays the help screen outside the Nav window."
+  (interactive)
+  (other-window 1)
+  (get-buffer-create "nav-help")
+  (switch-to-buffer "nav-help")
+  (get-buffer "nav-help")
+  (setq map (make-sparse-keymap))
+  (use-local-map map)
+  (define-key map [mouse-1] 'nav-help-screen-kill)
+  (define-key map [mouse-3] 'nav-help-screen-kill) 
+  (define-key map [mouse-2] 'nav-help-screen-kill) 
+  (define-key map "q" 'nav-help-screen-kill)
+  (setq display-hourglass nil
+        buffer-undo-list t)  
+  (insert "\
+Help for Nav bufs mode
+======================
+
+Key Bindings
+============
+
+Enter/Return: Jump to tag under cursor
+
+1\t Open the selected buffer in the first other window.
+2\t Open the selected buffer in the second other window.
+
+5\t Jump to 1st quick file.
+6\t Jump to 2nd quick file.
+7\t Jump to 3rd quick file.
+
+b\t Go back to Nav directory view.
+d\t Delete selected buffer.
+o\t Switch to other window.
+q\t Quit Nav.
+r\t Refresh
+u\t Go back to Nav directory view.
+w\t Shrink-wrap Nav's window to fit the longest filename in the current directory.
+W\t Set the window width to its default value.
+?\t Show this help screen.
+
+
+                Press 'q' or click mouse to quit help
+
+")
+  (goto-line 1)
+  (view-mode -1)
+  (toggle-read-only 1))
+
+
 (defun nav-open-buf-other-window (k)
   (let ((filename (nav-get-cur-line-str))
         (dirname (nav-get-working-dir)))
     (other-window k)
     (nav-buffer-jump filename)))
+
+
+(defun nav-bufs-delete ()
+  "Deletes the chosen buffer."
+  (interactive)
+  (kill-buffer (nav-get-cur-line-str))
+  (nav-bufs-show-buffers))
 
 
 (defun nav-open-buf-other-window-1 ()
