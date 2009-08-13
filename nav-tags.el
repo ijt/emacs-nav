@@ -115,7 +115,7 @@
   (interactive)
   (let ((inhibit-read-only t))
     (erase-buffer)
-    (insert (nav-make-header nav-tags-filename))
+    (nav-insert-text nav-tags-filename nav-face-heading)
     (insert "\n")
     (dolist (tag (cddr nav-tags-alist))
       (let* ((tag-name (car tag))

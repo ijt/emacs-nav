@@ -1,9 +1,5 @@
 ;; This file will contain Bufs mode.
 
-(defun nav-make-header (text)
-  (propertize text
-              'face
-              '( :background "navy" :foreground "white")))
 
 
 (defun nav-buffer-jump-button-action (button)
@@ -150,7 +146,7 @@ If there is no second other window, Nav will create one."
   (let ((inhibit-read-only t))
     (erase-buffer)
     (setq blist (mapcar (function buffer-name) (buffer-list)))
-    (insert (nav-make-header "Active Buffers:" ))
+    (nav-insert-text "Active Buffers:" nav-face-heading)
     (insert "\n")
     (let* ((active-bufs (nav-filter (lambda (b)
 				      (not (string-match "^[ *]" b)))
@@ -160,7 +156,7 @@ If there is no second other window, Nav will create one."
 	(insert-text-button b :type 'buffer-jump-button)
 	(insert "\n")))
     (insert "\n")
-    (insert (nav-make-header "Scratch Buffers:"))
+    (nav-insert-text "Scratch Buffers:" nav-face-heading)
     (insert "\n")
     (let* ((scratch-bufs (nav-filter (lambda (b)
 				       (string-match "^\\*" b))

@@ -102,6 +102,38 @@ This is used if only one window besides the Nav window is visible."
   :type 'boolean
   :group 'nav)
 
+;; Make nav faces
+(make-empty-face 'nav-face-heading)
+(make-empty-face 'nav-face-button-num)
+(make-empty-face 'nav-face-dir)
+(make-empty-face 'nav-face-hdir)
+(make-empty-face 'nav-face-file)
+(make-empty-face 'nav-face-hfile)
+
+;; params here are: foreground background stipple bold ital underline inverse
+(modify-face 'nav-face-heading "white" "navy" nil nil nil nil nil)
+(modify-face 'nav-face-button-num "LightSalmon" nil nil nil nil nil nil)
+(modify-face 'nav-face-dir "lime green" nil nil nil nil nil nil)
+(modify-face 'nav-face-hdir "red" nil nil nil nil nil nil)
+(modify-face 'nav-face-file "white" nil nil nil nil nil nil)
+(modify-face 'nav-face-hfile "pink" nil nil nil nil nil nil)
+
+(setq nav-face-heading 'nav-face-heading)
+(setq nav-face-button-num 'nav-face-button-num)
+(setq nav-face-dir 'nav-face-dir)
+(setq nav-face-hdir 'nav-face-hdir)
+(setq nav-face-file 'nav-face-file)
+(setq nav-face-hfile 'nav-face-hfile)
+
+
+(defun nav-insert-text (text face-type)
+  "Inserts text with select face."
+  (interactive)
+  (insert text)
+  (overlay-put
+   (make-overlay (line-beginning-position) (line-end-position))
+   'face face-type))
+
 
 (defun nav-buffer-menu-window-1 ()
   (interactive)
@@ -394,20 +426,20 @@ This works like a web browser's back button."
         ;; in this let-block.
         (inhibit-read-only t))
     (erase-buffer)
-    (insert "Directory:")
+    (nav-insert-text "Directory:" nav-face-heading)
     (insert "\n")
     (insert new-contents)
     (if should-make-filenames-clickable
         (nav-make-filenames-clickable))
+    (nav-colorize-filenames)
     (if nav-quickjump-show (nav-insert-jump-buttons))
-    (font-lock-fontify-buffer)
     (goto-line saved-line-number)))
 
 
 (defun nav-insert-jump-buttons ()
   ;; Make bookmark buttons.
   (insert "\n\n")
-  (insert "Quickjumps:")
+  (nav-insert-text "Quickjumps:" nav-face-heading)
   (insert "\n")
   (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 0 nav-quickfile-list)))
   (insert-text-button (concat "[5] " qfilename) :type 'quickfile-jump-button)
@@ -444,6 +476,23 @@ This works like a web browser's back button."
      ;; This can happen for versions of emacs that don't have
      ;; make-button defined.
      'failed)))
+
+
+(defun nav-colorize-filenames()
+  "Adds faces to the directory listing."
+	(goto-line 2)
+	(dotimes (i (count-lines 1 (point-max)))
+	  (let ((start (line-beginning-position))
+		(end (line-end-position))
+		(filename (buffer-substring (line-beginning-position) (line-end-position)))
+		(face-type nav-face-file))
+	    (if (looking-at "^[.].*")(setq face-type nav-face-hfile))
+	    (if (looking-at "^.*/$")(setq face-type nav-face-dir))
+	    (if (looking-at "^[.].*/$")(setq face-type nav-face-hdir))
+	    (overlay-put 
+	     (make-overlay start end)
+	     'face face-type)
+	    (forward-line 1))))
 
 
 (defun nav-string< (s1 s2)
@@ -1002,16 +1051,6 @@ Nav is more IDEish than dired, and lighter weight than speedbar."
   (nav-set-window-width nav-width)
   (setq mode-name "Navigation")
   (use-local-map nav-mode-map)
-  (turn-on-font-lock)
-  (set-face-attribute
-   'font-lock-variable-name-face nil
-   :foreground "white"
-   :background "navy")
-  (font-lock-add-keywords 'nav-mode '(("^.*/$" . font-lock-type-face)))
-  (font-lock-add-keywords 'nav-mode '(("^[.].*" . font-lock-comment-face)))
-  (font-lock-add-keywords 'nav-mode '(("^[.].*/$" . font-lock-string-face)))
-  (font-lock-add-keywords 'nav-mode '(("^\\[[0-9]\\] " . font-lock-string-face)))
-  (font-lock-add-keywords 'nav-mode '(("Directory: *\\|Quickjumps: *" . font-lock-variable-name-face)))
   (setq buffer-read-only t)
   (setq truncate-lines t)
   (blink-cursor-mode nil)
