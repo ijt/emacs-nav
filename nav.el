@@ -65,7 +65,7 @@
   :group 'nav)
 
 (defcustom nav-quickfile-list
-  (list "~/.emacs.d/nav.el" "~/.emacs.d/nav-bufs.el" "~/.emacs")
+  (list "~/.emacs.d/nav.el" "~/.emacs.d/nav-bufs.el" "~/.emacs.d/nav-tags.el")
   "*Nav quick file list. Fill this with your most frequently visited files."
   :type '(repeat string)
   :group 'nav)
@@ -113,7 +113,7 @@ This is used if only one window besides the Nav window is visible."
 ;; params here are: foreground background stipple bold ital underline inverse
 (modify-face 'nav-face-heading "white" "navy" nil nil nil nil nil)
 (modify-face 'nav-face-button-num "LightSalmon" nil nil nil nil nil nil)
-(modify-face 'nav-face-dir "lime green" nil nil nil nil nil nil)
+(modify-face 'nav-face-dir "green" nil nil nil nil nil nil)
 (modify-face 'nav-face-hdir "red" nil nil nil nil nil nil)
 (modify-face 'nav-face-file nil nil nil nil nil nil nil)
 (modify-face 'nav-face-hfile "pink" nil nil nil nil nil nil)
@@ -442,19 +442,25 @@ This works like a web browser's back button."
   (nav-insert-text "Quickjumps:" nav-face-heading)
   (insert "\n")
   (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 0 nav-quickfile-list)))
-  (insert-text-button (concat "[5] " qfilename) :type 'quickfile-jump-button)
+  (insert-text-button (concat (propertize "[5]" 'face nav-face-button-num) " "
+			      qfilename) :type 'quickfile-jump-button)
   (insert "\n")
   (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 1 nav-quickfile-list)))
-  (insert-text-button (concat "[6] " qfilename) :type 'quickfile-jump-button)
+  (insert-text-button (concat (propertize "[6]" 'face nav-face-button-num) " " 
+			      qfilename) :type 'quickfile-jump-button)
   (insert "\n")
   (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 2 nav-quickfile-list)))
-  (insert-text-button (concat "[7] " qfilename) :type 'quickfile-jump-button)
+  (insert-text-button (concat (propertize "[7]" 'face nav-face-button-num) " " 
+			      qfilename) :type 'quickfile-jump-button)
   (insert "\n")
-  (insert-text-button (concat "[8] " (nth 0 nav-quickdir-list)) :type 'quickdir-jump-button)
+  (insert-text-button (concat (propertize "[8]" 'face nav-face-button-num) " " 
+			      (nth 0 nav-quickdir-list)) :type 'quickdir-jump-button)
   (insert "\n")
-  (insert-text-button (concat "[9] " (nth 1 nav-quickdir-list)) :type 'quickdir-jump-button)
+  (insert-text-button (concat (propertize "[9]" 'face nav-face-button-num) " "  
+			      (nth 1 nav-quickdir-list)) :type 'quickdir-jump-button)
   (insert "\n")
-  (insert-text-button (concat "[0] " (nth 2 nav-quickdir-list)) :type 'quickdir-jump-button))
+  (insert-text-button (concat (propertize "[0]" 'face nav-face-button-num) " "  
+			      (nth 2 nav-quickdir-list)) :type 'quickdir-jump-button))
 
 
 (defun nav-make-filenames-clickable ()
