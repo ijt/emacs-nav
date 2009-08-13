@@ -90,7 +90,7 @@
   (setq nav-tags-filename filename)
   (nav-open-file filename)
   (setq nav-tags-alist (nav-make-tags-alist))
-  (set-buffer nav-buffer-name)  ; Can we remove this?
+
   (select-window (nav-get-window nav-buffer-name))
   (nav-tags))
 
@@ -145,6 +145,7 @@
 (defun nav-tags-quit ()
   "Kill nav-tags."
   (interactive)
+  (select-window (nav-get-window nav-buffer-name))
   (nav-mode))
   
 
@@ -189,7 +190,7 @@ Enter/Return: Jump to tag under cursor
 
 q\t Quit Nav.
 s\t Sort tags into alphabetical order.
-t\t Exit tags mode and go back to directory view
+t\t Exit tags mode and go back to directory view (or Shift-Left-Mouse).
 u\t Same as t. I.e., go up to view the file and other contents of the directory.
 w\t Shrink-wrap Nav's window to fit the longest filename in the current directory.
 W\t Set the window width to its default value.

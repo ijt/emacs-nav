@@ -190,7 +190,8 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "." 'nav-toggle-hidden-files)
     (define-key keymap "?" 'nav-help-screen)
     (define-key keymap " " 'nav-jump-to-name)
-    (define-key keymap [S-down-mouse-3] 'nav-bufs)
+    (define-key keymap [S-down-mouse-3] 'nav-mouse-tags-expand)
+    (define-key keymap [mouse-3] 'nav-bufs)
 
     ;; Avoid [(tab)] and [(shift tab)] because they fail on Issac's setup.
     (define-key keymap "\t" 'forward-button)
@@ -740,10 +741,19 @@ Synonymous with the (nav) function."
   (interactive)
   (nav-delete-file-or-dir (nav-get-cur-line-str)))
 
+
 (defun nav-tags-expand ()
   "Shows all function tags in file."
   (interactive)
   (nav-tags-fetch-imenu (nav-get-cur-line-str)))
+
+
+(defun nav-mouse-tags-expand ()
+  "Sets point to current mouse pos then calls nav-tags-expand."
+  (interactive)
+  (goto-line (+ 1  (cddr (mouse-position))))
+  (nav-tags-expand))
+  
 
 (defun nav-ok-to-overwrite (target-name)
   "Returns non-nil if it's ok to overwrite or create a file.
@@ -1012,7 +1022,7 @@ Space: Press then space then any other letter to jump to
 0\t Jump to 3rd quick dir.
 
 a\t Make a new file.
-b\t Toggle file/buffer browser (or Shift-Left-Mouse)
+b\t Toggle file/buffer browser (or Left-Mouse).
 c\t Copy file or directory under cursor.
 C\t Customize Nav settings and bookmarks.
 d\t Delete file or directory under cursor (asks to confirm first).
@@ -1029,7 +1039,7 @@ P\t Print full path of current displayed directory.
 q\t Quit nav.
 r\t Refresh.
 s\t Start a shell in an emacs window in the current directory.
-t\t Expand tags on selected file. Press t again to go back to the directory view.
+t\t Expand tags on selected file (or Shift-Left-Mouse).
 u\t Go up to parent directory.
 w\t Shrink-wrap Nav's window to fit the longest filename in the current directory.
 W\t Set the window width to its default value.
@@ -1037,7 +1047,6 @@ W\t Set the window width to its default value.
 [\t Rotate non-nav windows counter clockwise.
 ]\t Rotate non-nav windows clockwise.
 .\t Toggle hidden files.
-`\t Toggle file/buffer browser (or Shift-Left-Mouse)
 ?\t Show this help screen.
 
 

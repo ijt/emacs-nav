@@ -33,7 +33,7 @@
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
     (define-key keymap "?" 'nav-bufs-help-screen)
-    (define-key keymap [S-down-mouse-3] 'nav-bufs-quit)
+    (define-key keymap [mouse-3] 'nav-bufs-quit)
     (define-key keymap [(tab)] 'forward-button)
     (define-key keymap [(shift tab)] 'backward-button)
     (define-key keymap [(down)] 'forward-button)
@@ -175,6 +175,7 @@ If there is no second other window, Nav will create one."
 (defun nav-bufs-quit ()
   "Kill nav-bufs."
   (interactive)
+  (select-window (nav-get-window nav-buffer-name))
   (nav-mode))
 
 
@@ -190,6 +191,7 @@ If there is no second other window, Nav will create one."
 (defun nav-bufs ()
   "Run nav-buf-mode on top of nav."
   (interactive)
+  (select-window (nav-get-window nav-buffer-name))
   (nav-bufs-mode))
 
 
