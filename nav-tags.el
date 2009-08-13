@@ -153,6 +153,7 @@
   (setq mode-name "Nav tags")
   (use-local-map nav-tags-mode-map)
   (setq buffer-read-only t)
+  (blink-cursor-mode nil)
   (nav-tags-show-tags))
 
 
