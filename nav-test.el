@@ -53,6 +53,11 @@
 				   ("writepy" . 46361))))))
 
 
+(nav-deftest "nav-filter"
+	     (nav-assert (equal '() (nav-filter 'numberp '())))
+	     (nav-assert (equal '(1) (nav-filter 'numberp '(1))))
+	     (nav-assert (equal '(1) (nav-filter 'numberp '(1 "foo")))))
+
 (nav-deftest "nav-join"
   (nav-assert (string= "" (nav-join "" '())))
   (nav-assert (string= "" (nav-join "--" '())))
