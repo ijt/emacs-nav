@@ -197,7 +197,6 @@ If there is no second other window, Nav will create one."
     (setq mode-line-format "nav: Buffer list")
     (force-mode-line-update))
   (setq truncate-lines t)
-  (blink-cursor-mode nil)
   (goto-line 2))
 
 
