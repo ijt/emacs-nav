@@ -25,6 +25,9 @@
   (error
    'error-setting-up-python-support))
 
+(defcustom nav-tags-will-sort t
+  "Whether to sort alphabetically in tags mode")
+
 (defvar nav-tags-alist nil
   "Association list from tag names to positions")
 
@@ -52,8 +55,7 @@
 (setq nav-tags-mode-map (nav-tags-make-mode-map))
 
 
-;; Copied imenu internal functions to handle sort.
-(defun imenu--sort-by-name (item1 item2)
+(defun nav-tags-sort-by-name (item1 item2)
   (string-lessp (car item1) (car item2)))
 
 
@@ -94,8 +96,8 @@
 	 (imenu-auto-rescan-maxout nav-max-int)
 	 (alist (imenu--make-index-alist t))
 	 ;; Maybe sort.
-	 (alist (if imenu-sort-function
-		    (sort alist imenu-sort-function)
+	 (alist (if nav-tags-will-sort
+		    (sort alist 'nav-tags-sort-by-name)
 		  alist))
 	 (alists (mapcar 'nav-tags-flatten alist))
 	 (alist (apply 'append alists)))
@@ -174,13 +176,7 @@
 (defun nav-tags-sort ()
   "Toggles sort to by name/position and re-displays tags"
   (interactive)
-
-  ;; FIXME: We should keep our own boolean for whether to enable
-  ;; sorting, and only temporarily set imenu-sort-function using
-  ;; a (let) block.
-  (if (eq imenu-sort-function 'imenu--sort-by-name)
-      (setq imenu-sort-function nil)
-    (setq imenu-sort-function 'imenu--sort-by-name))
+  (setq nav-tags-will-sort (not nav-tags-will-sort))
   (nav-tags-refresh))
 
 
