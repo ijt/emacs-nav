@@ -227,10 +227,10 @@ Key Bindings
 Enter/Return: Jump to tag under cursor
 
 q\t Quit Nav.
-s\t Sort tags into alphabetical order.
+s\t Toggle sorting of tags into alphabetical order.
 t\t Exit tags mode and go back to directory view (or Shift-Left-Mouse).
 u\t Same as t. I.e., go up to view the file and other contents of the directory.
-w\t Shrink-wrap Nav's window to fit the longest filename in the current directory.
+w\t Shrink-wrap Nav's window to fit the longest tag.
 W\t Set the window width to its default value.
 ?\t Show this help screen.
 
