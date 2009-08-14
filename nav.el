@@ -1085,8 +1085,6 @@ Nav is more IDEish than dired, and lighter weight than speedbar."
   (use-local-map nav-mode-map)
   (setq buffer-read-only t)
   (setq truncate-lines t)
-  (setq focus-follows-mouse t)
-  (setq mouse-autoselect-window t)
   (nav-refresh))
 
 
