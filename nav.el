@@ -49,6 +49,8 @@
 (require 'nav-bufs)
 (require 'nav-tags)
 
+(defconst nav-max-int 268435455)
+
 (defgroup nav nil
   "A lightweight file/directory navigator."
   :group 'applications)

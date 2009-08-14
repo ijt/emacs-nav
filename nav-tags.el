@@ -75,7 +75,9 @@
 
 (defun nav-make-tags-alist ()
   "Builds the tags association list from the current buffer."
-  (let* ((alist (imenu--make-index-alist t))
+  (let* ((imenu-auto-rescan t)
+	 (imenu-auto-rescan-maxout nav-max-int)
+	 (alist (imenu--make-index-alist t))
 	 ;; Maybe sort.
 	 (alist (if imenu-sort-function
 		    (sort alist imenu-sort-function)
@@ -85,7 +87,6 @@
     alist))
 
 
-;; This has no effect. Must find a way that works.
 (defun nav-tags-refresh ()
   "Updates the Nav tags list."
   (interactive)
