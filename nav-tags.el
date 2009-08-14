@@ -20,9 +20,10 @@
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
     (define-key keymap "q" 'nav-quit)
+    (define-key keymap "r" 'nav-tags-refresh)
+    (define-key keymap "s" 'nav-tags-sort)
     (define-key keymap "t" 'nav-tags-quit)
     (define-key keymap "u" 'nav-tags-quit)
-    (define-key keymap "s" 'nav-tags-sort)
     (define-key keymap "?" 'nav-tags-help-screen)
     (define-key keymap [S-down-mouse-3] 'nav-tags-quit)
     (define-key keymap [(tab)] 'forward-button)
@@ -84,8 +85,15 @@
     alist))
 
 
+;; This has no effect. Must find a way that works.
+(defun nav-tags-refresh ()
+  "Updates the Nav tags list."
+  (interactive)
+  (nav-tags-fetch-imenu nav-tags-filename))
+
+
 (defun nav-tags-fetch-imenu (filename)
-  "Generates the tag index from selected file."
+  "Generates and displays the tag index from selected file."
   (require 'imenu)
   (setq nav-tags-filename filename)
   (nav-open-file filename)
@@ -113,11 +121,12 @@
 (defun nav-tags-show-tags ()
   "Displays all functions in selected file."
   (interactive)
-  (let ((inhibit-read-only t))
+  (let ((inhibit-read-only t)
+	(tags (nav-extract-function-tags nav-tags-alist)))
     (erase-buffer)
     (nav-insert-text nav-tags-filename nav-face-heading)
     (insert "\n")
-    (dolist (tag (cddr nav-tags-alist))
+    (dolist (tag tags)
       (let* ((tag-name (car tag))
 	     (tag-position (nav-marker-to-position (cdr tag))))
 	(let ((button-text (concat tag-name " [" (format "%s" tag-position) "]")))
@@ -131,6 +140,17 @@
     (force-mode-line-update)
     (setq truncate-lines t)
     (goto-line 2)))
+
+
+(defun nav-extract-function-tags (tags-alist)
+  (nav-filter (lambda (name-and-info)
+		(let ((name (car name-and-info))
+		      (info (cdr name-and-info)))
+		  (not (or (string= name "*Rescan*")
+			   (string= name "Module variables")
+			   (and (string= name "Variables")
+				(listp info))))))
+	      tags-alist))
 
 
 (defun nav-tags-sort ()
