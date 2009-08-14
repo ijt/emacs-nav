@@ -84,7 +84,7 @@ Help for Nav bufs mode
 Key Bindings
 ============
 
-Enter/Return: Jump to tag under cursor
+Enter/Return: Jump to buffers under cursor.
 
 1\t Open the selected buffer in the first other window.
 2\t Open the selected buffer in the second other window.
@@ -93,7 +93,7 @@ Enter/Return: Jump to tag under cursor
 6\t Jump to 2nd quick file.
 7\t Jump to 3rd quick file.
 
-b\t Go back to Nav directory view.
+b\t Go back to Nav directory view (or Left-Mouse).
 d\t Delete selected buffer.
 o\t Switch to other window.
 q\t Quit Nav.
