@@ -157,10 +157,14 @@
 (defun nav-tags-sort ()
   "Toggles sort to by name/position and re-displays tags"
   (interactive)
+
+  ;; FIXME: We should keep our own boolean for whether to enable
+  ;; sorting, and only temporarily set imenu-sort-function using
+  ;; a (let) block.
   (if (eq imenu-sort-function 'imenu--sort-by-name)
       (setq imenu-sort-function nil)
     (setq imenu-sort-function 'imenu--sort-by-name))
-  (nav-tags-fetch-imenu nav-tags-filename))
+  (nav-tags-refresh))
 
 
 (defun nav-tags-quit ()

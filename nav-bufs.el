@@ -148,6 +148,7 @@ If there is no second other window, Nav will create one."
   "Show tags for highlighted buffer."
   (interactive)
   (let ((buffer (nav-get-cur-line-str)))
+    (other-window 1)
     (switch-to-buffer buffer))
   (setq nav-tags-filename (buffer-name))
   (setq nav-tags-alist (nav-make-tags-alist))
