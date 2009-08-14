@@ -104,6 +104,11 @@ This is used if only one window besides the Nav window is visible."
   :type 'boolean
   :group 'nav)
 
+(defcustom nav-widths-percentile 90
+  "*What percentage of files should remain completely visible when shrink-wrapping."
+  :type 'integer
+  :group 'nav)
+
 ;; Make nav faces
 (make-empty-face 'nav-face-heading)
 (make-empty-face 'nav-face-button-num)
@@ -351,11 +356,22 @@ current directory. Updates the global variable nav-width as a side effect."
   (interactive)
   (let* ((lines (split-string (buffer-string) "\n" t))
 	 (num-lines (length lines))
-	 (maxlen (apply 'max (mapcar 'length lines)))
+	 (line-lengths (mapcar 'length lines))
+	 (desired-width (+ 1 (nav-percentile nav-widths-percentile
+					     (sort line-lengths '<))))
 	 (max-width (/ (frame-width) 2))
-	 (new-width (min (+ maxlen 1) max-width)))
+	 (new-width (min desired-width max-width)))
     (setq nav-width new-width)
     (nav-set-window-width new-width)))
+
+
+(defun nav-percentile (percent sorted-things)
+  "Returns the item a certain percent of the way through a list of items
+assumed to be sorted."
+  (let* ((n (length sorted-things))
+	 (k (min (- n 1 )
+		 (truncate (* (/ percent 100.0) n)))))
+    (nth k sorted-things)))
 
 
 (defun nav-set-width-to-default ()
