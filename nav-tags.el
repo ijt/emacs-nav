@@ -164,6 +164,8 @@
 		      (info (cdr name-and-info)))
 		  (not (or (string= name "*Rescan*")
 			   (string= name "Module variables")
+			   (and (string= name "Types")
+				(listp info))
 			   (and (string= name "Variables")
 				(listp info))))))
 	      tags-alist))
