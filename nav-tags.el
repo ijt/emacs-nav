@@ -15,10 +15,6 @@
 ;; limitations under the License.
 
 
-;; imenu returns a list in this format
-;; (("rescan" . -99) ("Types" (0 . 0) (0 . 0)) ("Variables" (0 . 0) (0 . 0))
-;;  (fun1 . marker) (fun2 . marker) (fun3 . marker))
-
 ;; Make sure we can get tags for Python.
 (condition-case err
     (require 'python)
@@ -100,7 +96,8 @@
 		    (sort alist 'nav-tags-sort-by-name)
 		  alist))
 	 (alists (mapcar 'nav-tags-flatten alist))
-	 (alist (apply 'append alists)))
+	 (alist (apply 'append alists))
+	 (alist (mapcar 'nav-marker-to-pos-in-pair alist)))
     alist))
 
 
@@ -125,11 +122,10 @@
   ;; For sorting?
   (select-window (nav-get-window nav-buffer-name))
 
-  (let* ((num (replace-regexp-in-string "^.* \\[" "" 
-					(button-label button)))
-	 (num (substring num 0 -1)))
+  (let* ((tag (button-label button))
+	 (num (cdr (assoc tag nav-tags-alist))))
     (select-window (nav-get-window nav-tags-filename))
-    (goto-char (string-to-number num)))
+    (goto-char num))
 
   ;; recenter-top-bottom is not defined in emacs 22.
   (when (functionp 'recenter-top-bottom)
@@ -145,15 +141,13 @@
     (nav-insert-text nav-tags-filename nav-face-heading)
     (insert "\n")
     (dolist (tag tags)
-      (let* ((tag-name (car tag))
-	     (tag-position (nav-marker-to-position (cdr tag))))
-	(let ((button-text (concat tag-name " [" (format "%s" tag-position) "]")))
-	    (insert-button button-text
-			   'action 'nav-jump-to-tag-of-button
-			   'follow-link t
-			   'face nav-button-face
-			   'help-echo nil)
-	    (insert "\n"))))
+      (let ((tag-name (car tag)))
+	(insert-button tag-name
+		       'action 'nav-jump-to-tag-of-button
+		       'follow-link t
+		       'face nav-button-face
+		       'help-echo nil)
+	(insert "\n")))
     (setq mode-line-format "nav: Tag list")
     (force-mode-line-update)
     (setq truncate-lines t)
