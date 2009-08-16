@@ -688,7 +688,17 @@ Synonymous with the (nav) function."
       (save-buffer)
       (kill-buffer (current-buffer)))
     (select-window (nav-get-window nav-buffer-name))
-    (format "cat '%s' | xargs -0 grep -inH '%s'" temp-filename pattern)))
+    (let ((pattern (nav-escape-single-quotes pattern)))
+      (format "cat '%s' | xargs -0 grep -inH '%s'" temp-filename pattern))))
+
+
+(defun nav-escape-single-quotes (string)
+  "Replaces ' with '\'' in a string, for use inside a single quoted string that will
+be interpreted by bash.
+
+http://muffinresearch.co.uk/archives/2007/01/30/bash-single-quotes-inside-of-single-quoted-strings/
+"
+  (replace-regexp-in-string "'" "'\\\\''" string))
 
 
 (defun nav-recursive-grep (pattern)
@@ -703,11 +713,13 @@ Synonymous with the (nav) function."
   (interactive)
   (nav-push-dir "~"))
 
+
 (defun nav-jump-to-name (arg)
- (interactive "K")
- (goto-line 2)
- (setq nav-search-string (concat "^" arg))
- (search-forward-regexp nav-search-string))
+  (interactive "K")
+  (goto-line 2)
+  (setq nav-search-string (concat "^" arg))
+  (search-forward-regexp nav-search-string))
+
 
 (defun nav-quickfile-jump (quickfile-num)
   "Jumps to directory from custom bookmark list."
