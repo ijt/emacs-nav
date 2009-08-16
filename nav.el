@@ -689,7 +689,7 @@ Synonymous with the (nav) function."
       (kill-buffer (current-buffer)))
     (select-window (nav-get-window nav-buffer-name))
     (let ((pattern (nav-escape-single-quotes pattern)))
-      (format "cat '%s' | xargs -0 grep -inH '%s'" temp-filename pattern))))
+      (format "cat '%s' | xargs -0 grep -inH --regexp='%s'" temp-filename pattern))))
 
 
 (defun nav-escape-single-quotes (string)
