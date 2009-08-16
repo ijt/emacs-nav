@@ -70,7 +70,7 @@
 	     (listp info))
 	(let ((class-pos (cdr (car info)))
 	      (class-name (substring name (length "class ") (length name))))
-	  (cons (cons name class-pos)
+	  (cons (cons class-name class-pos)
 		(mapcar (lambda (method-name-and-pos)
 			  (let ((method-name (car method-name-and-pos))
 				(pos (cdr method-name-and-pos)))
@@ -91,13 +91,13 @@
   (let* ((imenu-auto-rescan t)
 	 (imenu-auto-rescan-maxout nav-max-int)
 	 (alist (imenu--make-index-alist t))
+	 (alists (mapcar 'nav-tags-flatten alist))
+	 (alist (apply 'append alists))
+	 (alist (mapcar 'nav-marker-to-pos-in-pair alist))
 	 ;; Maybe sort.
 	 (alist (if nav-tags-will-sort
 		    (sort alist 'nav-tags-sort-by-name)
-		  alist))
-	 (alists (mapcar 'nav-tags-flatten alist))
-	 (alist (apply 'append alists))
-	 (alist (mapcar 'nav-marker-to-pos-in-pair alist)))
+		  alist)))
     alist))
 
 
