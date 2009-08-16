@@ -62,22 +62,27 @@
     maybe-marker))
 
 
+;; FIXME: this should be called nav-tags-expand-classes or similar.
 (defun nav-tags-flatten (name-and-info)
   "Converts class tags into flat names of class methods."
   (let ((name (car name-and-info))
 	(info (cdr name-and-info)))
     (if (and (string-match "^class [a-zA-Z0-9_]+$" name)
 	     (listp info))
-	(let ((class-pos (cdr (car info)))
-	      (class-name (substring name (length "class ") (length name))))
-	  (cons (cons class-name class-pos)
-		(mapcar (lambda (method-name-and-pos)
-			  (let ((method-name (car method-name-and-pos))
-				(pos (cdr method-name-and-pos)))
-			    (cons (concat class-name "." method-name)
-				  pos)))
-			(cddr name-and-info))))
+	(nav-tags-expand-methods-of-class name info)
       (list name-and-info))))
+
+
+(defun nav-tags-expand-methods-of-class (name info)
+  (let ((class-pos (cdr (car info)))
+	(class-name (substring name (length "class ") (length name))))
+    (cons (cons class-name class-pos)
+	  (mapcar (lambda (method-name-and-pos)
+		    (let ((method-name (car method-name-and-pos))
+			  (pos (cdr method-name-and-pos)))
+		      (cons (concat class-name "." method-name)
+			    pos)))
+		  (cddr name-and-info)))))
 
 
 (defun nav-marker-to-pos-in-pair (name-and-maybe-marker)
