@@ -1040,10 +1040,12 @@ depending on the passed-in function next-i."
     (view-mode -1)
     (setq map (make-sparse-keymap))
     (use-local-map map)
-    (define-key map "q" 'nav-help-screen-kill)
+    (define-key map "q" (lambda nil (interactive)
+			  (kill-buffer (buffer-name (current-buffer)))
+			  (other-window 1)))
     (toggle-read-only 1)))
 
-  
+
 (defun nav-help-screen ()
   "Displays the help screen outside the Nav window."
   (interactive)
