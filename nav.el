@@ -1111,10 +1111,11 @@ automatically splits windows when opening files in a large frame."
 ;; The next line is for ELPA, the Emacs Lisp Package Archive.
 ;;;###autoload
 (defun nav ()
-  "Run nav-mode in a narrow window on the left side."
+  "Runs nav-mode in a narrow window on the left side, or quit Nav
+if it's already running."
   (interactive)
   (if (nav-is-open)
-      (nav-come-here)
+      (nav-quit)
     (nav-disable-annoying-emacs23-window-splitting)
     (delete-other-windows)
     (split-window-horizontally)
@@ -1129,7 +1130,7 @@ automatically splits windows when opening files in a large frame."
 
 (defun nav-come-here ()
   "Tells Nav to display the contents of the current directory, if
-an instance of Nav is running."
+an instance of Nav is already running."
   (interactive)
   (let ((dir default-directory)
 	(nav-win (nav-get-window nav-buffer-name)))
