@@ -174,7 +174,7 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "9" (lambda nil (interactive) (nav-quickdir-jump 1)))
     (define-key keymap "0" (lambda nil (interactive) (nav-quickdir-jump 2)))
     (define-key keymap "a" 'nav-make-new-file)
-    (define-key keymap "b" 'nav-bufs)
+    (define-key keymap "b" 'nav-show-bufs)
     (define-key keymap "c" 'nav-copy-file-or-dir)
     (define-key keymap "C" 'nav-customize)
     (define-key keymap "d" 'nav-delete-file-or-dir-on-this-line)
@@ -263,6 +263,12 @@ This is used if only one window besides the Nav window is visible."
   'follow-link t
   'face nil
   'help-echo nil)
+
+
+(defun nav-show-bufs ()
+  (interactive)
+  (if nav-follow (cancel-timer nav-timer))
+  (nav-bufs))
 
 
 (defun turn-off-font-lock ()
