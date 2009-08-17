@@ -203,7 +203,7 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "?" 'nav-help-screen)
     (define-key keymap " " 'nav-jump-to-name)
     (define-key keymap [S-down-mouse-3] 'nav-mouse-tags-expand)
-    (define-key keymap [mouse-3] 'nav-bufs)
+    (define-key keymap [mouse-3] 'nav-show-bufs)
 
     ;; Avoid [(tab)] and [(shift tab)] because they fail on Issac's setup.
     (define-key keymap "\t" 'forward-button)
