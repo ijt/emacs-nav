@@ -77,6 +77,12 @@
   :type 'boolean
   :group 'nav)
 
+(defcustom nav-follow-delay 0.1
+  "*How long Nav waits before checking to see if the directory has changed.
+Nav must be restarted for changes to this variable to take effect."
+  :type 'float
+  :group 'nav)
+
 (defcustom nav-quickjump-show t
   "*If t, nav will show quickjump buttons."
   :type 'boolean
@@ -1116,7 +1122,9 @@ Nav is more IDEish than dired, and lighter weight than speedbar."
   (use-local-map nav-mode-map)
   (setq buffer-read-only t)
   (setq truncate-lines t)
-  (if nav-follow (setq nav-timer (run-at-time nil 1 'nav-follow-buffer)))
+  (if nav-follow (setq nav-timer (run-at-time nil 
+					      nav-follow-delay
+					      'nav-follow-buffer)))
   (nav-refresh))
 
 
