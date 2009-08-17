@@ -72,7 +72,7 @@
   :type '(repeat string)
   :group 'nav)
 
-(defcustom nav-follow nil
+(defcustom nav-follow t
   "*If t, nav will follow buffer's directory."
   :type 'boolean
   :group 'nav)
@@ -1122,9 +1122,7 @@ Nav is more IDEish than dired, and lighter weight than speedbar."
   (use-local-map nav-mode-map)
   (setq buffer-read-only t)
   (setq truncate-lines t)
-  (if nav-follow (setq nav-timer (run-at-time nil 
-					      nav-follow-delay
-					      'nav-follow-buffer)))
+  (if nav-follow (add-hook 'window-configuration-change-hook 'nav-start-timer))
   (nav-refresh))
 
 
@@ -1155,6 +1153,12 @@ if it's already running."
       (nav-resize-frame))))
 
 
+(defun nav-start-timer ()
+  (setq nav-timer (run-at-time nil 
+			       nav-follow-delay
+			       'nav-follow-buffer)))
+
+
 (defun nav-follow-buffer ()
   "Tells Nav to display the contents of the current directory."
   (interactive)
@@ -1164,7 +1168,8 @@ if it's already running."
 	      (win (buffer-name (current-buffer))))
 	  (select-window (nav-get-window nav-buffer-name))
 	  (nav-push-dir dir)
-	  (select-window (nav-get-window win))))))
+	  (select-window (nav-get-window win)))))
+  (cancel-timer nav-timer))
 
 
 (provide 'nav)
