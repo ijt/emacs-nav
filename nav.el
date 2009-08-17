@@ -199,6 +199,7 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "s" 'nav-shell)
     (define-key keymap "t" 'nav-tags-expand)
     (define-key keymap "u" 'nav-go-up-one-dir)
+    (define-key keymap "v" 'nav-view-file)
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
     (define-key keymap "[" 'nav-rotate-windows-ccw)
@@ -1029,6 +1030,20 @@ depending on the passed-in function next-i."
 	(mapcar (lambda (x) (and (funcall condp x) x)) lst)))
 
 
+(defun nav-view-file ()
+  "View file under cursor in read only mode. q to quit."
+  (interactive)
+  (let ((filename (nav-get-cur-line-str)))
+    (other-window 1)
+    (find-file filename)
+    (goto-line 1)
+    (view-mode -1)
+    (setq map (make-sparse-keymap))
+    (use-local-map map)
+    (define-key map "q" 'nav-help-screen-kill)
+    (toggle-read-only 1)))
+
+  
 (defun nav-help-screen ()
   "Displays the help screen outside the Nav window."
   (interactive)
