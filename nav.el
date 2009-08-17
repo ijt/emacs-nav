@@ -789,6 +789,7 @@ http://muffinresearch.co.uk/archives/2007/01/30/bash-single-quotes-inside-of-sin
 (defun nav-tags-expand ()
   "Shows all function tags in file."
   (interactive)
+  (if nav-follow (cancel-timer nav-timer))
   (nav-save-cursor-line)
   (nav-tags-fetch-imenu (nav-get-cur-line-str)))
 
