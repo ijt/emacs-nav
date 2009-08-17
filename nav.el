@@ -654,10 +654,12 @@ If there is no second other window, Nav will create one."
   (interactive)
   (let ((window (get-buffer-window nav-buffer-name)))
     (when window
-      (when nav-resize-frame-p
-        (set-frame-width (selected-frame) 
-                         (- (frame-width) (nav-outer-width))))
-      (delete-window window)))
+      (let ((this-is-not-the-only-window (not (equal window (next-window window)))))
+	(when this-is-not-the-only-window
+	  (when nav-resize-frame-p
+	    (set-frame-width (selected-frame) 
+			     (- (frame-width) (nav-outer-width))))
+	  (delete-window window)))))
   (kill-buffer nav-buffer-name)
   (nav-equalize-window-widths))
 
