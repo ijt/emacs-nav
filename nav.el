@@ -1114,7 +1114,7 @@ automatically splits windows when opening files in a large frame."
   "Run nav-mode in a narrow window on the left side."
   (interactive)
   (if (nav-is-open)
-      (nav-quit)
+      (nav-come-here)
     (nav-disable-annoying-emacs23-window-splitting)
     (delete-other-windows)
     (split-window-horizontally)
@@ -1125,6 +1125,17 @@ automatically splits windows when opening files in a large frame."
     (nav-mode)
     (when nav-resize-frame-p
       (nav-resize-frame))))
+
+
+(defun nav-come-here ()
+  "Tells Nav to display the contents of the current directory, if
+an instance of Nav is running."
+  (interactive)
+  (let ((dir default-directory)
+	(nav-win (nav-get-window nav-buffer-name)))
+    (when nav-win
+      (select-window nav-win)
+      (nav-push-dir dir))))
 
 
 (provide 'nav)
