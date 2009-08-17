@@ -72,6 +72,11 @@
   :type '(repeat string)
   :group 'nav)
 
+(defcustom nav-follow t
+  "*If t, nav will follow buffer's directory."
+  :type 'boolean
+  :group 'nav)
+
 (defcustom nav-quickjump-show t
   "*If t, nav will show quickjump buttons."
   :type 'boolean
@@ -660,6 +665,7 @@ If there is no second other window, Nav will create one."
 	    (set-frame-width (selected-frame) 
 			     (- (frame-width) (nav-outer-width))))
 	  (delete-window window)))))
+  (if nav-follow (cancel-timer nav-timer))
   (kill-buffer nav-buffer-name)
   (nav-equalize-window-widths))
 
@@ -1100,6 +1106,7 @@ Nav is more IDEish than dired, and lighter weight than speedbar."
   (use-local-map nav-mode-map)
   (setq buffer-read-only t)
   (setq truncate-lines t)
+  (if nav-follow (setq nav-timer (run-at-time nil 1 'nav-follow-buffer)))
   (nav-refresh))
 
 
@@ -1130,15 +1137,14 @@ if it's already running."
       (nav-resize-frame))))
 
 
-(defun nav-come-here ()
-  "Tells Nav to display the contents of the current directory, if
-an instance of Nav is already running."
+(defun nav-follow-buffer ()
+  "Tells Nav to display the contents of the current directory."
   (interactive)
   (let ((dir default-directory)
-	(nav-win (nav-get-window nav-buffer-name)))
-    (when nav-win
-      (select-window nav-win)
-      (nav-push-dir dir))))
+	(win (buffer-name (current-buffer))))
+    (select-window (nav-get-window nav-buffer-name))
+    (nav-push-dir dir)
+    (select-window (nav-get-window win))))
 
 
 (provide 'nav)
