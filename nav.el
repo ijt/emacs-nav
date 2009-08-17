@@ -393,8 +393,11 @@ updates the nav-width global variable as a side effect."
 
 
 (defun nav-push-dir (dirname)
-  (push (file-truename default-directory) nav-dir-stack)
-  (nav-cd dirname))
+  (let ((dirname (file-truename dirname)))
+    (when (not (and nav-dir-stack
+		    (string= dirname (car nav-dir-stack))))
+	(push (file-truename default-directory) nav-dir-stack)
+	(nav-cd dirname))))
 
 
 (defun nav-pop-dir ()
@@ -1127,7 +1130,7 @@ automatically splits windows when opening files in a large frame."
 ;; The next line is for ELPA, the Emacs Lisp Package Archive.
 ;;;###autoload
 (defun nav ()
-  "Runs nav-mode in a narrow window on the left side, or quit Nav
+  "Runs nav-mode in a narrow window on the left side, or quits Nav
 if it's already running."
   (interactive)
   (if (nav-is-open)
@@ -1148,7 +1151,7 @@ if it's already running."
   "Tells Nav to display the contents of the current directory."
   (interactive)
   (if (not (string= nav-buffer-name (buffer-name (current-buffer))))
-      (progn 
+      (progn
 	(let ((dir default-directory)
 	      (win (buffer-name (current-buffer))))
 	  (select-window (nav-get-window nav-buffer-name))
