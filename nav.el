@@ -1147,11 +1147,13 @@ if it's already running."
 (defun nav-follow-buffer ()
   "Tells Nav to display the contents of the current directory."
   (interactive)
-  (let ((dir default-directory)
-	(win (buffer-name (current-buffer))))
-    (select-window (nav-get-window nav-buffer-name))
-    (nav-push-dir dir)
-    (select-window (nav-get-window win))))
+  (if (not (string= nav-buffer-name (buffer-name (current-buffer))))
+      (progn 
+	(let ((dir default-directory)
+	      (win (buffer-name (current-buffer))))
+	  (select-window (nav-get-window nav-buffer-name))
+	  (nav-push-dir dir)
+	  (select-window (nav-get-window win))))))
 
 
 (provide 'nav)
