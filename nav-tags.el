@@ -96,6 +96,7 @@
   (let* ((imenu-auto-rescan t)
 	 (imenu-auto-rescan-maxout nav-max-int)
 	 (alist (imenu--make-index-alist t))
+	 (alist (nav-remove-nils alist))
 	 (alists (mapcar 'nav-tags-flatten alist))
 	 (alist (apply 'append alists))
 	 (alist (mapcar 'nav-marker-to-pos-in-pair alist))
@@ -104,6 +105,11 @@
 		    (sort alist 'nav-tags-sort-by-name)
 		  alist)))
     alist))
+
+
+(defun nav-remove-nils (list)
+  "Returns a copy of a list with all nils removed."
+  (nav-filter (lambda (x) x) list))
 
 
 (defun nav-tags-refresh ()
