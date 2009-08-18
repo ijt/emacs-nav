@@ -744,7 +744,6 @@ http://muffinresearch.co.uk/archives/2007/01/30/bash-single-quotes-inside-of-sin
   (search-forward-regexp nav-search-string))
 
 
-
 (defun nav-quickfile-jump (quickfile-num)
   "Jumps to directory from custom bookmark list."
   (interactive)
@@ -1110,6 +1109,7 @@ r\t Refresh.
 s\t Start a shell in an emacs window in the current directory.
 t\t Expand tags on selected file (or Shift-Left-Mouse).
 u\t Go up to parent directory.
+v\t View file in read-only mode. Press q to close file.
 w\t Shrink-wrap Nav's window to fit the longest filename in the current directory.
 W\t Set the window width to its default value.
 !\t Run shell command.
