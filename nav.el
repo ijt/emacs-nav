@@ -274,7 +274,8 @@ This is used if only one window besides the Nav window is visible."
 
 (defun nav-show-bufs ()
   (interactive)
-  (if nav-follow (setq window-configuration-change-hook nil))
+  (if nav-follow (remove-hook 'window-configuration-change-hook 
+   			   'nav-start-timer))
   (nav-bufs))
 
 
@@ -798,7 +799,8 @@ http://muffinresearch.co.uk/archives/2007/01/30/bash-single-quotes-inside-of-sin
 (defun nav-tags-expand ()
   "Shows all function tags in file."
   (interactive)
-  (if nav-follow (setq window-configuration-change-hook nil))
+  (if nav-follow (remove-hook 'window-configuration-change-hook 
+   			   'nav-start-timer))
   (nav-save-cursor-line)
   (nav-tags-fetch-imenu (nav-get-cur-line-str)))
 
@@ -1134,7 +1136,8 @@ Nav is more IDEish than dired, and lighter weight than speedbar."
   (use-local-map nav-mode-map)
   (setq buffer-read-only t)
   (setq truncate-lines t)
-  (if nav-follow (add-hook 'window-configuration-change-hook 'nav-start-timer))
+  (if nav-follow (add-hook 'window-configuration-change-hook 
+			   'nav-start-timer))
   (nav-refresh))
 
 
