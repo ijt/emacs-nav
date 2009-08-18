@@ -1016,11 +1016,10 @@ depending on the passed-in function next-i."
   (print default-directory))
 
 
-(defun nav-help-screen-kill ()
-  "Kills the help screen."
+(defun nav-screen-kill ()
+  "Kills secondary nav screens."
   (interactive)
-  (setq buf (get-buffer "nav-help"))
-  (kill-buffer buf)
+  (kill-buffer (buffer-name (current-buffer)))
   (other-window 1))
 
 
@@ -1040,9 +1039,7 @@ depending on the passed-in function next-i."
     (view-mode -1)
     (setq map (make-sparse-keymap))
     (use-local-map map)
-    (define-key map "q" (lambda nil (interactive)
-			  (kill-buffer (buffer-name (current-buffer)))
-			  (other-window 1)))
+    (define-key map "q" 'nav-screen-kill)
     (toggle-read-only 1)))
 
 
@@ -1052,18 +1049,17 @@ depending on the passed-in function next-i."
   (other-window 1)
   (get-buffer-create "nav-help")
   (switch-to-buffer "nav-help")
-  (get-buffer "nav-help")
   (setq map (make-sparse-keymap))
   (use-local-map map)
-  (define-key map [mouse-1] 'nav-help-screen-kill)
-  (define-key map [mouse-3] 'nav-help-screen-kill) 
-  (define-key map [mouse-2] 'nav-help-screen-kill) 
-  (define-key map "q" 'nav-help-screen-kill)
+  (define-key map [mouse-1] 'nav-screen-kill)
+  (define-key map [mouse-3] 'nav-screen-kill) 
+  (define-key map [mouse-2] 'nav-screen-kill) 
+  (define-key map "q" 'nav-screen-kill)
   (setq display-hourglass nil
         buffer-undo-list t)  
   (insert "\
 Help for nav directory listing mode
-=================
+===================================
 
 The numbers at the bottom are shortcuts.  5 opens the first 
 bookmarked file (or 'quickfile') and so on. 8 takes you to the

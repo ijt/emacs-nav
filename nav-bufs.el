@@ -68,13 +68,12 @@
   (other-window 1)
   (get-buffer-create "nav-help")
   (switch-to-buffer "nav-help")
-  (get-buffer "nav-help")
   (setq map (make-sparse-keymap))
   (use-local-map map)
-  (define-key map [mouse-1] 'nav-help-screen-kill)
-  (define-key map [mouse-3] 'nav-help-screen-kill) 
-  (define-key map [mouse-2] 'nav-help-screen-kill) 
-  (define-key map "q" 'nav-help-screen-kill)
+  (define-key map [mouse-1] 'nav-screen-kill)
+  (define-key map [mouse-3] 'nav-screen-kill) 
+  (define-key map [mouse-2] 'nav-screen-kill) 
+  (define-key map "q" 'nav-screen-kill)
   (setq display-hourglass nil
         buffer-undo-list t)  
   (insert "\
