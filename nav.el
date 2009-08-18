@@ -475,7 +475,7 @@ This works like a web browser's back button."
 
 
 (defun nav-insert-jump-buttons ()
-  ;; Make bookmark buttons.
+  ;; Make quickjump buttons.
   (insert "\n\n")
   (nav-insert-text "Quickjumps:" nav-face-heading)
   (insert "\n")
@@ -1039,15 +1039,13 @@ depending on the passed-in function next-i."
 (defun nav-view-file ()
   "View file under cursor in read only mode. q to quit."
   (interactive)
-  (let ((filename (nav-get-cur-line-str)))
-    (other-window 1)
-    (find-file filename)
-    (goto-line 1)
-    (view-mode -1)
-    (setq map (make-sparse-keymap))
-    (use-local-map map)
-    (define-key map "q" 'nav-screen-kill)
-    (toggle-read-only 1)))
+  (nav-open-file-under-cursor)
+  (setq nav-view-file-map (make-sparse-keymap))
+  (use-local-map nav-view-file-map)
+  (define-key nav-view-file-map "q" 'nav-screen-kill)
+  (goto-line 1)
+  (view-mode -1)
+  (toggle-read-only 1))
 
 
 (defun nav-help-screen ()
