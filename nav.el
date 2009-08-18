@@ -481,24 +481,30 @@ This works like a web browser's back button."
   (insert "\n")
   (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 0 nav-quickfile-list)))
   (insert-text-button (concat (propertize "5." 'face nav-face-button-num) " "
-			      qfilename) :type 'quickfile-jump-button)
+			      (propertize qfilename 'face nav-face-file))
+		      :type 'quickfile-jump-button)
   (insert "\n")
   (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 1 nav-quickfile-list)))
-  (insert-text-button (concat (propertize "6." 'face nav-face-button-num) " " 
-			      qfilename) :type 'quickfile-jump-button)
+  (insert-text-button (concat (propertize "6." 'face nav-face-button-num) " "
+			      (propertize qfilename 'face nav-face-file)) 
+		      :type 'quickfile-jump-button)
   (insert "\n")
   (setq qfilename (replace-regexp-in-string "^.*/" "" (nth 2 nav-quickfile-list)))
-  (insert-text-button (concat (propertize "7." 'face nav-face-button-num) " " 
-			      qfilename) :type 'quickfile-jump-button)
+  (insert-text-button (concat (propertize "7." 'face nav-face-button-num) " "
+			      (propertize qfilename 'face nav-face-file)) 
+		      :type 'quickfile-jump-button)
   (insert "\n")
   (insert-text-button (concat (propertize "8." 'face nav-face-button-num) " " 
-			      (nth 0 nav-quickdir-list)) :type 'quickdir-jump-button)
+			      (propertize (nth 0 nav-quickdir-list) 'face nav-face-dir))
+		      :type 'quickdir-jump-button)
   (insert "\n")
   (insert-text-button (concat (propertize "9." 'face nav-face-button-num) " "  
-			      (nth 1 nav-quickdir-list)) :type 'quickdir-jump-button)
+			      (propertize (nth 1 nav-quickdir-list) 'face nav-face-dir))
+		      :type 'quickdir-jump-button)
   (insert "\n")
   (insert-text-button (concat (propertize "0." 'face nav-face-button-num) " "  
-			      (nth 2 nav-quickdir-list)) :type 'quickdir-jump-button))
+			      (propertize (nth 2 nav-quickdir-list) 'face nav-face-dir))
+		      :type 'quickdir-jump-button))
 
 
 (defun nav-make-filenames-clickable ()
