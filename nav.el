@@ -565,9 +565,9 @@ This works like a web browser's back button."
     (setq mode-line-format (concat "-(nav)" 
 				   (if nav-follow 
 				       (format "%s" "-F-")
-				     (format "%s" "---"))
-				   (propertize (concat " " (nav-dir-suffix (file-truename dir)) "/ ")
-					       'face 'bold)))
+				     (format "%s" "---")) " "
+				   (propertize (concat (nav-dir-suffix (file-truename dir)) "/")
+					       'face 'modeline-buffer-id)))
     (force-mode-line-update)))
 
 

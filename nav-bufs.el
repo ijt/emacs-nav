@@ -196,9 +196,9 @@ If there is no second other window, Nav will create one."
     (setq mode-line-format (concat "-(nav)" 
 				   (if nav-follow 
 				       (format "%s" "-F-")
-				     (format "%s" "---"))
-				   (propertize " Buffer List"
-					       'face 'bold)))
+				     (format "%s" "---")) " "
+				   (propertize "Buffer List"
+					       'face 'modeline-buffer-id)))
     (force-mode-line-update))
   (setq truncate-lines t)
   (goto-line 2))

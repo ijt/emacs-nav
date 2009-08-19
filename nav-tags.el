@@ -162,9 +162,9 @@
     (setq mode-line-format (concat "-(nav)" 
 				   (if nav-follow 
 				       (format "%s" "-F-")
-				     (format "%s" "---"))
-				   (propertize " Tag List"
-					       'face 'bold)))
+				     (format "%s" "---")) " "
+				   (propertize "Tag List"
+					       'face 'modeline-buffer-id)))
 
     (force-mode-line-update)
     (setq truncate-lines t)
