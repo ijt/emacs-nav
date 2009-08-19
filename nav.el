@@ -78,7 +78,7 @@
   :group 'nav)
 
 (defcustom nav-hidden nil
-  "*If t, nav will follow buffer's directory."
+  "*If t, nav will show hidden files and directories."
   :type 'boolean
   :group 'nav)
 
