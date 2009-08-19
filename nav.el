@@ -186,6 +186,7 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "d" 'nav-delete-file-or-dir-on-this-line)
     (define-key keymap "e" 'nav-invoke-dired)  
     (define-key keymap "f" 'nav-find-files)
+    (define-key keymap "F" 'nav-toggle-follow)
     (define-key keymap "g" 'nav-recursive-grep)
     (define-key keymap "h" 'nav-jump-to-home)
     (define-key keymap "j" 'nav-jump-to-dir)
@@ -561,7 +562,11 @@ This works like a web browser's back button."
     (let* ((new-contents (sort new-contents 'nav-string<))
            (new-contents (nav-join "" (cons "../" new-contents))))
       (nav-replace-buffer-contents new-contents t))
-    (setq mode-line-format (concat "nav: " (nav-dir-suffix (file-truename dir)) "/"))
+    (setq mode-line-format (concat "nav: " 
+				   (nav-dir-suffix (file-truename dir)) "/ "
+				   (if nav-follow 
+				       (format "%s" "-F-")
+				     (format "%s" "---"))))
     (force-mode-line-update)))
 
 
@@ -736,6 +741,21 @@ http://muffinresearch.co.uk/archives/2007/01/30/bash-single-quotes-inside-of-sin
   (grep (nav-make-recursive-grep-command pattern))
   (other-window 1))
 
+
+(defun nav-toggle-follow ()
+  "Toggle nav follow."
+  (interactive)
+  (if (not nav-follow)
+      (progn
+	(add-hook 'window-configuration-change-hook 
+		  'nav-start-timer)
+	(setq nav-follow t))
+    (progn
+      (remove-hook 'window-configuration-change-hook 
+		   'nav-start-timer)
+      (setq nav-follow nil)))
+  (nav-refresh))
+    
 
 (defun nav-jump-to-home ()
   "Show home directory in Nav."
