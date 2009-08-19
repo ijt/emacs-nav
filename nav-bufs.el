@@ -193,12 +193,7 @@ If there is no second other window, Nav will create one."
       (dolist (b scratch-bufs)
 	  (insert-text-button b :type 'buffer-jump-button)
 	  (insert "\n")))
-    (setq mode-line-format (concat "-(nav)" 
-				   (if nav-follow 
-				       (format "%s" "-F-")
-				     (format "%s" "---")) " "
-				   (propertize "Buffer List"
-					       'face 'modeline-buffer-id)))
+    (setq mode-line-format (nav-update-mode-line "b"))
     (force-mode-line-update))
   (setq truncate-lines t)
   (goto-line 2))

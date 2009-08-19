@@ -77,6 +77,11 @@
   :type 'boolean
   :group 'nav)
 
+(defcustom nav-hidden nil
+  "*If t, nav will follow buffer's directory."
+  :type 'boolean
+  :group 'nav)
+
 (defcustom nav-follow-delay 0.1
   "*How long Nav waits before checking to see if the directory has changed.
 Nav must be restarted for changes to this variable to take effect."
@@ -291,8 +296,12 @@ This is used if only one window besides the Nav window is visible."
 (defun nav-toggle-hidden-files ()
   (interactive) 
   (if (equal nav-filter-regexps nav-boring-file-regexps)
-      (setq nav-filter-regexps nav-no-hidden-boring-file-regexps)
-    (setq nav-filter-regexps nav-boring-file-regexps))
+      (progn
+	(setq nav-filter-regexps nav-no-hidden-boring-file-regexps)
+	(setq nav-hidden t))
+    (progn
+      (setq nav-filter-regexps nav-boring-file-regexps)
+      (setq nav-hidden nil)))
   (nav-show-dir "."))
 
 
@@ -562,12 +571,7 @@ This works like a web browser's back button."
     (let* ((new-contents (sort new-contents 'nav-string<))
            (new-contents (nav-join "" (cons "../" new-contents))))
       (nav-replace-buffer-contents new-contents t))
-    (setq mode-line-format (concat "-(nav)" 
-				   (if nav-follow 
-				       (format "%s" "-F-")
-				     (format "%s" "---")) " "
-				   (propertize (concat (nav-dir-suffix (file-truename dir)) "/")
-					       'face 'modeline-buffer-id)))
+    (setq mode-line-format (nav-update-mode-line "d"))
     (force-mode-line-update)))
 
 
@@ -787,6 +791,25 @@ http://muffinresearch.co.uk/archives/2007/01/30/bash-single-quotes-inside-of-sin
   "Shows a specified directory in Nav."
   (interactive "fDirectory: ")
   (nav-push-dir dirname))
+
+
+(defun nav-update-mode-line (mode)
+  (setq nav-mode-line (concat "-(nav)" 
+			      (if nav-hidden 
+				  (format "%s" "H")
+				(format "%s" "-"))  
+			      (if nav-follow 
+				  (format "%s" "F")
+				(format "%s" "-")) 
+			      "- "
+			      (if (string= mode "d")
+				  (propertize (concat (nav-dir-suffix (file-truename dir)) "/")
+					      'face 'modeline-buffer-id))
+			      (if (string= mode "b")
+				  (propertize "Buffer Mode" 'face 'modeline-buffer-id))
+		      (if (string= mode "t")
+			  (propertize "Tag Mode" 'face 'modeline-buffer-id))))
+  nav-mode-line)
 
 
 (defun nav-this-is-a-microsoft-os ()
@@ -1161,6 +1184,7 @@ Nav is more IDEish than dired, and lighter weight than speedbar."
   (use-local-map nav-mode-map)
   (setq buffer-read-only t)
   (setq truncate-lines t)
+  (if nav-hidden (setq nav-filter-regexps nav-no-hidden-boring-file-regexps))
   (if nav-follow (add-hook 'window-configuration-change-hook 
 			   'nav-start-timer))
   (nav-refresh))

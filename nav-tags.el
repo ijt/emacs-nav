@@ -159,13 +159,7 @@
 		       'face nav-button-face
 		       'help-echo nil)
 	(insert "\n")))
-    (setq mode-line-format (concat "-(nav)" 
-				   (if nav-follow 
-				       (format "%s" "-F-")
-				     (format "%s" "---")) " "
-				   (propertize "Tag List"
-					       'face 'modeline-buffer-id)))
-
+    (setq mode-line-format (nav-update-mode-line "t"))
     (force-mode-line-update)
     (setq truncate-lines t)
     (goto-line 2)))
