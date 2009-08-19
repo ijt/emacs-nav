@@ -159,7 +159,13 @@
 		       'face nav-button-face
 		       'help-echo nil)
 	(insert "\n")))
-    (setq mode-line-format "nav: Tag list")
+    (setq mode-line-format (concat "-(nav)" 
+				   (if nav-follow 
+				       (format "%s" "-F-")
+				     (format "%s" "---"))
+				   (propertize " Tag List"
+					       'face 'bold)))
+
     (force-mode-line-update)
     (setq truncate-lines t)
     (goto-line 2)))

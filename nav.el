@@ -562,11 +562,12 @@ This works like a web browser's back button."
     (let* ((new-contents (sort new-contents 'nav-string<))
            (new-contents (nav-join "" (cons "../" new-contents))))
       (nav-replace-buffer-contents new-contents t))
-    (setq mode-line-format (concat "nav: " 
-				   (nav-dir-suffix (file-truename dir)) "/ "
+    (setq mode-line-format (concat "-(nav)" 
 				   (if nav-follow 
 				       (format "%s" "-F-")
-				     (format "%s" "---"))))
+				     (format "%s" "---"))
+				   (propertize (concat " " (nav-dir-suffix (file-truename dir)) "/ ")
+					       'face 'bold)))
     (force-mode-line-update)))
 
 
