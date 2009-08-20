@@ -280,7 +280,7 @@ This is used if only one window besides the Nav window is visible."
 (defun nav-show-bufs ()
   (interactive)
   (if nav-follow (remove-hook 'window-configuration-change-hook 
-   			   'nav-start-timer))
+   			   'nav-follow-buffer))
   (nav-bufs))
 
 
@@ -752,11 +752,11 @@ http://muffinresearch.co.uk/archives/2007/01/30/bash-single-quotes-inside-of-sin
   (if (not nav-follow)
       (progn
 	(add-hook 'window-configuration-change-hook 
-		  'nav-start-timer)
+		  'nav-follow-buffer)
 	(setq nav-follow t))
     (progn
       (remove-hook 'window-configuration-change-hook 
-		   'nav-start-timer)
+		   'nav-follow-buffer)
       (setq nav-follow nil)))
   (nav-refresh))
     
@@ -848,7 +848,7 @@ http://muffinresearch.co.uk/archives/2007/01/30/bash-single-quotes-inside-of-sin
   "Shows all function tags in file."
   (interactive)
   (if nav-follow (remove-hook 'window-configuration-change-hook 
-   			   'nav-start-timer))
+   			   'nav-follow-buffer))
   (nav-save-cursor-line)
   (nav-tags-fetch-imenu (nav-get-cur-line-str)))
 
@@ -1186,7 +1186,7 @@ Nav is more IDEish than dired, and lighter weight than speedbar."
   (setq truncate-lines t)
   (if nav-hidden (setq nav-filter-regexps nav-no-hidden-boring-file-regexps))
   (if nav-follow (add-hook 'window-configuration-change-hook 
-			   'nav-start-timer))
+			   'nav-follow-buffer))
   (nav-refresh))
 
 
@@ -1217,12 +1217,6 @@ if it's already running."
       (nav-resize-frame))))
 
 
-(defun nav-start-timer ()
-  (setq nav-timer (run-at-time nil 
-			       nav-follow-delay
-			       'nav-follow-buffer)))
-
-
 (defun nav-follow-buffer ()
   "Tells Nav to display the contents of the current directory."
   (interactive)
@@ -1232,8 +1226,7 @@ if it's already running."
 	      (win (buffer-name (current-buffer))))
 	  (select-window (nav-get-window nav-buffer-name))
 	  (nav-push-dir dir)
-	  (select-window (nav-get-window win)))))
-  (cancel-timer nav-timer))
+	  (select-window (nav-get-window win))))))
 
 
 (provide 'nav)
