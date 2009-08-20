@@ -211,7 +211,6 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "[" 'nav-rotate-windows-ccw)
     (define-key keymap "]" 'nav-rotate-windows-cw)
     (define-key keymap "!" 'nav-shell-command)
-    (define-key keymap ":" 'nav-turn-off-keys-and-be-writable)
     (define-key keymap "." 'nav-toggle-hidden-files)
     (define-key keymap "?" 'nav-help-screen)
     (define-key keymap " " 'nav-jump-to-name)
@@ -1144,6 +1143,7 @@ C\t Customize Nav settings and bookmarks.
 d\t Delete file or directory under cursor (asks to confirm first).
 e\t Edit current directory in dired.
 f\t Recursively find files whose names or contents match some regexp.
+F\t Toggles follow mode.
 g\t Recursively grep for some regexp.
 h\t Jump to home (~).
 j\t Jump to another directory.
