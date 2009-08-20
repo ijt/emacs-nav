@@ -31,6 +31,7 @@
 (defun nav-tags-make-mode-map ()
   "Creates and returns a mode map with tags's key bindings."
   (let ((keymap (make-sparse-keymap)))
+    (define-key keymap "b" 'nav-show-bufs)
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
     (define-key keymap "q" 'nav-quit)
@@ -39,6 +40,7 @@
     (define-key keymap "t" 'nav-tags-quit)
     (define-key keymap "u" 'nav-tags-quit)
     (define-key keymap "?" 'nav-tags-help-screen)
+    (define-key keymap [mouse-3] 'nav-show-bufs)
     (define-key keymap [S-down-mouse-3] 'nav-tags-quit)
     (define-key keymap [(tab)] 'forward-button)
     (define-key keymap [(shift tab)] 'backward-button)
@@ -229,6 +231,7 @@ Key Bindings
 
 Enter/Return: Jump to tag under cursor
 
+b\t Toggle file/buffer browser (or Left-Mouse).
 q\t Quit Nav.
 s\t Toggle sorting of tags into alphabetical order.
 t\t Exit tags mode and go back to directory view (or Shift-Left-Mouse).
