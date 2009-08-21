@@ -135,9 +135,9 @@ This is used if only one window besides the Nav window is visible."
 
 ;; params here are: foreground background stipple bold ital underline inverse
 (modify-face 'nav-face-heading "white" "navy" nil nil nil nil nil)
-(modify-face 'nav-face-button-num "LightSalmon" nil nil nil nil nil nil)
-(modify-face 'nav-face-dir "green" nil nil nil nil nil nil)
-(modify-face 'nav-face-hdir "red" nil nil nil nil nil nil)
+(modify-face 'nav-face-button-num "MediumOrchid4" nil nil nil nil nil nil)
+(modify-face 'nav-face-dir "ForestGreen" nil nil nil nil nil nil)
+(modify-face 'nav-face-hdir "Red1" nil nil nil nil nil nil)
 (modify-face 'nav-face-file nil nil nil nil nil nil nil)
 (modify-face 'nav-face-hfile "pink" nil nil nil nil nil nil)
 
