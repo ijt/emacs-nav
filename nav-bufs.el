@@ -199,9 +199,21 @@ If there is no second other window, Nav will create one."
   (goto-line 2))
 
 
+(defun nav-bufs-update ()
+  "Tells Nav to update the display of current buffers."
+  (interactive)
+  (if (not (string= nav-buffer-name (buffer-name (current-buffer))))
+      (progn
+	  (select-window (nav-get-window nav-buffer-name))
+	  (nav-bufs-show-buffers)
+	  (other-window 1))))
+
+
 (defun nav-bufs-quit ()
   "Kill nav-bufs."
   (interactive)
+  (remove-hook 'window-configuration-change-hook 'nav-bufs-update)
+  (remove-hook 'kill-buffer-hook 'nav-bufs-update)
   (select-window (nav-get-window nav-buffer-name))
   (nav-mode))
 
@@ -210,6 +222,8 @@ If there is no second other window, Nav will create one."
   "Nav-buf-mode is displaying and switching buffers."
   (setq mode-name "Nav buffers")
   (use-local-map nav-bufs-mode-map)
+  (add-hook 'window-configuration-change-hook 'nav-bufs-update)
+  (add-hook 'kill-buffer-hook 'nav-bufs-update)
   (turn-on-font-lock)
   (setq buffer-read-only t)
   (nav-bufs-show-buffers))

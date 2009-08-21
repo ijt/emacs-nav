@@ -72,7 +72,7 @@
   :type '(repeat string)
   :group 'nav)
 
-(defcustom nav-follow nil
+(defcustom nav-follow t
   "*If t, nav will follow buffer's directory."
   :type 'boolean
   :group 'nav)
