@@ -688,6 +688,7 @@ If there is no second other window, Nav will create one."
 (defun nav-quit ()
   "Exits Nav."
   (interactive)
+  (remove-hook 'kill-emacs-hook 'nav-quit)
   (remove-hook 'window-configuration-change-hook 'nav-follow-buffer)
   (let ((window (get-buffer-window nav-buffer-name)))
     (when window
