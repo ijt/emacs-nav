@@ -1230,6 +1230,11 @@ if it's already running."
 	  (select-window (nav-get-window win))))))
 
 
+(define-key menu-bar-showhide-menu [Nav]
+  '(menu-item "Nav" nav
+	      :help "Start/Stop Nav"))
+
+
 (provide 'nav)
 
 ;;; nav.el ends here
