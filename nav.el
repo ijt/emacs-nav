@@ -135,7 +135,7 @@ This is used if only one window besides the Nav window is visible."
 
 ;; params here are: foreground background stipple bold ital underline inverse
 (modify-face 'nav-face-heading "white" "navy" nil nil nil nil nil)
-(modify-face 'nav-face-button-num "MediumOrchid4" nil nil nil nil nil nil)
+(modify-face 'nav-face-button-num "#8722c9" nil nil nil nil nil nil)
 (modify-face 'nav-face-dir "ForestGreen" nil nil nil nil nil nil)
 (modify-face 'nav-face-hdir "Red1" nil nil nil nil nil nil)
 (modify-face 'nav-face-file nil nil nil nil nil nil nil)
@@ -688,6 +688,7 @@ If there is no second other window, Nav will create one."
 (defun nav-quit ()
   "Exits Nav."
   (interactive)
+  (remove-hook 'window-configuration-change-hook 'nav-follow-buffer)
   (let ((window (get-buffer-window nav-buffer-name)))
     (when window
       (let ((this-is-not-the-only-window (not (equal window (next-window window)))))
