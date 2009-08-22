@@ -48,6 +48,7 @@
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
     (define-key keymap "?" 'nav-bufs-help-screen)
+    (define-key keymap " " 'nav-jump-to-name)
     (define-key keymap [mouse-3] 'nav-bufs-quit)
     (define-key keymap [S-down-mouse-3] 'nav-mouse-tags-expand)
     (define-key keymap [(tab)] 'forward-button)
@@ -84,6 +85,8 @@ Key Bindings
 ============
 
 Enter/Return: Jump to buffers under cursor.
+Space: Press then space then any other letter to jump to
+       filename that starts with that letter.
 
 1\t Open the selected buffer in the first other window.
 2\t Open the selected buffer in the second other window.

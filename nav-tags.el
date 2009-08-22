@@ -40,6 +40,7 @@
     (define-key keymap "t" 'nav-tags-quit)
     (define-key keymap "u" 'nav-tags-quit)
     (define-key keymap "?" 'nav-tags-help-screen)
+    (define-key keymap " " 'nav-jump-to-name)
     (define-key keymap [mouse-3] 'nav-show-bufs)
     (define-key keymap [S-down-mouse-3] 'nav-tags-quit)
     (define-key keymap [(tab)] 'forward-button)
@@ -230,6 +231,8 @@ Key Bindings
 ============
 
 Enter/Return: Jump to tag under cursor
+Space: Press then space then any other letter to jump to
+       filename that starts with that letter.
 
 b\t Toggle file/buffer browser (or Left-Mouse).
 q\t Quit Nav.
