@@ -688,7 +688,6 @@ If there is no second other window, Nav will create one."
 (defun nav-quit ()
   "Exits Nav."
   (interactive)
-  (remove-hook 'kill-emacs-hook 'nav-quit)
   (remove-hook 'window-configuration-change-hook 'nav-follow-buffer)
   (let ((window (get-buffer-window nav-buffer-name)))
     (when window
@@ -1185,7 +1184,6 @@ Nav is more IDEish than dired, and lighter weight than speedbar."
   (use-local-map nav-mode-map)
   (setq buffer-read-only t)
   (setq truncate-lines t)
-  (add-hook 'kill-emacs-hook 'nav-quit)
   (if nav-hidden (setq nav-filter-regexps nav-no-hidden-boring-file-regexps))
   (if nav-follow (add-hook 'window-configuration-change-hook 
 			   'nav-follow-buffer))
