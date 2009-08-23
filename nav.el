@@ -963,14 +963,14 @@ directory, or if the user says it's ok."
 (defun nav-make-new-file (name)
   "Creates a new file."
   (interactive "sMake file: ")
-  (setq new-file-dir (expand-file-name default-directory))
-  (other-window 1)
-  (nav-push-dir new-file-dir)
-  (find-file name)
-  (write-file name)
-  (other-window 1)
-  (nav-refresh)
-  (other-window 1))
+  (let ((new-file-dir (expand-file-name default-directory)))
+    (other-window 1)
+    (nav-push-dir new-file-dir)
+    (find-file name)
+    (write-file name)
+    (other-window 1)
+    (nav-refresh)
+    (other-window 1)))
 
 
 (defun nav-make-new-directory (name)
@@ -1018,13 +1018,13 @@ If there is already a *terminal* buffer then it is reused."
 (defun nav-rotate-windows-cw ()
   "Cyclically permutes the windows other than the nav window, clockwise."
   (interactive)
-  (nav-rotate-windows (lambda (i) (mod (+ i 1) n))))
+  (nav-rotate-windows (lambda (i n) (mod (+ i 1) n))))
 
 
 (defun nav-rotate-windows-ccw ()
   "Cyclically permutes the windows other than the nav window, counter-clockwise."
   (interactive)
-  (nav-rotate-windows (lambda (i) (mod (+ i n -1) n))))
+  (nav-rotate-windows (lambda (i n) (mod (+ i n -1) n))))
 
 
 (defun nav-rotate-windows (next-i)
@@ -1038,7 +1038,7 @@ depending on the passed-in function next-i."
          (buf-vec (apply 'vector buf-list))
          (n (length win-vec)))
     (dotimes (i n)
-      (set-window-buffer (aref win-vec (funcall next-i i))
+      (set-window-buffer (aref win-vec (funcall next-i i n))
                          (buffer-name (aref buf-vec i))))))
 
 
@@ -1096,12 +1096,12 @@ depending on the passed-in function next-i."
   "View file under cursor in read only mode. q to quit."
   (interactive)
   (nav-open-file-under-cursor)
-  (setq nav-view-file-map (make-sparse-keymap))
-  (use-local-map nav-view-file-map)
-  (define-key nav-view-file-map "q" 'nav-screen-kill)
-  (goto-line 1)
-  (view-mode -1)
-  (toggle-read-only 1))
+  (let ((nav-view-file-map (make-sparse-keymap)))
+    (use-local-map nav-view-file-map)
+    (define-key nav-view-file-map "q" 'nav-screen-kill)
+    (goto-line 1)
+    (view-mode -1)
+    (toggle-read-only 1)))
 
 
 (defun nav-help-screen ()
@@ -1110,14 +1110,14 @@ depending on the passed-in function next-i."
   (other-window 1)
   (get-buffer-create "nav-help")
   (switch-to-buffer "nav-help")
-  (setq map (make-sparse-keymap))
-  (use-local-map map)
-  (define-key map [mouse-1] 'nav-screen-kill)
-  (define-key map [mouse-3] 'nav-screen-kill) 
-  (define-key map [mouse-2] 'nav-screen-kill) 
-  (define-key map "q" 'nav-screen-kill)
+  (let ((map (make-sparse-keymap)))
+    (use-local-map map)
+    (define-key map [mouse-1] 'nav-screen-kill)
+    (define-key map [mouse-3] 'nav-screen-kill) 
+    (define-key map [mouse-2] 'nav-screen-kill) 
+    (define-key map "q" 'nav-screen-kill))
   (setq display-hourglass nil
-        buffer-undo-list t)  
+        buffer-undo-list t)
   (insert "\
 Help for nav directory listing mode
 ===================================
