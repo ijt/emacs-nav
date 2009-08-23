@@ -16,11 +16,24 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
+(defvar nav-tags-filename nil
+  "Name of the file whose tags will be displayed")
+
+(defvar nav-tags-alist nil
+  "Association list from tag names to locations")
+
+
+(define-button-type 'buffer-jump-button
+  'action 'nav-buffer-jump-button-action
+  'follow-link t
+  'face nil
+  'help-echo nil)
+
 
 (defun nav-buffer-jump-button-action (button)
-  (setq buf-name (button-label button))
-  (other-window 1)
-  (nav-buffer-jump buf-name))
+  (let ((buf-name (button-label button)))
+    (other-window 1)
+    (nav-buffer-jump buf-name)))
 
 
 (defun nav-buffer-jump (buf-name)
@@ -71,12 +84,12 @@
   (other-window 1)
   (get-buffer-create "nav-help")
   (switch-to-buffer "nav-help")
-  (setq map (make-sparse-keymap))
-  (use-local-map map)
-  (define-key map [mouse-1] 'nav-screen-kill)
-  (define-key map [mouse-3] 'nav-screen-kill) 
-  (define-key map [mouse-2] 'nav-screen-kill) 
-  (define-key map "q" 'nav-screen-kill)
+  (let ((map (make-sparse-keymap)))
+    (use-local-map map)
+    (define-key map [mouse-1] 'nav-screen-kill)
+    (define-key map [mouse-3] 'nav-screen-kill) 
+    (define-key map [mouse-2] 'nav-screen-kill) 
+    (define-key map "q" 'nav-screen-kill))
   (setq display-hourglass nil
         buffer-undo-list t)  
   (insert "\

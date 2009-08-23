@@ -274,13 +274,6 @@ of the current buffer")
   'face nil
   'help-echo nil)
 
-(define-button-type 'buffer-jump-button
-  'action 'nav-buffer-jump-button-action
-  'follow-link t
-  'face nil
-  'help-echo nil)
-
-
 (defun nav-show-bufs ()
   (interactive)
   (nav-cancel-timer)
