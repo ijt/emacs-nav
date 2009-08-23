@@ -1,4 +1,6 @@
-;; nav-bufs.el
+;;; nav-bufs.el: View of buffers
+;;
+;; Author: matthew.ozor@gmail.com (Matthew Ozor)
 ;;
 ;;; License:
 ;;

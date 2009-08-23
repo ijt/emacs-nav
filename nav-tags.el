@@ -1,4 +1,6 @@
-;; nav-tags.el
+;;; nav-tags.el: View of all functions in a file
+;;
+;; Author: matthew.ozor@gmail.com (Matthew Ozor)
 ;;
 ;;; License:
 ;;

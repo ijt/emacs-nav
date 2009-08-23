@@ -3,7 +3,7 @@
 ;; Copyright 2009 Google Inc. All Rights Reserved.
 ;;
 ;; Author: issactrotts@google.com (Issac Trotts)
-;; Version: 56
+;; Version: 20090823
 ;;
 
 ;;; License:
@@ -29,9 +29,9 @@
 ;; (require 'nav)
 ;;
 ;; Type M-x nav to open the navigation window. It should show up as a
-;; 30-character wide column on the left, showing the contents of the
-;; current directory. If there are multiple windows open, all but one
-;; will be closed to make sure the nav window shows up correctly.
+;; narrow column on the left, showing the contents of the current
+;; directory. If there are multiple windows open, all but one will be
+;; closed to make sure the nav window shows up correctly.
 
 ;;; Key Bindings
 ;;

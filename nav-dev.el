@@ -9,3 +9,11 @@
 (define-key emacs-lisp-mode-map [f7] (lambda ()
                                        (interactive)
                                        (load-file "nav-test.el")))
+
+(defun byte-compile-current-file ()
+  (interactive)
+  (byte-compile-file (buffer-name (current-buffer))))
+
+(defun bc ()
+  (interactive)
+  (byte-compile-current-file))
