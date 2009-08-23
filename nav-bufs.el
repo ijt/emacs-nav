@@ -204,7 +204,7 @@ If there is no second other window, Nav will create one."
       (dolist (b scratch-bufs)
 	  (insert-text-button b :type 'buffer-jump-button)
 	  (insert "\n")))
-    (setq mode-line-format (nav-update-mode-line "b"))
+    (setq mode-line-format (nav-update-mode-line "b" default-directory))
     (force-mode-line-update))
   (setq truncate-lines t)
   (goto-line 2))

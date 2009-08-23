@@ -24,7 +24,9 @@
    'error-setting-up-python-support))
 
 (defcustom nav-tags-will-sort t
-  "Whether to sort alphabetically in tags mode")
+  "Whether to sort alphabetically in tags mode"
+  :type 'boolean
+  :group 'nav)
 
 (defvar nav-tags-alist nil
   "Association list from tag names to positions")
@@ -164,7 +166,7 @@
 		       'face nav-button-face
 		       'help-echo nil)
 	(insert "\n")))
-    (setq mode-line-format (nav-update-mode-line "t"))
+    (setq mode-line-format (nav-update-mode-line "t" default-directory))
     (force-mode-line-update)
     (setq truncate-lines t)
     (goto-line 2)))
@@ -231,7 +233,7 @@
   (define-key map [mouse-2] 'nav-screen-kill) 
   (define-key map "q" 'nav-screen-kill)
   (setq display-hourglass nil
-        buffer-undo-list t)  
+        buffer-undo-list t)
   (insert "\
 Help for Nav tags mode
 ======================
