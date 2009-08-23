@@ -469,18 +469,18 @@ This works like a web browser's back button."
 
 
 (defun nav-quickdir-jump-button-action (button)
-  (setq num (string-to-number (substring (button-label button) 0 1)))
-  (if (= num 0) (setq num 2))
-  (if (= num 9) (setq num 1))
-  (if (= num 8) (setq num 0))  
-  (nav-quickdir-jump num))
+  (let ((num (string-to-number (substring (button-label button) 0 1))))
+    (if (= num 0) (setq num 2))
+    (if (= num 9) (setq num 1))
+    (if (= num 8) (setq num 0))
+    (nav-quickdir-jump num)))
 
 
 (defun nav-quickfile-jump-button-action (button)
   (select-window (nav-get-window nav-buffer-name))
-  (setq num (string-to-number (substring (button-label button) 0 1)))
-  (setq num (- num 5))
-  (nav-quickfile-jump num))
+  (let* ((num (string-to-number (substring (button-label button) 0 1)))
+         (num (- num 5)))
+    (nav-quickfile-jump num)))
 
 
 (defun nav-replace-buffer-contents (new-contents should-make-filenames-clickable)
@@ -586,7 +586,7 @@ This works like a web browser's back button."
     (let* ((new-contents (sort new-contents 'nav-string<))
            (new-contents (nav-join "" (cons "../" new-contents))))
       (nav-replace-buffer-contents new-contents t))
-    (setq mode-line-format (nav-update-mode-line "d"))
+    (setq mode-line-format (nav-update-mode-line "d" dir))
     (force-mode-line-update)))
 
 
@@ -784,8 +784,8 @@ http://muffinresearch.co.uk/archives/2007/01/30/bash-single-quotes-inside-of-sin
 (defun nav-jump-to-name (arg)
   (interactive "K")
   (goto-line 2)
-  (setq nav-search-string (concat "^" arg))
-  (search-forward-regexp nav-search-string))
+  (let ((nav-search-string (concat "^" arg)))
+    (search-forward-regexp nav-search-string)))
 
 
 (defun nav-quickfile-jump (quickfile-num)
@@ -806,7 +806,7 @@ http://muffinresearch.co.uk/archives/2007/01/30/bash-single-quotes-inside-of-sin
   (nav-push-dir dirname))
 
 
-(defun nav-update-mode-line (mode)
+(defun nav-update-mode-line (mode dir)
   (setq nav-mode-line (concat "-(nav)" 
 			      (if nav-hidden 
 				  (format "%s" "H")
@@ -955,7 +955,7 @@ directory, or if the user says it's ok."
   (erase-buffer)
   (let ((lines (mapcar (lambda (name)
 			 (concat name ":1:"))
-		       names-matching-pattern)))
+		       paths)))
     (insert (nav-join "\n" lines)))
   (grep-mode))
 
