@@ -234,6 +234,10 @@ This is used if only one window besides the Nav window is visible."
 ;; changing the nav mode map.
 (setq nav-mode-map (nav-make-mode-map))
 
+(defvar nav-follow-timer nil
+  "Timer used to update Nav's contents to reflect the directory
+of the current buffer")
+
 (defvar nav-width nav-default-width)
 
 (defvar nav-dir-stack '())
@@ -279,9 +283,21 @@ This is used if only one window besides the Nav window is visible."
 
 (defun nav-show-bufs ()
   (interactive)
-  (if nav-follow (remove-hook 'window-configuration-change-hook 
-   			   'nav-follow-buffer))
+  (nav-cancel-timer)
   (nav-bufs))
+
+
+(defun nav-start-timer ()
+  "Starts the timer to update Nav while following."
+  (setq nav-follow-timer
+        (run-with-idle-timer nav-follow-delay t 'nav-follow-buffer)))
+
+
+(defun nav-cancel-timer ()
+  "Cancels Nav's timer and sets it to nil."
+  (when nav-follow-timer
+    (cancel-timer nav-follow-timer)
+    (setq nav-follow-timer nil)))
 
 
 (defun turn-off-font-lock ()
@@ -688,7 +704,7 @@ If there is no second other window, Nav will create one."
 (defun nav-quit ()
   "Exits Nav."
   (interactive)
-  (remove-hook 'window-configuration-change-hook 'nav-follow-buffer)
+  (nav-cancel-timer)
   (let ((window (get-buffer-window nav-buffer-name)))
     (when window
       (let ((this-is-not-the-only-window (not (equal window (next-window window)))))
@@ -751,12 +767,10 @@ http://muffinresearch.co.uk/archives/2007/01/30/bash-single-quotes-inside-of-sin
   (interactive)
   (if (not nav-follow)
       (progn
-	(add-hook 'window-configuration-change-hook 
-		  'nav-follow-buffer)
+        (nav-start-timer)
 	(setq nav-follow t))
     (progn
-      (remove-hook 'window-configuration-change-hook 
-		   'nav-follow-buffer)
+      (nav-cancel-timer)
       (setq nav-follow nil)))
   (nav-refresh))
     
@@ -847,8 +861,7 @@ http://muffinresearch.co.uk/archives/2007/01/30/bash-single-quotes-inside-of-sin
 (defun nav-tags-expand ()
   "Shows all function tags in file."
   (interactive)
-  (if nav-follow (remove-hook 'window-configuration-change-hook 
-   			   'nav-follow-buffer))
+  (nav-cancel-timer)
   (nav-save-cursor-line)
   (nav-tags-fetch-imenu (nav-get-cur-line-str)))
 
@@ -1184,9 +1197,10 @@ Nav is more IDEish than dired, and lighter weight than speedbar."
   (use-local-map nav-mode-map)
   (setq buffer-read-only t)
   (setq truncate-lines t)
-  (if nav-hidden (setq nav-filter-regexps nav-no-hidden-boring-file-regexps))
-  (if nav-follow (add-hook 'window-configuration-change-hook 
-			   'nav-follow-buffer))
+  (if nav-hidden
+      (setq nav-filter-regexps nav-no-hidden-boring-file-regexps))
+  (if nav-follow
+      (nav-start-timer))
   (nav-refresh))
 
 
