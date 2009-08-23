@@ -37,19 +37,19 @@
     (define-key keymap "5" (lambda nil (interactive) (nav-quickfile-jump 0)))   
     (define-key keymap "6" (lambda nil (interactive) (nav-quickfile-jump 1)))
     (define-key keymap "7" (lambda nil (interactive) (nav-quickfile-jump 2)))
-    (define-key keymap "b" 'nav-bufs-quit)
+    (define-key keymap "b" 'nav-bufs-return-to-nav)
     (define-key keymap "d" 'nav-bufs-delete)
     (define-key keymap "o" (lambda nil (interactive) (other-window 1)))
     (define-key keymap "r" 'nav-bufs-show-buffers)
-    (define-key keymap "q" 'nav-quit)
+    (define-key keymap "q" 'nav-bufs-quit)
     (define-key keymap "s" 'nav-shell)
     (define-key keymap "t" 'nav-bufs-expand-tags)
-    (define-key keymap "u" 'nav-bufs-quit)
+    (define-key keymap "u" 'nav-bufs-return-to-nav)
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
     (define-key keymap "?" 'nav-bufs-help-screen)
     (define-key keymap " " 'nav-jump-to-name)
-    (define-key keymap [mouse-3] 'nav-bufs-quit)
+    (define-key keymap [mouse-3] 'nav-bufs-return-to-nav)
     (define-key keymap [S-down-mouse-3] 'nav-mouse-tags-expand)
     (define-key keymap [(tab)] 'forward-button)
     (define-key keymap [(shift tab)] 'backward-button)
@@ -215,13 +215,24 @@ If there is no second other window, Nav will create one."
 	  (other-window 1))))
 
 
-(defun nav-bufs-quit ()
-  "Kill nav-bufs."
+(defun nav-bufs-return-to-nav ()
+  "Returns to Nav directory view."
   (interactive)
-  (remove-hook 'window-configuration-change-hook 'nav-bufs-update)
-  (remove-hook 'kill-buffer-hook 'nav-bufs-update)
+  (nav-bufs-remove-hooks)
   (select-window (nav-get-window nav-buffer-name))
   (nav-mode))
+
+
+(defun nav-bufs-remove-hooks ()
+  (remove-hook 'window-configuration-change-hook 'nav-bufs-update)
+  (remove-hook 'kill-buffer-hook 'nav-bufs-update))
+
+
+(defun nav-bufs-quit ()
+  "Quits Nav from within bufs mode."
+  (interactive)
+  (nav-bufs-remove-hooks)
+  (nav-quit))
 
 
 (define-derived-mode nav-bufs-mode fundamental-mode 
