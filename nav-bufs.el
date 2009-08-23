@@ -57,7 +57,6 @@
     (define-key keymap "o" (lambda nil (interactive) (other-window 1)))
     (define-key keymap "r" 'nav-bufs-show-buffers)
     (define-key keymap "q" 'nav-bufs-quit)
-    (define-key keymap "s" 'nav-shell)
     (define-key keymap "t" 'nav-bufs-expand-tags)
     (define-key keymap "u" 'nav-bufs-return-to-nav)
     (define-key keymap "w" 'nav-shrink-wrap)
@@ -115,7 +114,6 @@ d\t Delete selected buffer.
 o\t Switch to other window.
 q\t Quit Nav.
 r\t Refresh
-s\t Launch shell.
 u\t Go back to Nav directory view.
 w\t Shrink-wrap Nav's window to fit the longest filename in the current directory.
 W\t Set the window width to its default value.
