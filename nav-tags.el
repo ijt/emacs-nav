@@ -16,6 +16,7 @@
 ;; See the License for the specific language governing permissions and
 ;; limitations under the License.
 
+(require 'imenu)
 
 ;; Make sure we can get tags for Python.
 (condition-case err
@@ -89,7 +90,7 @@
 			  (pos (cdr method-name-and-pos)))
 		      (cons (concat class-name "." method-name)
 			    pos)))
-		  (cddr name-and-info)))))
+		  (cdr info)))))
 
 
 (defun nav-marker-to-pos-in-pair (name-and-maybe-marker)
@@ -127,7 +128,6 @@
 
 (defun nav-tags-fetch-imenu (filename)
   "Generates and displays the tag index from selected file."
-  (require 'imenu)
   (setq nav-tags-filename filename)
   (nav-open-file filename)
   (setq nav-tags-alist (nav-make-tags-alist))
@@ -226,12 +226,12 @@
   (other-window 1)
   (get-buffer-create "nav-help")
   (switch-to-buffer "nav-help")
-  (setq map (make-sparse-keymap))
-  (use-local-map map)
-  (define-key map [mouse-1] 'nav-screen-kill)
-  (define-key map [mouse-3] 'nav-screen-kill) 
-  (define-key map [mouse-2] 'nav-screen-kill) 
-  (define-key map "q" 'nav-screen-kill)
+  (let ((map (make-sparse-keymap)))
+    (use-local-map map)
+    (define-key map [mouse-1] 'nav-screen-kill)
+    (define-key map [mouse-3] 'nav-screen-kill) 
+    (define-key map [mouse-2] 'nav-screen-kill) 
+    (define-key map "q" 'nav-screen-kill))
   (setq display-hourglass nil
         buffer-undo-list t)
   (insert "\
