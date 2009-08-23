@@ -125,11 +125,14 @@ W\t Set the window width to its default value.
 (defun nav-bufs-delete ()
   "Deletes the chosen buffer."
   (interactive)
-  (let ((line-num (nav-line-number-at-pos (point))))
-    (kill-buffer (nav-get-cur-line-str))
-    (select-window (nav-get-window nav-buffer-name))
-    (nav-bufs-show-buffers)
-    (goto-line line-num)))
+  (let ((line-num (nav-line-number-at-pos (point)))
+        (buffer-name (nav-get-cur-line-str)))
+    (if (string= buffer-name nav-buffer-name)
+        (nav-bufs-quit)
+      (kill-buffer buffer-name)
+      (select-window (nav-get-window nav-buffer-name))
+      (nav-bufs-show-buffers)
+      (goto-line line-num))))
 
 
 (defun nav-open-buf-other-window-1 ()
