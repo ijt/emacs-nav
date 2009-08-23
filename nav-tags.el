@@ -206,7 +206,14 @@
 (defun nav-tags ()
   "Run nav-tags-mode on top of nav."
   (interactive)
-  (nav-tags-mode))
+  (let ((nav-win (nav-get-window nav-buffer-name)))
+    (if nav-win
+        (progn
+          (select-window nav-win)
+          (nav-tags-mode))
+      (progn
+        (nav)
+        (nav-tags-mode)))))
 
 
 (defun nav-tags-help-screen ()

@@ -82,7 +82,7 @@
   :type 'boolean
   :group 'nav)
 
-(defcustom nav-follow-delay 0.1
+(defcustom nav-follow-delay 0.05
   "*How long Nav waits before checking to see if the directory has changed.
 Nav must be restarted for changes to this variable to take effect."
   :type 'float
