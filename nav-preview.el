@@ -29,7 +29,7 @@
   (let ((keymap (make-sparse-keymap)))
     (define-key keymap "n" 'nav-preview-next-line)
     (define-key keymap "p" 'nav-preview-previous-line)
-    (define-key keymap "q" 'nav-bufs-quit)
+    (define-key keymap "q" 'nav-preview-quit)
     (define-key keymap "V" 'nav-toggle-preview)
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
@@ -62,6 +62,7 @@
 	(nav-open-file-under-cursor)
 	(add-to-list 'nav-preview-open-list (buffer-name (current-buffer)))
 	(setq buffer-read-only t)
+	(buffer-disable-undo)
 	(select-window (nav-get-window nav-buffer-name)))))
 
 
@@ -151,6 +152,13 @@ W\t Set the window width to its default value.
   (setq nav-preview nil)
   (global-font-lock-mode 1)
   (nav-mode))
+
+
+(defun nav-preview-quit ()
+  "Quits Nav from within bufs mode."
+  (interactive)
+  (nav-preview-stop)
+  (nav-quit))
 
 
 (provide 'nav-preview)
