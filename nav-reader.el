@@ -37,34 +37,30 @@
 
 (setq nav-reader-mode-map (nav-reader-make-mode-map))
 
+
 (defun nav-reader-down ()
   (interactive)
   (next-line)
-  (if (not (looking-at "^.*/$"))
-	   (progn
-	     (other-window 1)
-	     (let ((old-buf (buffer-name (current-buffer))))
-	       (kill-buffer old-buf)   ;need to test for already open buffers
-	       (select-window (nav-get-window nav-buffer-name))
-	       (nav-open-file-under-cursor)
-	       (setq buffer-read-only t)
-	       (select-window (nav-get-window nav-buffer-name))))))
+  (nav-reader-show))
 
 
 (defun nav-reader-up ()
   (interactive)
   (previous-line)
-  (if (not (looking-at "^.*/$"))
-	   (progn
-	     (other-window 1)
-	     (let ((old-buf (buffer-name (current-buffer))))
-	       (kill-buffer old-buf)   ;need to test for already open buffers
-	       (select-window (nav-get-window nav-buffer-name))
-	       (nav-open-file-under-cursor)
-	       (setq buffer-read-only t)
-	       (select-window (nav-get-window nav-buffer-name))))))
+  (nav-reader-show))
   
-
+  
+(defun nav-reader-show ()
+  (if (not (looking-at "^.*/$"))
+      (progn
+	(other-window 1)
+	(let ((old-buf (buffer-name (current-buffer))))
+	  (kill-buffer old-buf)   ;need to test for already open buffers
+	  (select-window (nav-get-window nav-buffer-name))
+	  (nav-open-file-under-cursor)
+	  (setq buffer-read-only t)
+	  (select-window (nav-get-window nav-buffer-name))))))
+  
 
 (defun nav-reader-help-screen ()
   "Displays the help screen outside the Nav window."
