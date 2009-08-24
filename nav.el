@@ -48,7 +48,7 @@
 (require 'cl)
 (require 'nav-bufs)
 (require 'nav-tags)
-(require 'nav-reader)
+(require 'nav-preview)
 
 (defconst nav-max-int 268435455)
 
@@ -203,11 +203,12 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "o" (lambda nil (interactive) (other-window 1)))
     (define-key keymap "q" 'nav-quit)
     (define-key keymap "r" 'nav-refresh)
-    (define-key keymap "R" 'nav-toggle-reader)
+    (define-key keymap "R" 'nav-toggle-preview)
     (define-key keymap "s" 'nav-shell)
     (define-key keymap "t" 'nav-tags-expand)
     (define-key keymap "u" 'nav-go-up-one-dir)
     (define-key keymap "v" 'nav-view-file)
+    (define-key keymap "V" 'nav-toggle-preview)
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
     (define-key keymap "[" 'nav-rotate-windows-ccw)
@@ -236,7 +237,7 @@ This is used if only one window besides the Nav window is visible."
 ;; changing the nav mode map.
 (setq nav-mode-map (nav-make-mode-map))
 
-(defvar nav-reader nil)
+(defvar nav-preview nil)
 
 (defvar nav-follow-timer nil
   "Timer used to update Nav's contents to reflect the directory
@@ -811,8 +812,8 @@ http://muffinresearch.co.uk/archives/2007/01/30/bash-single-quotes-inside-of-sin
 			      (if nav-follow 
 				  (format "%s" "F")
 				(format "%s" "-")) 
-			      (if nav-reader
-				  (format "%s" "R")
+			      (if nav-preview
+				  (format "%s" "P")
 				(format "%s" "-")) 
 			      " "
 			      (if (string= mode "d")
@@ -1105,17 +1106,17 @@ depending on the passed-in function next-i."
     (toggle-read-only 1)))
 
 
-(defun nav-toggle-reader ()
-  "Toggle nav reader."
+(defun nav-toggle-preview ()
+  "Toggle nav preview mode."
   (interactive)
-  (if (not nav-reader)
+  (if (not nav-preview)
       (progn
-        (nav-reader)
-	(setq nav-reader t)
+        (nav-preview)
+	(setq nav-preview t)
 	(setq mode-line-format (nav-update-mode-line "d" default-directory)))
     (progn
-      (nav-reader-stop)
-      (setq nav-reader nil)))
+      (nav-preview-stop)
+      (setq nav-preview nil)))
   (nav-refresh))
 
 

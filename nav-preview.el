@@ -1,4 +1,4 @@
-;;; nav-reader.el: Nav reader mode
+;;; nav-preview.el: Nav preview mode
 ;;
 ;; Author: matthew.ozor@gmail.com (Matthew Ozor)
 ;;
@@ -17,43 +17,43 @@
 ;; limitations under the License.
 
 
-(defvar nav-reader-pre-open-list nil
+(defvar nav-preview-pre-open-list nil
   "list of open buffers not to auto-close")
 
 
-(defun nav-reader-make-mode-map ()
+(defun nav-preview-make-mode-map ()
   "Creates and returns a mode map with bufs's key bindings."
   (let ((keymap (make-sparse-keymap)))
-    (define-key keymap "n" 'nav-reader-next-line)
-    (define-key keymap "p" 'nav-reader-previous-line)
-    (define-key keymap "R" 'nav-toggle-reader)
+    (define-key keymap "n" 'nav-preview-next-line)
+    (define-key keymap "p" 'nav-preview-previous-line)
+    (define-key keymap "R" 'nav-toggle-preview)
     (define-key keymap "q" 'nav-bufs-quit)
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
-    (define-key keymap "?" 'nav-reader-help-screen)
+    (define-key keymap "?" 'nav-preview-help-screen)
     (define-key keymap " " 'scroll-other-window)
-    (define-key keymap [(down)] 'nav-reader-down)
-    (define-key keymap [(up)] 'nav-reader-up)
-    (define-key keymap [(control ?n)] 'nav-reader-down)
-    (define-key keymap [(control ?p)] 'nav-reader-up)
+    (define-key keymap [(down)] 'nav-preview-down)
+    (define-key keymap [(up)] 'nav-preview-up)
+    (define-key keymap [(control ?n)] 'nav-preview-down)
+    (define-key keymap [(control ?p)] 'nav-preview-up)
     keymap))
 
-(setq nav-reader-mode-map (nav-reader-make-mode-map))
+(setq nav-preview-mode-map (nav-preview-make-mode-map))
 
 
-(defun nav-reader-down ()
+(defun nav-preview-down ()
   (interactive)
   (next-line)
-  (nav-reader-show))
+  (nav-preview-show))
 
 
-(defun nav-reader-up ()
+(defun nav-preview-up ()
   (interactive)
   (previous-line)
-  (nav-reader-show))
+  (nav-preview-show))
   
   
-(defun nav-reader-show ()
+(defun nav-preview-show ()
   (if (not (looking-at "^.*/$"))
       (progn
 	(other-window 1)
@@ -65,21 +65,21 @@
 	  (select-window (nav-get-window nav-buffer-name))))))
 
 
-(defun nav-reader-next-line ()
+(defun nav-preview-next-line ()
   (interactive)
   (other-window 1)
   (next-line)
   (select-window (nav-get-window nav-buffer-name)))
   
 
-(defun nav-reader-previous-line ()
+(defun nav-preview-previous-line ()
   (interactive)
   (other-window 1)
   (previous-line)
   (select-window (nav-get-window nav-buffer-name)))
 
 
-(defun nav-reader-help-screen ()
+(defun nav-preview-help-screen ()
   "Displays the help screen outside the Nav window."
   (interactive)
   (other-window 1)
@@ -94,7 +94,7 @@
   (setq display-hourglass nil
         buffer-undo-list t)  
   (insert "\
-Help for Nav Reader mode
+Help for Nav Preview mode
 ========================
 
 Key Bindings
@@ -106,7 +106,7 @@ Space: Srolls other window down one page.
 n\t Move cursor in other window down line.
 p\t Move cursor in other window up line.
 q\t Quit Nav.
-R\t Turn off Reader mode.
+R\t Turn off Preview mode.
 w\t Shrink-wrap Nav's window to fit the longest filename in the current directory.
 W\t Set the window width to its default value.
 ?\t Show this help screen.
@@ -120,19 +120,19 @@ W\t Set the window width to its default value.
   (toggle-read-only 1))
 
 
-(define-derived-mode nav-reader-mode fundamental-mode 
+(define-derived-mode nav-preview-mode fundamental-mode 
   "Nav-buf-mode is displaying and switching buffers."
-  (setq mode-name "Nav reader")
-  (use-local-map nav-reader-mode-map))
+  (setq mode-name "Nav preview")
+  (use-local-map nav-preview-mode-map))
 
 
-(defun nav-reader ()
-  "Start nav reader mode."
+(defun nav-preview ()
+  "Start nav preview mode."
   (interactive)
-  (setq nav-reader-pre-open-list (mapcar (function buffer-name) (buffer-list)))
+  (setq nav-preview-pre-open-list (mapcar (function buffer-name) (buffer-list)))
   (nav-save-cursor-line)
   (select-window (nav-get-window nav-buffer-name))
-  (nav-reader-mode)
+  (nav-preview-mode)
   (if (not (looking-at "^.*/$"))
       (progn
 	(nav-open-file-under-cursor)
@@ -140,13 +140,13 @@ W\t Set the window width to its default value.
 	(select-window (nav-get-window nav-buffer-name)))))
 
 
-(defun nav-reader-stop ()
-  "Stops reader mode."
+(defun nav-preview-stop ()
+  "Stops preview mode."
   (interactive)
-  (setq nav-reader nil)
+  (setq nav-preview nil)
   (nav-mode))
 
 
-(provide 'nav-reader)
+(provide 'nav-preview)
 
-;;; nav-reader.el ends here
+;;; nav-preview.el ends here
