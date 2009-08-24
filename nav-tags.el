@@ -73,8 +73,7 @@
     maybe-marker))
 
 
-;; FIXME: this should be called nav-tags-expand-classes or similar.
-(defun nav-tags-flatten (name-and-info)
+(defun nav-tags-expand-classes (name-and-info)
   "Converts class tags into flat names of class methods."
   (let ((name (car name-and-info))
 	(info (cdr name-and-info)))
@@ -108,7 +107,7 @@
 	 (imenu-auto-rescan-maxout nav-max-int)
 	 (alist (imenu--make-index-alist t))
 	 (alist (nav-remove-nils alist))
-	 (alists (mapcar 'nav-tags-flatten alist))
+	 (alists (mapcar 'nav-tags-expand-classes alist))
 	 (alist (apply 'append alists))
 	 (alist (mapcar 'nav-marker-to-pos-in-pair alist))
 	 ;; Maybe sort.

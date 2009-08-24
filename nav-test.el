@@ -38,15 +38,15 @@
          nav-test-functions))
 
 
-(nav-deftest "nav-tags-flatten"
-	     (nav-assert (equal '(("f" . 123)) (nav-tags-flatten '("f" . 123))))
+(nav-deftest "nav-tags-expand-classes"
+	     (nav-assert (equal '(("f" . 123)) (nav-tags-expand-classes '("f" . 123))))
 	     (nav-assert (equal '(("class BadZipFile" . 123))
-				(nav-tags-flatten 
+				(nav-tags-expand-classes 
 				 '("class BadZipFile" . 123))))
 	     (nav-assert (equal '(("class PyZipFile" . 46255)
 				  ("PyZipFile._get_codename" . 49560)
 				  ("PyZipFile.writepy" . 46361))
-				(nav-tags-flatten
+				(nav-tags-expand-classes
 				 '("class PyZipFile"
 				   (" class PyZipFile" . 46255)
 				   ("_get_codename" . 49560)
