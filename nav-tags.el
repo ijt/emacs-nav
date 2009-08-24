@@ -32,6 +32,9 @@
 (defvar nav-tags-alist nil
   "Association list from tag names to positions")
 
+(defvar nav-tags-filename nil
+  "Name of the file whose tags are to be displayed in Nav tags mode")
+
 
 (defun nav-tags-make-mode-map ()
   "Creates and returns a mode map with tags's key bindings."
