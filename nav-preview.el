@@ -20,14 +20,17 @@
 (defvar nav-preview-pre-open-list nil
   "list of open buffers not to auto-close")
 
+(defvar nav-preview-open-list nil
+  "list of buffers nav-preview opened")
+
 
 (defun nav-preview-make-mode-map ()
   "Creates and returns a mode map with bufs's key bindings."
   (let ((keymap (make-sparse-keymap)))
     (define-key keymap "n" 'nav-preview-next-line)
     (define-key keymap "p" 'nav-preview-previous-line)
-    (define-key keymap "R" 'nav-toggle-preview)
     (define-key keymap "q" 'nav-bufs-quit)
+    (define-key keymap "V" 'nav-toggle-preview)
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
     (define-key keymap "?" 'nav-preview-help-screen)
@@ -56,13 +59,10 @@
 (defun nav-preview-show ()
   (if (not (looking-at "^.*/$"))
       (progn
-	(other-window 1)
-	(let ((old-buf (buffer-name (current-buffer))))
-	  (kill-buffer old-buf)   ;need to test for already open buffers
-	  (select-window (nav-get-window nav-buffer-name))
-	  (nav-open-file-under-cursor)
-	  (setq buffer-read-only t)
-	  (select-window (nav-get-window nav-buffer-name))))))
+	(nav-open-file-under-cursor)
+	(add-to-list 'nav-preview-open-list (buffer-name (current-buffer)))
+	(setq buffer-read-only t)
+	(select-window (nav-get-window nav-buffer-name)))))
 
 
 (defun nav-preview-next-line ()
@@ -143,6 +143,9 @@ W\t Set the window width to its default value.
 (defun nav-preview-stop ()
   "Stops preview mode."
   (interactive)
+  (dolist (b nav-preview-open-list)
+    (kill-buffer b))
+  (setq nav-preview-open-list nil)
   (setq nav-preview nil)
   (nav-mode))
 

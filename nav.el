@@ -203,7 +203,6 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "o" (lambda nil (interactive) (other-window 1)))
     (define-key keymap "q" 'nav-quit)
     (define-key keymap "r" 'nav-refresh)
-    (define-key keymap "R" 'nav-toggle-preview)
     (define-key keymap "s" 'nav-shell)
     (define-key keymap "t" 'nav-tags-expand)
     (define-key keymap "u" 'nav-go-up-one-dir)
@@ -1187,6 +1186,7 @@ s\t Start a shell in an emacs window in the current directory.
 t\t Expand tags on selected file (or Shift-Left-Mouse).
 u\t Go up to parent directory.
 v\t View file in read-only mode. Press q to close file.
+V\t Toggle preview mode.
 w\t Shrink-wrap Nav's window to fit the longest filename in the current directory.
 W\t Set the window width to its default value.
 !\t Run shell command.
