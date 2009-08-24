@@ -48,6 +48,7 @@
 (require 'cl)
 (require 'nav-bufs)
 (require 'nav-tags)
+(require 'nav-reader)
 
 (defconst nav-max-int 268435455)
 
@@ -202,6 +203,7 @@ This is used if only one window besides the Nav window is visible."
     (define-key keymap "o" (lambda nil (interactive) (other-window 1)))
     (define-key keymap "q" 'nav-quit)
     (define-key keymap "r" 'nav-refresh)
+    (define-key keymap "R" 'nav-toggle-reader)
     (define-key keymap "s" 'nav-shell)
     (define-key keymap "t" 'nav-tags-expand)
     (define-key keymap "u" 'nav-go-up-one-dir)
@@ -233,6 +235,8 @@ This is used if only one window besides the Nav window is visible."
 ;; eval-buffer instead of restarting emacs or other junk after
 ;; changing the nav mode map.
 (setq nav-mode-map (nav-make-mode-map))
+
+(defvar nav-reader nil)
 
 (defvar nav-follow-timer nil
   "Timer used to update Nav's contents to reflect the directory
@@ -807,7 +811,10 @@ http://muffinresearch.co.uk/archives/2007/01/30/bash-single-quotes-inside-of-sin
 			      (if nav-follow 
 				  (format "%s" "F")
 				(format "%s" "-")) 
-			      "- "
+			      (if nav-reader
+				  (format "%s" "R")
+				(format "%s" "-")) 
+			      " "
 			      (if (string= mode "d")
 				  (propertize (concat (nav-dir-suffix (file-truename dir)) "/")
 					      'face 'modeline-buffer-id))
@@ -1098,6 +1105,20 @@ depending on the passed-in function next-i."
     (toggle-read-only 1)))
 
 
+(defun nav-toggle-reader ()
+  "Toggle nav reader."
+  (interactive)
+  (if (not nav-reader)
+      (progn
+        (nav-reader)
+	(setq nav-reader t)
+	(setq mode-line-format (nav-update-mode-line "d" default-directory)))
+    (progn
+      (nav-reader-stop)
+      (setq nav-reader nil)))
+  (nav-refresh))
+
+
 (defun nav-help-screen ()
   "Displays the help screen outside the Nav window."
   (interactive)
@@ -1250,7 +1271,7 @@ if it's already running."
 
 (define-key menu-bar-showhide-menu [Nav]
   '(menu-item "Nav" nav
-	      :help "Start/Stop Nav"))
+	      :help "Turn Nav on/off"))
 
 
 (provide 'nav)
