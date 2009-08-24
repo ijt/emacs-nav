@@ -123,6 +123,7 @@ W\t Set the window width to its default value.
 (define-derived-mode nav-preview-mode fundamental-mode 
   "Nav-buf-mode is displaying and switching buffers."
   (setq mode-name "Nav preview")
+  (global-font-lock-mode nil)
   (use-local-map nav-preview-mode-map))
 
 
@@ -136,6 +137,7 @@ W\t Set the window width to its default value.
   (if (not (looking-at "^.*/$"))
       (progn
 	(nav-open-file-under-cursor)
+	(add-to-list 'nav-preview-open-list (buffer-name (current-buffer)))
 	(setq buffer-read-only t)
 	(select-window (nav-get-window nav-buffer-name)))))
 
@@ -147,6 +149,7 @@ W\t Set the window width to its default value.
     (kill-buffer b))
   (setq nav-preview-open-list nil)
   (setq nav-preview nil)
+  (global-font-lock-mode 1)
   (nav-mode))
 
 
