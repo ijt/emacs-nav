@@ -24,11 +24,14 @@
 (defun nav-reader-make-mode-map ()
   "Creates and returns a mode map with bufs's key bindings."
   (let ((keymap (make-sparse-keymap)))
+    (define-key keymap "n" 'nav-reader-next-line)
+    (define-key keymap "p" 'nav-reader-previous-line)
     (define-key keymap "R" 'nav-toggle-reader)
     (define-key keymap "q" 'nav-bufs-quit)
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
     (define-key keymap "?" 'nav-reader-help-screen)
+    (define-key keymap " " 'nav-reader-scroll-page)
     (define-key keymap [(down)] 'nav-reader-down)
     (define-key keymap [(up)] 'nav-reader-up)
     (define-key keymap [(control ?n)] 'nav-reader-down)
@@ -51,7 +54,7 @@
   
   
 (defun nav-reader-show ()
-  (if (not (looking-at "^.*/$"))
+  (if (not (looking-at "^.*/$") )
       (progn
 	(other-window 1)
 	(let ((old-buf (buffer-name (current-buffer))))
@@ -60,7 +63,26 @@
 	  (nav-open-file-under-cursor)
 	  (setq buffer-read-only t)
 	  (select-window (nav-get-window nav-buffer-name))))))
+
+
+(defun nav-reader-next-line ()
+  (interactive)
+  (other-window 1)
+  (next-line)
+    (select-window (nav-get-window nav-buffer-name)))
   
+
+(defun nav-reader-previous-line ()
+  (interactive)
+  (other-window 1)
+  (previous-line)
+    (select-window (nav-get-window nav-buffer-name)))
+
+
+(defun nav-reader-scroll-page ()
+  (interactive)
+  (scroll-other-window))
+
 
 (defun nav-reader-help-screen ()
   "Displays the help screen outside the Nav window."
@@ -84,9 +106,10 @@ Key Bindings
 ============
 
 Enter/Return: Jump to buffers under cursor.
-Space: Press then space then any other letter to jump to
-       filename that starts with that letter.
+Space: Srolls other window down one page.
 
+n\t Move cursor in other window down line.
+p\t Move cursor in other window up line.
 q\t Quit Nav.
 R\t Turn off Reader mode.
 w\t Shrink-wrap Nav's window to fit the longest filename in the current directory.
