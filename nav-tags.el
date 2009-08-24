@@ -206,12 +206,13 @@
   (nav-tags-show-tags))
 
 
-;(defun nav-tags-here ()
-;  "Runs Nav tags mode on the current buffer."
-;  (interactive)
-;  (let ((filename (buffer-file-name (window-buffer (selected-window)))))
-;    (nav-make-sure-nav-is-running)
-;    (nav-tags-mode)))
+(defun nav-tags-here ()
+  "Runs Nav tags mode on the current buffer."
+  (interactive)
+  (let ((filename (buffer-file-name (window-buffer (selected-window)))))
+    (nav-ensure-that-nav-is-running)
+    (nav-select-nav-window)
+    (nav-tags-fetch-imenu filename)))
 
 
 (defun nav-tags-help-screen ()

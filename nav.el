@@ -1237,6 +1237,17 @@ if it's already running."
 	  (select-window (nav-get-window win))))))
 
 
+(defun nav-select-nav-window ()
+  "Makes the Nav window active. Nav must already be running or this will fail."
+  (select-window (nav-get-window nav-buffer-name)))
+
+
+(defun nav-ensure-that-nav-is-running ()
+  "Runs Nav if it is not already running."
+  (if (not (nav-is-open))
+      (nav)))
+
+
 (define-key menu-bar-showhide-menu [Nav]
   '(menu-item "Nav" nav
 	      :help "Start/Stop Nav"))
