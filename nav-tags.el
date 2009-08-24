@@ -133,15 +133,12 @@
   (setq nav-tags-filename filename)
   (nav-open-file filename)
   (setq nav-tags-alist (nav-make-tags-alist))
-
   (select-window (nav-get-window nav-buffer-name))
-  (nav-tags))
+  (nav-tags-mode))
 
 
 (defun nav-jump-to-tag-of-button (button)
-  ;; For sorting?
   (select-window (nav-get-window nav-buffer-name))
-
   (let* ((tag (button-label button))
 	 (num (cdr (assoc tag nav-tags-alist))))
     (select-window (nav-get-window nav-tags-filename))
@@ -202,24 +199,19 @@
   
 
 (define-derived-mode nav-tags-mode fundamental-mode 
-  "Nav-buf-mode is displaying and switching buffers."
+  "nav-tags-mode shows all the functions in a file."
   (setq mode-name "Nav tags")
   (use-local-map nav-tags-mode-map)
   (setq buffer-read-only t)
   (nav-tags-show-tags))
 
 
-(defun nav-tags ()
-  "Run nav-tags-mode on top of nav."
-  (interactive)
-  (let ((nav-win (nav-get-window nav-buffer-name)))
-    (if nav-win
-        (progn
-          (select-window nav-win)
-          (nav-tags-mode))
-      (progn
-        (nav)
-        (nav-tags-mode)))))
+;(defun nav-tags-here ()
+;  "Runs Nav tags mode on the current buffer."
+;  (interactive)
+;  (let ((filename (buffer-file-name (window-buffer (selected-window)))))
+;    (nav-make-sure-nav-is-running)
+;    (nav-tags-mode)))
 
 
 (defun nav-tags-help-screen ()

@@ -856,7 +856,8 @@ http://muffinresearch.co.uk/archives/2007/01/30/bash-single-quotes-inside-of-sin
   (interactive)
   (nav-cancel-timer)
   (nav-save-cursor-line)
-  (nav-tags-fetch-imenu (nav-get-cur-line-str)))
+  (let ((filename (nav-get-cur-line-str)))
+    (nav-tags-fetch-imenu filename)))
 
 
 (defun nav-mouse-tags-expand ()
