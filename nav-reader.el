@@ -31,7 +31,7 @@
     (define-key keymap "w" 'nav-shrink-wrap)
     (define-key keymap "W" 'nav-set-width-to-default)
     (define-key keymap "?" 'nav-reader-help-screen)
-    (define-key keymap " " 'nav-reader-scroll-page)
+    (define-key keymap " " 'scroll-other-window)
     (define-key keymap [(down)] 'nav-reader-down)
     (define-key keymap [(up)] 'nav-reader-up)
     (define-key keymap [(control ?n)] 'nav-reader-down)
@@ -54,7 +54,7 @@
   
   
 (defun nav-reader-show ()
-  (if (not (looking-at "^.*/$") )
+  (if (not (looking-at "^.*/$"))
       (progn
 	(other-window 1)
 	(let ((old-buf (buffer-name (current-buffer))))
@@ -69,19 +69,14 @@
   (interactive)
   (other-window 1)
   (next-line)
-    (select-window (nav-get-window nav-buffer-name)))
+  (select-window (nav-get-window nav-buffer-name)))
   
 
 (defun nav-reader-previous-line ()
   (interactive)
   (other-window 1)
   (previous-line)
-    (select-window (nav-get-window nav-buffer-name)))
-
-
-(defun nav-reader-scroll-page ()
-  (interactive)
-  (scroll-other-window))
+  (select-window (nav-get-window nav-buffer-name)))
 
 
 (defun nav-reader-help-screen ()
