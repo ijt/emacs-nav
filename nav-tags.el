@@ -130,7 +130,7 @@
 
 (defun nav-tags-fetch-imenu (filename)
   "Generates and displays the tag index from selected file."
-  (setq nav-tags-filename filename)
+  (setq nav-tags-filename (file-name-nondirectory filename))
   (nav-open-file filename)
   (setq nav-tags-alist (nav-make-tags-alist))
   (select-window (nav-get-window nav-buffer-name))
@@ -155,8 +155,7 @@
   (let ((inhibit-read-only t)
 	(tags (nav-extract-function-tags nav-tags-alist)))
     (erase-buffer)
-    (nav-insert-text (file-name-nondirectory nav-tags-filename)
-                     nav-face-heading)
+    (nav-insert-text nav-tags-filename nav-face-heading)
     (insert "\n")
     (dolist (tag tags)
       (let ((tag-name (car tag)))
