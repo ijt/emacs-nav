@@ -20,7 +20,7 @@
 (defvar nav-preview-pre-open-list nil
   "list of open buffers not to auto-close")
 
-(defvar nav-preview-open-list nil
+(defvar nav-preview-kill-list nil
   "list of buffers nav-preview opened")
 
 
@@ -62,7 +62,8 @@
   (if (not (looking-at "^.*/$"))
       (progn
 	(nav-open-file-under-cursor)
-	(add-to-list 'nav-preview-open-list (buffer-name (current-buffer)))
+	(if (not (member (buffer-name (current-buffer)) 'nav-preview-pre-open-list))
+	    (add-to-list 'nav-preview-kill-list (buffer-name (current-buffer))))
 	(setq buffer-read-only t)
 	(buffer-disable-undo)
 	(select-window (nav-get-window nav-buffer-name)))))
@@ -145,9 +146,9 @@ W\t Set the window width to its default value.
 (defun nav-preview-stop ()
   "Stops preview mode."
   (interactive)
-  (dolist (b nav-preview-open-list)
+  (dolist (b nav-preview-kill-list)
     (kill-buffer b))
-  (setq nav-preview-open-list nil)
+  (setq nav-preview-kill-list nil)
   (setq nav-preview nil)
   (global-font-lock-mode 1)
   (nav-mode))

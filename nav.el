@@ -1274,7 +1274,6 @@ if it's already running."
   '(menu-item "Nav" nav
 	      :help "Turn Nav on/off"))
 
-
 (provide 'nav)
 
 ;;; nav.el ends here
