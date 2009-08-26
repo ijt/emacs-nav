@@ -131,22 +131,36 @@
 (defun nav-tags-fetch-imenu (filename)
   "Generates and displays the tag index from selected file."
   (setq nav-tags-filename (file-name-nondirectory filename))
-  (nav-open-file filename)
+  (setq nav-tags-source-buffer (find-file-other-window filename))
   (setq nav-tags-alist (nav-make-tags-alist))
   (select-window (nav-get-window nav-buffer-name))
   (nav-tags-mode))
 
 
 (defun nav-jump-to-tag-of-button (button)
-  (select-window (nav-get-window nav-buffer-name))
   (let* ((tag (button-label button))
 	 (num (cdr (assoc tag nav-tags-alist))))
-    (select-window (nav-get-window nav-tags-filename))
+    (select-window (nav-tags-get-source-window))
     (goto-char num))
 
   ;; recenter-top-bottom is not defined in emacs 22.
   (when (functionp 'recenter-top-bottom)
       (recenter-top-bottom)))
+
+
+(defun nav-tags-get-source-window ()
+  "Gets the window containing the source code for which Nav tags                                                                                                                                                                            
+mode is showing a list of functions. If no window is showing that buffer, an                                                                                                                                                                
+existing window will be used. This function should only be called if the                                                                                                                                                                    
+tags window is selected."
+  (let ((source-wins (get-buffer-window-list nav-tags-source-buffer)))
+    (if source-wins
+        (car source-wins)
+      (let ((win (get-window-with-predicate (lambda (w)
+                                              (not (string= (buffer-name (window-buffer w))
+                                                 nav-buffer-name))))))
+        (set-window-buffer win nav-tags-source-buffer)
+	win))))
 
 
 (defun nav-tags-show-tags ()
