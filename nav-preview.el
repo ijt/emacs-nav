@@ -45,12 +45,14 @@
 
 
 (defun nav-preview-down ()
+ "Preview the next file down."
   (interactive)
   (next-line)
   (nav-preview-show))
 
 
 (defun nav-preview-up ()
+ "Preview the next file up."
   (interactive)
   (previous-line)
   (nav-preview-show))
@@ -67,6 +69,7 @@
 
 
 (defun nav-preview-next-line ()
+  "Move preview frame point down one line."
   (interactive)
   (other-window 1)
   (next-line)
@@ -74,6 +77,7 @@
   
 
 (defun nav-preview-previous-line ()
+  "Move preview frame point up one line."
   (interactive)
   (other-window 1)
   (previous-line)
@@ -135,12 +139,7 @@ W\t Set the window width to its default value.
   (nav-save-cursor-line)
   (select-window (nav-get-window nav-buffer-name))
   (nav-preview-mode)
-  (if (not (looking-at "^.*/$"))
-      (progn
-	(nav-open-file-under-cursor)
-	(add-to-list 'nav-preview-open-list (buffer-name (current-buffer)))
-	(setq buffer-read-only t)
-	(select-window (nav-get-window nav-buffer-name)))))
+  (nav-preview-show))
 
 
 (defun nav-preview-stop ()
