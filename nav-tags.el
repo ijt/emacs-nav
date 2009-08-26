@@ -141,11 +141,7 @@
   (let* ((tag (button-label button))
 	 (num (cdr (assoc tag nav-tags-alist))))
     (select-window (nav-tags-get-source-window))
-    (goto-char num))
-
-  ;; recenter-top-bottom is not defined in emacs 22.
-  (when (functionp 'recenter-top-bottom)
-      (recenter-top-bottom)))
+    (goto-char num)))
 
 
 (defun nav-tags-get-source-window ()
