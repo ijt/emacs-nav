@@ -141,7 +141,10 @@
   (let* ((tag (button-label button))
 	 (num (cdr (assoc tag nav-tags-alist))))
     (select-window (nav-tags-get-source-window))
-    (goto-char num)))
+    (goto-char num))
+
+  (if (functionp 'recenter-top-bottom)
+      (recenter-top-bottom 4)))
 
 
 (defun nav-tags-get-source-window ()
