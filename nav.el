@@ -486,13 +486,16 @@ This works like a web browser's back button."
         ;; in this let-block.
         (inhibit-read-only t))
     (erase-buffer)
-    (nav-insert-text "Directory:" nav-face-heading)
-    (insert "\n")
+    (if should-make-filenames-clickable
+	(progn
+	  (nav-insert-text "Directory:" nav-face-heading)
+	  (insert "\n")))
     (insert new-contents)
     (if should-make-filenames-clickable
-        (nav-make-filenames-clickable))
-    (nav-colorize-filenames)
-    (if nav-quickjump-show (nav-insert-jump-buttons))
+	(progn
+	  (nav-make-filenames-clickable)
+          (nav-colorize-filenames)
+	  (if nav-quickjump-show (nav-insert-jump-buttons))))
     (goto-line saved-line-number)))
 
 
@@ -1273,6 +1276,7 @@ if it's already running."
 (define-key menu-bar-showhide-menu [Nav]
   '(menu-item "Nav" nav
 	      :help "Turn Nav on/off"))
+
 
 (provide 'nav)
 
