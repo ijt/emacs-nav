@@ -366,7 +366,7 @@ If DIRNAME is not a directory or is not accessible, returns nil."
 (defun nav-restore-cursor-line ()
   "Remembers what line we were on last time we visited this directory."
   (let ((line-num (nav-get-line-for-cur-dir)))
-    (goto-line (if line-num line-num 2))))
+    (goto-line (if line-num line-num 3))))
 
 
 (defun nav-open-file (filename)
