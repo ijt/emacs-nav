@@ -791,13 +791,17 @@ http://muffinresearch.co.uk/archives/2007/01/30/bash-single-quotes-inside-of-sin
 (defun nav-quickfile-jump (quickfile-num)
   "Jumps to directory from custom bookmark list."
   (interactive)
-  (nav-open-file (nth quickfile-num nav-quickfile-list)))
+  (let* ((filename (nth quickfile-num nav-quickfile-list))
+	 (filename (substitute-in-file-name filename)))
+    (nav-open-file filename)))
 
 
 (defun nav-quickdir-jump (quickdir-num)
   "Jumps to directory from custom bookmark list."
   (interactive)
-  (nav-push-dir (nth quickdir-num nav-quickdir-list)))
+  (let* ((dirname (nth quickdir-num nav-quickdir-list))
+	 (dirname (substitute-in-file-name dirname)))
+    (nav-push-dir dirname)))
 
 
 (defun nav-jump-to-dir (dirname)
@@ -1197,7 +1201,6 @@ W\t Set the window width to its default value.
 ]\t Rotate non-nav windows clockwise.
 .\t Toggle hidden files.
 ?\t Show this help screen.
-
 
                 Press 'q' or click mouse to quit help
 
