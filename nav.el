@@ -83,6 +83,8 @@
     (define-key keymap "C" 'nav-customize)
     (define-key keymap "d" 'nav-delete-file-or-dir-on-this-line)
     (define-key keymap "e" 'nav-invoke-dired)  
+    (define-key keymap "f" 'find-dired)
+    (define-key keymap "g" 'grep-find)
     (define-key keymap "h" 'nav-jump-to-home)
     (define-key keymap "j" 'nav-jump-to-dir)
     (define-key keymap "m" 'nav-move-file-or-dir)
@@ -111,7 +113,7 @@
     keymap))
 
 (defun nav-help-screen ()
-  "Displays the help screen outide the Nav window."
+  "Displays the help screen."
   (interactive)
   (switch-to-buffer "*nav-help*")
   (let ((map (make-sparse-keymap)))
@@ -134,6 +136,8 @@ c\t Copy file or directory under cursor.
 C\t Customize Nav settings and bookmarks.
 d\t Delete file or directory under cursor (asks to confirm first).
 e\t Edit current directory in dired.
+f\t Find recursively from current directory using find-dired
+g\t Grep recursively from current directory using grep-find
 h\t Jump to home (~).
 j\t Jump to another directory.
 m\t Move or rename file or directory.
@@ -208,9 +212,10 @@ visited. A value of 1 would start the cursor off on ../.")
 	(mapcar (lambda (x) (and (funcall condp x) x)) lst)))
 
 (defun nav-filter-out-boring-filenames (filenames boring-regexps)
-  (flet ((is-non-boring (filename)
-			(not (nav-filename-matches-some-regexp filename boring-regexps))))
-    (nav-filter 'is-non-boring filenames)))
+  (nav-filter 
+   (lambda (filename)
+     (not (nav-filename-matches-some-regexp filename boring-regexps)))
+   filenames))
 
 (defun nav-get-line-for-cur-dir ()
   (gethash (nav-get-working-dir) nav-map-dir-to-line-number))
