@@ -12,6 +12,10 @@
 
 (defun byte-compile-current-file ()
   (interactive)
+  ;; Old junk stays around in the compile log, which can be confusing.
+  ;; Blow it away so we only see up to date information
+  (ignore-errors
+    (kill-buffer "*Compile-Log*"))
   (byte-compile-file (buffer-name (current-buffer))))
 
 (defun bc ()
