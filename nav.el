@@ -68,18 +68,18 @@ hidden files, backups and .elc files.  The result depends on
 	"[.]pyc$"
 	"[.]o$"
 	"[.]bak$"
-    ;; Stolen from Ack:
-    "^_MTN$"  ; Monotone
-    "^blib$"  ; Perl module building
-    "^CVS$"  ; CVS
-    "^RCS$"  ; RCS
-    "^SCCS$"  ; SCCS
-    "^_darcs$"  ; darcs
-    "^_sgbak$"  ; Vault/Fortress
-    "^autom4te.cache$"  ; autoconf
-    "^cover_db$"  ; Devel::Cover
-    "^_build$"  ; Module::Build
-)
+	;; Stolen from Ack:
+	"^_MTN$"  ; Monotone
+	"^blib$"  ; Perl module building
+	"^CVS$"  ; CVS
+	"^RCS$"  ; RCS
+	"^SCCS$"  ; SCCS
+	"^_darcs$"  ; darcs
+	"^_sgbak$"  ; Vault/Fortress
+	"^autom4te.cache$"  ; autoconf
+	"^cover_db$"  ; Devel::Cover
+	"^_build$"  ; Module::Build
+	)
   "*Nav ignores filenames that match any regular expression in this list."
   :type '(repeat string)
   :group 'nav)
@@ -89,6 +89,7 @@ hidden files, backups and .elc files.  The result depends on
 ;; Fontification
 ;;
 (require 'dired)
+
 (defvar nav-directory-face 'dired-directory
   "Face name used for directories.")
 
@@ -114,7 +115,7 @@ directories."
     (define-key keymap "C" 'nav-customize)
     (define-key keymap "d" 'nav-delete-file-or-dir-on-this-line)
     (define-key keymap "e" 'nav-invoke-dired)  
-    (define-key keymap "f" 'find-dired)
+    (define-key keymap "f" 'nav-find-files)
     (define-key keymap "g" 'grep-find)
     (define-key keymap "h" 'nav-jump-to-home)
     (define-key keymap "j" 'nav-jump-to-dir)
@@ -170,12 +171,12 @@ Shift-Tab: Move backward through filenames.
 Space: Press spacebar, then any other letter to jump to filename
        that starts with that letter.
 
-a\t Ack. (http://betterthangrep.com/)
+a\t Recursively grep for a Perl regex using Ack (http://betterthangrep.com/).
 c\t Copy file or directory under cursor.
 C\t Customize Nav settings and bookmarks.
 d\t Delete file or directory under cursor (asks to confirm first).
 e\t Edit current directory in dired.
-f\t Find recursively from current directory using find-dired
+f\t Recursively find files whose titles match a Perl regex (using Ack).
 g\t Grep recursively from current directory using grep-find
 h\t Jump to home (~).
 j\t Jump to another directory.
@@ -222,6 +223,9 @@ visited. A value of 1 would start the cursor off on ../.")
 
 (defconst nav-buffer-name "*nav*"
   "Name of the buffer where nav shows directory contents.")
+
+(defconst nav-buffer-name-for-find-results "*nav-find*"
+  "Name of the buffer where nav shows find results.")
 
 (defun nav-join (sep string-list)
   (mapconcat 'identity string-list sep))
@@ -431,6 +435,22 @@ This works like a web browser's back button."
   "Invokes dired on the current directory."
   (interactive)
   (dired (nav-get-working-dir)))
+
+(defun nav-find-files (pattern)
+  "Recursively finds files whose names match a Perl regular expression."
+  (interactive "sPattern: ")
+  (let ((find-command (format "ack -a -l '.' | ack %s" pattern)))
+    (let ((inhibit-read-only t))
+      (erase-buffer)
+      (call-process-shell-command find-command nil (current-buffer))
+      (nav-make-filenames-clickable)
+      (cond ((string= "" (buffer-string))
+	     (insert "No matching files found."))
+	    (t
+	     ;; Enable nav keyboard shortcuts, mainly so hitting enter will open
+	     ;; files.
+	     (use-local-map nav-mode-map)
+	     )))))
 
 (defun nav-refresh ()
   "Resizes Nav window to original size, updates its contents."
