@@ -359,7 +359,9 @@ This works like a web browser's back button."
 		(end (line-end-position)))
 	    (make-button start end
 			 'action (lambda (button)
-				   (nav-open-file-other-window (button-label button)))
+				   (let ((buffer (overlay-buffer button)))
+				     (pop-to-buffer buffer)
+				     (nav-open-file-other-window (button-label button))))
 			 'follow-link t
 			 'face nav-button-face
 			 'help-echo nil))
