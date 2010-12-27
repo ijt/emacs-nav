@@ -52,18 +52,14 @@
   :type 'boolean
   :group 'nav)
 
-;; TODO(issac): Rely on ack for boring file filtration.
-(defcustom nav-no-hidden-boring-file-regexps
-  (list "\\.pyc$" "\\.o$" "~$" "\\.bak$"
-        "^\\.*/?$")                     ; ./ and ../
-  "*In no-hidden mode, nav ignores filenames matching any regex in this list."
-  :type '(repeat string)
-  :group 'nav)
-
 (defcustom nav-boring-file-regexps
-  (append nav-no-hidden-boring-file-regexps 
-          (list "^\\.[^/]"          ; files such as .foo
-                "/\\."))            ; any path with a hidden component
+  (list "^[.][^.].*$"        ; hidden files such as .foo
+	"^[.]$"              ; current directory
+	"~$"
+	"[.]elc$"
+	"[.]pyc$"
+	"[.]o$"
+	"[.]bak$")
   "*Nav ignores filenames that match any regular expression in this list."
   :type '(repeat string)
   :group 'nav)
@@ -91,8 +87,8 @@ directories."
 (defun nav-make-mode-map ()
   "Creates and returns a mode map with nav's key bindings."
   (let ((keymap (make-sparse-keymap)))
-    (define-key keymap "\n" 'nav-open-file-under-cursor)
-    (define-key keymap "\r" 'nav-open-file-under-cursor)
+    (define-key keymap "\n" 'nav-open-file-under-cursor-other-window)
+    (define-key keymap "\r" 'nav-open-file-under-cursor-other-window)
     (define-key keymap "c" 'nav-copy-file-or-dir)
     (define-key keymap "C" 'nav-customize)
     (define-key keymap "d" 'nav-delete-file-or-dir-on-this-line)
@@ -103,7 +99,7 @@ directories."
     (define-key keymap "j" 'nav-jump-to-dir)
     (define-key keymap "m" 'nav-move-file-or-dir)
     (define-key keymap "n" 'nav-make-new-directory)
-    (define-key keymap "o" 'nav-open-file-under-cursor-other-window)
+    (define-key keymap "o" 'nav-open-file-under-cursor)
     (define-key keymap "p" 'nav-pop-dir)
     (define-key keymap "P" 'nav-print-current-dir)
     (define-key keymap "q" 'nav-quit)
@@ -185,8 +181,6 @@ w\t Shrink-wrap Nav's window to fit the longest filename in the current director
 (defvar nav-map-dir-to-line-number (make-hash-table :test 'equal)
   "Hash table from dir paths to most recent cursor pos in them.")
 
-(defvar nav-filter-regexps nav-boring-file-regexps)
-
 (defvar nav-button-face nil)
 
 (defconst nav-default-line-num 2
@@ -205,14 +199,8 @@ visited. A value of 1 would start the cursor off on ../.")
 
 (defun nav-toggle-hidden-files ()
   (interactive) 
-  (if (equal nav-filter-regexps nav-boring-file-regexps)
-      (progn
-	(setq nav-filter-regexps nav-no-hidden-boring-file-regexps)
-	(setq nav-hidden t))
-    (progn
-      (setq nav-filter-regexps nav-boring-file-regexps)
-      (setq nav-hidden nil)))
-  (nav-show-dir "."))
+  (setq nav-hidden (not nav-hidden))
+  (nav-refresh))
 
 (defun nav-filename-matches-some-regexp (filename regexps)
   (let ((matches-p nil))
@@ -264,6 +252,13 @@ visited. A value of 1 would start the cursor off on ../.")
   (if (file-directory-p filename)
       (nav-push-dir filename)
     (find-file filename)))
+
+(defun nav-open-file-other-window (filename)
+  "Opens a file or directory from Nav."
+  (interactive "FFilename:")
+  (if (file-directory-p filename)
+      (nav-push-dir filename)
+    (find-file-other-window filename)))
 
 (defun nav-open-file-under-cursor ()
   "Finds the file under the cursor."
@@ -327,7 +322,10 @@ This works like a web browser's back button."
                                   (point-at-eol)))
 
 (defun nav-non-boring-directory-files (dir)
-  (nav-filter-out-boring-filenames (directory-files dir) nav-filter-regexps))
+  (nav-filter-out-boring-filenames (directory-files dir)
+				   (if nav-hidden
+				       nav-boring-file-regexps
+				     '())))
 
 (defun nav-dir-suffix (dir)
   (replace-regexp-in-string ".*/" "" (directory-file-name dir)))
@@ -357,7 +355,7 @@ This works like a web browser's back button."
 		(end (line-end-position)))
 	    (make-button start end
 			 'action (lambda (button)
-				   (nav-open-file (button-label button)))
+				   (nav-open-file-other-window (button-label button)))
 			 'follow-link t
 			 'face nav-button-face
 			 'help-echo nil))
@@ -380,7 +378,7 @@ This works like a web browser's back button."
                             ""))))
         (push line new-contents)))
     (let* ((new-contents (sort new-contents 'nav-string<))
-           (new-contents (nav-join "" (cons "../" new-contents))))
+           (new-contents (nav-join "" new-contents)))
       (nav-replace-buffer-contents new-contents))
     (setq mode-line-format (nav-make-mode-line "d" dir))
     (force-mode-line-update)))
@@ -428,7 +426,15 @@ This works like a web browser's back button."
 
 (defun nav-make-mode-line (mode dir)
   (concat "-(nav)" 
-	  (nav-dir-suffix (file-truename dir)) "/"))
+	  (nav-dir-suffix (file-truename dir))
+	  "/"
+	  " "
+	  (format "[%s boring]" 
+		  (if nav-hidden
+		      "show"
+		    "hide"))
+	  )
+  )
 
 (defun nav-this-is-a-microsoft-os ()
   (or (string= system-type "windows-nt")
@@ -539,8 +545,6 @@ http://code.google.com/p/emacs-nav/issues/detail?id=78
   (setq buffer-read-only t)
   (setq truncate-lines t)
   (setq font-lock-defaults '(nav-font-lock-keywords))
-  (if nav-hidden
-      (setq nav-filter-regexps nav-no-hidden-boring-file-regexps))
   (nav-refresh))
 
 (defun nav-disable-emacs23-window-splitting ()
