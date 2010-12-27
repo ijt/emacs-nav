@@ -43,6 +43,11 @@
 
 ;;; Code:
 
+(condition-case err
+    (require 'ack)
+  (error
+   (message "Could not load ack.")))
+
 (defgroup nav nil
   "A lightweight filesystem navigator."
   :group 'applications)
@@ -92,7 +97,7 @@ directories."
   (let ((keymap (make-sparse-keymap)))
     (define-key keymap "\n" 'nav-open-file-under-cursor-other-window)
     (define-key keymap "\r" 'nav-open-file-under-cursor-other-window)
-    (define-key keymap "a" 'nav-ack)
+    (define-key keymap "a" 'ack)
     (define-key keymap "c" 'nav-copy-file-or-dir)
     (define-key keymap "C" 'nav-customize)
     (define-key keymap "d" 'nav-delete-file-or-dir-on-this-line)
@@ -491,11 +496,6 @@ directory, or if the user says it's ok."
   (or (not (file-exists-p target-name))
       (file-directory-p target-name)
       (y-or-n-p (format "Really overwrite %s ? " target-name))))
-
-(defun nav-ack ()
-  (interactive)
-  (require 'ack)
-  (ack))
 
 (defun nav-copy-file-or-dir (target-name)
   "Copies a file or directory."
