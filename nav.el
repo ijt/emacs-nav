@@ -92,6 +92,7 @@ directories."
   (let ((keymap (make-sparse-keymap)))
     (define-key keymap "\n" 'nav-open-file-under-cursor-other-window)
     (define-key keymap "\r" 'nav-open-file-under-cursor-other-window)
+    (define-key keymap "a" 'nav-ack)
     (define-key keymap "c" 'nav-copy-file-or-dir)
     (define-key keymap "C" 'nav-customize)
     (define-key keymap "d" 'nav-delete-file-or-dir-on-this-line)
@@ -125,13 +126,18 @@ directories."
     (define-key keymap [(control ?p)] 'backward-button)
     keymap))
 
+(defun nav-quit-help ()
+  "Exits the nav help screen."
+  (interactive)
+  (kill-buffer (current-buffer)))
+
 (defun nav-help-screen ()
   "Displays the help screen."
   (interactive)
   (switch-to-buffer "*nav-help*")
   (let ((map (make-sparse-keymap)))
     (use-local-map map)
-    (define-key map "q" (lambda () (kill-buffer (current-buffer)))))
+    (define-key map "q" 'nav-quit-help))
   (setq display-hourglass nil
         buffer-undo-list t)
   (insert "\
@@ -147,6 +153,7 @@ Shift-Tab: Move backward through filenames.
 Space: Press spacebar, then any other letter to jump to filename
        that starts with that letter.
 
+a\t Ack. (http://betterthangrep.com/)
 c\t Copy file or directory under cursor.
 C\t Customize Nav settings and bookmarks.
 d\t Delete file or directory under cursor (asks to confirm first).
@@ -484,6 +491,11 @@ directory, or if the user says it's ok."
   (or (not (file-exists-p target-name))
       (file-directory-p target-name)
       (y-or-n-p (format "Really overwrite %s ? " target-name))))
+
+(defun nav-ack ()
+  (interactive)
+  (require 'ack)
+  (ack))
 
 (defun nav-copy-file-or-dir (target-name)
   "Copies a file or directory."
