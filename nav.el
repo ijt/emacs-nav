@@ -1,6 +1,6 @@
-;;; nav.el --- Emacs mode for IDE-like navigation of directories
+;;; nav.el --- Emacs mode for filesystem navigation
 ;;
-;; Copyright 2009 Google Inc. All Rights Reserved.
+;; Copyright 2010 Google Inc. All Rights Reserved.
 ;;
 ;; Author: issactrotts@google.com (Issac Trotts)
 ;; Version: 20101226
@@ -43,10 +43,8 @@
 
 ;;; Code:
 
-(defconst nav-max-int 268435455)
-
 (defgroup nav nil
-  "A lightweight file/directory navigator."
+  "A lightweight filesystem navigator."
   :group 'applications)
 
 (defcustom nav-hidden nil
@@ -54,6 +52,7 @@
   :type 'boolean
   :group 'nav)
 
+;; TODO(issac): Rely on ack for boring file filtration.
 (defcustom nav-no-hidden-boring-file-regexps
   (list "\\.pyc$" "\\.o$" "~$" "\\.bak$"
         "^\\.*/?$")                     ; ./ and ../
@@ -68,6 +67,21 @@
   "*Nav ignores filenames that match any regular expression in this list."
   :type '(repeat string)
   :group 'nav)
+
+
+;;
+;; Fontification
+;;
+(require 'dired)
+(defvar nav-directory-face 'dired-directory
+  "Face name used for directories.")
+
+(defvar nav-font-lock-keywords
+ '(("^.*/$" . nav-directory-face))
+ "Regexes and associated faces used by Nav to fontify files and
+directories."
+)
+
 
 (defcustom nav-widths-percentile 100
   "*What percentage of files should remain completely visible when shrink-wrapping."
@@ -523,6 +537,7 @@ http://code.google.com/p/emacs-nav/issues/detail?id=78
   (use-local-map nav-mode-map)
   (setq buffer-read-only t)
   (setq truncate-lines t)
+  (setq font-lock-defaults '(nav-font-lock-keywords))
   (if nav-hidden
       (setq nav-filter-regexps nav-no-hidden-boring-file-regexps))
   (nav-refresh))
