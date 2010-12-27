@@ -380,20 +380,31 @@ This works like a web browser's back button."
     (nav-make-filenames-clickable)
     (nav-goto-line saved-line-number)))
 
+(defun nav-button-action-to-open-file (button)
+  (let ((buffer (overlay-buffer button)))
+    (pop-to-buffer buffer)
+    (if (= 1 (count-windows))
+	(split-window-horizontally))
+    (nav-open-file-other-window (button-label button))))
+
+(defun nav-button-action-to-open-dir (button)
+  (let ((buffer (overlay-buffer button)))
+    (pop-to-buffer buffer)
+    (nav-push-dir (button-label button))))
+
 (defun nav-make-filenames-clickable ()
   (condition-case err
       (save-excursion
 	(nav-goto-line 1)
 	(dotimes (i (count-lines 1 (point-max)))
-	  (let ((start (line-beginning-position))
-		(end (line-end-position)))
+	  (let* ((start (line-beginning-position))
+		 (end (line-end-position))
+		 (filename (buffer-substring-no-properties start end))
+		 (action (if (file-directory-p filename)
+			     'nav-button-action-to-open-dir
+			   'nav-button-action-to-open-file)))
 	    (make-button start end
-			 'action (lambda (button)
-				   (let ((buffer (overlay-buffer button)))
-				     (pop-to-buffer buffer)
-				     (if (= 1 (count-windows))
-					 (split-window-horizontally))
-				     (nav-open-file-other-window (button-label button))))
+			 'action action
 			 'follow-link t
 			 'face nav-button-face
 			 'help-echo nil))
