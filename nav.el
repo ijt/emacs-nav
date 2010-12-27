@@ -439,18 +439,22 @@ This works like a web browser's back button."
 (defun nav-find-files (pattern)
   "Recursively finds files whose names match a Perl regular expression."
   (interactive "sPattern: ")
-  (let ((find-command (format "ack -a -l '.' | ack %s" pattern)))
-    (let ((inhibit-read-only t))
-      (erase-buffer)
-      (call-process-shell-command find-command nil (current-buffer))
-      (nav-make-filenames-clickable)
-      (cond ((string= "" (buffer-string))
-	     (insert "No matching files found."))
-	    (t
-	     ;; Enable nav keyboard shortcuts, mainly so hitting enter will open
-	     ;; files.
-	     (use-local-map nav-mode-map)
-	     )))))
+  (let* ((pattern (format "%s[^/]*$" pattern))
+	 (find-command (format "ack -a -l '.' | ack %s" pattern))
+	 (inhibit-read-only t))
+    (erase-buffer)
+    (call-process-shell-command find-command nil (current-buffer))
+    (nav-make-filenames-clickable)
+    (message "Hit r to bring back Nav directory listing.")
+    (cond ((string= "" (buffer-string))
+	   (insert "No matching files found."))
+	  (t
+	   ;; Enable nav keyboard shortcuts, mainly so hitting enter will open
+	   ;; files.
+	   (use-local-map nav-mode-map))
+	  )
+    (forward-line -1)
+    ))
 
 (defun nav-refresh ()
   "Resizes Nav window to original size, updates its contents."
