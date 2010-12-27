@@ -336,7 +336,7 @@ This works like a web browser's back button."
 (defun nav-make-filenames-clickable ()
   (condition-case err
       (save-excursion
-	(nav-goto-line 2)
+	(nav-goto-line 1)
 	(dotimes (i (count-lines 1 (point-max)))
 	  (let ((start (line-beginning-position))
 		(end (line-end-position)))
