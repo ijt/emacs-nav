@@ -376,13 +376,14 @@ This works like a web browser's back button."
 (defun nav-show-dir (dir)
   (let ((new-contents '()))
     (dolist (filename (nav-non-boring-directory-files dir))
-      (let ((line (concat "\n" filename
+      (let ((line (concat filename
                           (if (file-directory-p filename)
                               "/"
-                            ""))))
+                            "")
+			  )))
         (push line new-contents)))
     (let* ((new-contents (sort new-contents 'nav-string<))
-           (new-contents (nav-join "" new-contents)))
+           (new-contents (nav-join "\n" new-contents)))
       (nav-replace-buffer-contents new-contents))
     (setq mode-line-format (nav-make-mode-line "d" dir))
     (force-mode-line-update)))
