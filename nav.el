@@ -47,8 +47,11 @@
   "A lightweight filesystem navigator."
   :group 'applications)
 
-(defcustom nav-hidden nil
-  "*If t, nav will show hidden files and directories."
+(defcustom nav-filtered-p t
+  "*If true, nav will filter out files and directories such as
+hidden files, backups and .elc files.  The result depends on
+`nav-boring-file-regexps'.
+"
   :type 'boolean
   :group 'nav)
 
@@ -199,7 +202,7 @@ visited. A value of 1 would start the cursor off on ../.")
 
 (defun nav-toggle-hidden-files ()
   (interactive) 
-  (setq nav-hidden (not nav-hidden))
+  (setq nav-filtered-p (not nav-filtered-p))
   (nav-refresh))
 
 (defun nav-filename-matches-some-regexp (filename regexps)
@@ -323,9 +326,10 @@ This works like a web browser's back button."
 
 (defun nav-non-boring-directory-files (dir)
   (nav-filter-out-boring-filenames (directory-files dir)
-				   (if nav-hidden
+				   (if nav-filtered-p
 				       nav-boring-file-regexps
-				     '())))
+				     '()
+				     )))
 
 (defun nav-dir-suffix (dir)
   (replace-regexp-in-string ".*/" "" (directory-file-name dir)))
@@ -429,10 +433,10 @@ This works like a web browser's back button."
 	  (nav-dir-suffix (file-truename dir))
 	  "/"
 	  " "
-	  (format "[%s boring]" 
-		  (if nav-hidden
-		      "show"
-		    "hide"))
+	  (format "[%s]" 
+		  (if nav-filtered-p
+		      "filtered"
+		    "unfiltered"))
 	  )
   )
 
