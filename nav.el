@@ -138,9 +138,11 @@ directories."
 Nav Key Bindings
 ================
 
-Enter/Return: Open file or directory under cursor.
-Tab: To move forward through filenames.
-Shift-Tab: To move backward through filenames.
+Enter/Return: Go to directory under cursor, or open file under
+              cursor in other window.
+
+Tab: Move forward through filenames.
+Shift-Tab: Move backward through filenames.
 
 Space: Press spacebar, then any other letter to jump to filename
        that starts with that letter.
@@ -155,7 +157,7 @@ h\t Jump to home (~).
 j\t Jump to another directory.
 m\t Move or rename file or directory.
 n\t Make a new directory.
-o\t Open file under cursor in other window.
+o\t Open file under cursor in the nav window.
 p\t Pop directory stack to go back to the previous directory.
 P\t Print full path of current displayed directory.
 q\t Quit nav.
