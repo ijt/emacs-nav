@@ -164,6 +164,7 @@ r\t Refresh.
 s\t Start a shell in an emacs window in the current directory.
 u\t Go up to parent directory.
 w\t Shrink-wrap Nav's window to fit the longest filename in the current directory.
+ \t Hit C-x + to roughly undo this by balancing windows.
 !\t Run shell command.
 .\t Toggle display of hidden files.
 ?\t Show this help screen.
