@@ -323,15 +323,14 @@ This works like a web browser's back button."
       (if (eq ?\n (char-after i))
           (setq line-num (+ line-num 1))))))
 
-(defun nav-replace-buffer-contents (new-contents should-make-filenames-clickable)
+(defun nav-replace-buffer-contents (new-contents)
   (let ((saved-line-number (nav-line-number-at-pos (point)))
         ;; Setting inhibit-read-only to t here lets us edit the buffer
         ;; in this let-block.
         (inhibit-read-only t))
     (erase-buffer)
     (insert new-contents)
-    (when should-make-filenames-clickable
-      (nav-make-filenames-clickable))
+    (nav-make-filenames-clickable)
     (nav-goto-line saved-line-number)))
 
 (defun nav-make-filenames-clickable ()
@@ -367,7 +366,7 @@ This works like a web browser's back button."
         (push line new-contents)))
     (let* ((new-contents (sort new-contents 'nav-string<))
            (new-contents (nav-join "" (cons "../" new-contents))))
-      (nav-replace-buffer-contents new-contents t))
+      (nav-replace-buffer-contents new-contents))
     (setq mode-line-format (nav-make-mode-line "d" dir))
     (force-mode-line-update)))
 
