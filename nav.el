@@ -67,7 +67,19 @@ hidden files, backups and .elc files.  The result depends on
 	"[.]elc$"
 	"[.]pyc$"
 	"[.]o$"
-	"[.]bak$")
+	"[.]bak$"
+    ;; Stolen from Ack:
+    "^_MTN$"  ; Monotone
+    "^blib$"  ; Perl module building
+    "^CVS$"  ; CVS
+    "^RCS$"  ; RCS
+    "^SCCS$"  ; SCCS
+    "^_darcs$"  ; darcs
+    "^_sgbak$"  ; Vault/Fortress
+    "^autom4te.cache$"  ; autoconf
+    "^cover_db$"  ; Devel::Cover
+    "^_build$"  ; Module::Build
+)
   "*Nav ignores filenames that match any regular expression in this list."
   :type '(repeat string)
   :group 'nav)
