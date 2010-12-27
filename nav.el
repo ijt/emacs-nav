@@ -361,6 +361,8 @@ This works like a web browser's back button."
 			 'action (lambda (button)
 				   (let ((buffer (overlay-buffer button)))
 				     (pop-to-buffer buffer)
+				     (if (= 1 (count-windows))
+					 (split-window-horizontally))
 				     (nav-open-file-other-window (button-label button))))
 			 'follow-link t
 			 'face nav-button-face
