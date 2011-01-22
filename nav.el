@@ -310,10 +310,7 @@ visited. A value of 1 would start the cursor off on ../.")
   (interactive)
   (nav-push-dir ".."))
 
-(defun nav-shrink-wrap ()
-  "Updates the width of the Nav window to fit the longest filename in the
-current directory. Updates the global variable nav-width as a side effect."
-  (interactive)
+(defun nav-get-shrink-wrap-width ()
   (let* ((lines (split-string (buffer-string) "\n" t))
 	 (num-lines (length lines))
 	 (line-lengths (mapcar 'length lines))
@@ -321,7 +318,13 @@ current directory. Updates the global variable nav-width as a side effect."
 					     (sort line-lengths '<))))
 	 (max-width (/ (frame-width) 2))
 	 (new-width (min desired-width max-width)))
-    (nav-set-window-width new-width)))
+    new-width))
+
+(defun nav-shrink-wrap ()
+  "Updates the width of the Nav window to fit the longest filename in the
+current directory. Updates the global variable nav-width as a side effect."
+  (interactive)
+    (nav-set-window-width (nav-get-shrink-wrap-width)))
 
 (defun nav-percentile (percent sorted-things)
   "Returns the item a certain percent of the way through a list of items
@@ -434,10 +437,11 @@ This works like a web browser's back button."
     (force-mode-line-update)))
 
 (defun nav-set-window-width (n)
-  (if (> (window-width) n)
-    (shrink-window-horizontally (- (window-width) n)))
-  (if (< (window-width) n)
-    (enlarge-window-horizontally (- n (window-width)))))
+  (let ((n (max n window-min-width)))
+    (if (> (window-width) n)
+	(shrink-window-horizontally (- (window-width) n)))
+    (if (< (window-width) n)
+	(enlarge-window-horizontally (- n (window-width))))))
 
 (defun nav-get-working-dir ()
   (file-name-as-directory (file-truename default-directory)))
