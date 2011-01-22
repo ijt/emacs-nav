@@ -157,12 +157,11 @@ directories."
     keymap))
 
 (defun nav-shrink-window-horizontally (delta)
-
-  ;; First, compute a new value for the delta to make sure we don't
-  ;; make the window too small, according to the following equation.
-  ;;
-  ;; window-width - delta' = max(window-min-width, window-width - delta)
-  ;;
+  "First, compute a new value for the delta to make sure we don't
+make the window too small, according to the following equation:
+  
+window-width - delta' = max(window-min-width, window-width - delta)
+"
   (let ((delta (- (window-width)
 		  (max window-min-width
 		       (- (window-width) delta)))))
