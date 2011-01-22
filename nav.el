@@ -166,15 +166,10 @@ directories."
   (let ((delta (- (window-width)
 		  (max window-min-width
 		       (- (window-width) delta)))))
-    (shrink-window-horizontally delta)
-    (nav-remember-current-width-during-this-session)))
+    (shrink-window-horizontally delta)))
 
 (defun nav-enlarge-window-horizontally (delta)
-  (enlarge-window-horizontally delta)
-  (nav-remember-current-width-during-this-session))
-
-(defun nav-remember-current-width-during-this-session ()
-  (customize-set-variable 'nav-width (window-width)))
+  (enlarge-window-horizontally delta))
 
 (defun nav-shrink-a-bit ()
   "Decreases the width of the nav window by one character."
