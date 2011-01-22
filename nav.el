@@ -108,12 +108,6 @@ other windows.
 directories."
 )
 
-
-(defcustom nav-widths-percentile 100
-  "*What percentage of files should remain completely visible when shrink-wrapping."
-  :type 'integer
-  :group 'nav)
-
 (defun nav-make-mode-map ()
   "Creates and returns a mode map with nav's key bindings."
   (let ((keymap (make-sparse-keymap)))
@@ -346,8 +340,7 @@ visited. A value of 1 would start the cursor off on ../.")
   (let* ((lines (split-string (buffer-string) "\n" t))
 	 (num-lines (length lines))
 	 (line-lengths (mapcar 'length lines))
-	 (desired-width (+ 1 (nav-percentile nav-widths-percentile
-					     (sort line-lengths '<))))
+	 (desired-width (+ 1 (apply 'max line-lengths)))
 	 (max-width (/ (frame-width) 2))
 	 (new-width (min desired-width max-width)))
     new-width))
@@ -357,14 +350,6 @@ visited. A value of 1 would start the cursor off on ../.")
 current directory. Updates the global variable nav-width as a side effect."
   (interactive)
     (nav-set-window-width (nav-get-shrink-wrap-width)))
-
-(defun nav-percentile (percent sorted-things)
-  "Returns the item a certain percent of the way through a list of items
-assumed to be sorted."
-  (let* ((n (length sorted-things))
-	 (k (min (- n 1 )
-		 (truncate (* (/ percent 100.0) n)))))
-    (nth k sorted-things)))
 
 (defun nav-push-dir (dirname)
   (let ((dirname (file-truename dirname)))
