@@ -60,6 +60,12 @@ hidden files, backups and .elc files.  The result depends on
   :type 'boolean
   :group 'nav)
 
+(defcustom nav-adjust-width-when-opening-files-p nil
+  "*If true, nav will shrink its window when files are opened from it.
+"
+  :type 'boolean
+  :group 'nav)
+
 (defcustom nav-boring-file-regexps
   (list "^[.][^.].*$"        ; hidden files such as .foo
 	"^[.]$"              ; current directory
@@ -108,8 +114,6 @@ directories."
 (defun nav-make-mode-map ()
   "Creates and returns a mode map with nav's key bindings."
   (let ((keymap (make-sparse-keymap)))
-    (define-key keymap "\n" 'nav-open-file-under-cursor-other-window)
-    (define-key keymap "\r" 'nav-open-file-under-cursor-other-window)
     (define-key keymap "a" 'ack)
     (define-key keymap "c" 'nav-copy-file-or-dir)
     (define-key keymap "C" 'nav-customize)
@@ -299,11 +303,14 @@ visited. A value of 1 would start the cursor off on ../.")
   (let ((filename (nav-get-cur-line-str)))
     (nav-open-file filename)))
 
-(defun nav-open-file-under-cursor-other-window ()
-  "Finds the file under the cursor, in another window."
-  (interactive)
-  (let ((filename (nav-get-cur-line-str)))
-    (find-file-other-window filename)))
+(defun nav-get-current-window ()
+  "Returns the currently selected window."
+  (get-buffer-window (current-buffer)))
+
+;; (defun nav-open-file-under-cursor-other-window ()
+;;   "Finds the file under the cursor, in another window."
+;;   (interactive)
+;;   (let ((filename (nav-get-cur-line-str))
 
 (defun nav-go-up-one-dir ()
   "Points Nav to ../."
@@ -383,12 +390,25 @@ This works like a web browser's back button."
     (nav-make-filenames-clickable)
     (nav-goto-line saved-line-number)))
 
+(defun nav-select-window (window)
+  (if window
+      (select-window window)
+    (message "Attempted to select nil window")))
+
 (defun nav-button-action-to-open-file (button)
-  (let ((buffer (overlay-buffer button)))
-    (pop-to-buffer buffer)
+  "Opens a file or directory in response to a button."
+  (let* ((buffer (overlay-buffer button))
+	 (window-with-nav (get-buffer-window buffer)))
+    (nav-select-window window-with-nav)
     (if (= 1 (count-windows))
 	(split-window-horizontally))
-    (nav-open-file-other-window (button-label button))))
+    (nav-open-file-other-window (button-label button))
+    
+    (if nav-adjust-width-when-opening-files-p
+	(let ((other-window (nav-get-current-window)))
+	  (select-window window-with-nav)
+	  (nav-shrink-wrap)
+	  (select-window other-window)))))
 
 (defun nav-button-action-to-open-dir (button)
   (let ((buffer (overlay-buffer button)))
