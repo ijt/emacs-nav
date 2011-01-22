@@ -30,6 +30,8 @@
 ;;
 ;; Type M-x nav to start navigating.
 ;;
+;; To set options for Nav, type M-x customize, then select
+;; Applications, Nav.
 
 ;;; Key Bindings
 ;;
@@ -60,10 +62,11 @@ hidden files, backups and .elc files.  The result depends on
   :type 'boolean
   :group 'nav)
 
-(defcustom nav-adjust-width-when-opening-files-p nil
-  "*If true, nav will shrink its window when files are opened from it.
+(defcustom nav-width 25
+  "*If non-nil, nav will change its width to this when it opens files in
+other windows.
 "
-  :type 'boolean
+  :type 'integer
   :group 'nav)
 
 (defcustom nav-boring-file-regexps
@@ -136,6 +139,10 @@ directories."
     (define-key keymap "!" 'nav-shell-command)
     (define-key keymap "." 'nav-toggle-hidden-files)
     (define-key keymap "?" 'nav-help-screen)
+    (define-key keymap "-" 'nav-shrink-a-bit)
+    (define-key keymap "_" 'nav-shrink-a-bit)
+    (define-key keymap "+" 'nav-expand-a-bit)
+    (define-key keymap "=" 'nav-expand-a-bit)
     (define-key keymap " " 'nav-jump-to-name)
 
     ;; Avoid [(tab)] and [(shift tab)] because they don't always work.
@@ -148,6 +155,18 @@ directories."
     (define-key keymap [(control ?p)] 'backward-button)
     keymap))
 
+(defun nav-shrink-a-bit ()
+  "Decreases the width of the nav window by one character."
+  (interactive)
+  (setq nav-width (max window-min-width (- nav-width 1)))
+  (nav-set-window-width nav-width))
+
+(defun nav-expand-a-bit ()
+  "Increases the width of the nav window by one character."
+  (interactive)
+  (setq nav-width (+ nav-width 1))
+  (nav-set-window-width nav-width))
+
 (defun nav-quit-help ()
   "Exits the nav help screen."
   (interactive)
@@ -156,7 +175,7 @@ directories."
 (defun nav-help-screen ()
   "Displays the help screen."
   (interactive)
-  (switch-to-buffer "*nav-help*")
+  (switch-to-buffer-other-window "*nav-help*")
   (let ((map (make-sparse-keymap)))
     (use-local-map map)
     (define-key map "q" 'nav-quit-help))
@@ -198,6 +217,8 @@ w\t Shrink-wrap Nav's window to fit the longest filename in the current director
 !\t Run shell command.
 .\t Toggle display of hidden files.
 ?\t Show this help screen.
+-\t Narrow Nav window by one character.
++\t Widen Nav window by one character.
 
                 Press 'q' to quit help
 
@@ -404,10 +425,10 @@ This works like a web browser's back button."
 	(split-window-horizontally))
     (nav-open-file-other-window (button-label button))
     
-    (if nav-adjust-width-when-opening-files-p
+    (if nav-width
 	(let ((other-window (nav-get-current-window)))
 	  (select-window window-with-nav)
-	  (nav-shrink-wrap)
+	  (nav-set-window-width nav-width)
 	  (select-window other-window)))))
 
 (defun nav-button-action-to-open-dir (button)
