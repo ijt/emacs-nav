@@ -136,6 +136,7 @@ directories."
     (define-key keymap "s" 'nav-shell)
     (define-key keymap "u" 'nav-go-up-one-dir)
     (define-key keymap "w" 'nav-shrink-wrap)
+    (define-key keymap "W" 'nav-save-window-width)
     (define-key keymap "!" 'nav-shell-command)
     (define-key keymap "." 'nav-toggle-hidden-files)
     (define-key keymap "?" 'nav-help-screen)
@@ -155,17 +156,35 @@ directories."
     (define-key keymap [(control ?p)] 'backward-button)
     keymap))
 
+(defun nav-shrink-window-horizontally (delta)
+
+  ;; First, compute a new value for the delta to make sure we don't
+  ;; make the window too small, according to the following equation.
+  ;;
+  ;; window-width - delta' = max(window-min-width, window-width - delta)
+  ;;
+  (let ((delta (- (window-width)
+		  (max window-min-width
+		       (- (window-width) delta)))))
+    (shrink-window-horizontally delta)
+    (nav-remember-current-width-during-this-session)))
+
+(defun nav-enlarge-window-horizontally (delta)
+  (enlarge-window-horizontally delta)
+  (nav-remember-current-width-during-this-session))
+
+(defun nav-remember-current-width-during-this-session ()
+  (customize-set-variable 'nav-width (window-width)))
+
 (defun nav-shrink-a-bit ()
   "Decreases the width of the nav window by one character."
   (interactive)
-  (setq nav-width (max window-min-width (- nav-width 1)))
-  (nav-set-window-width nav-width))
+  (nav-shrink-window-horizontally 1))
 
 (defun nav-expand-a-bit ()
   "Increases the width of the nav window by one character."
   (interactive)
-  (setq nav-width (+ nav-width 1))
-  (nav-set-window-width nav-width))
+  (enlarge-window-horizontally 1))
 
 (defun nav-quit-help ()
   "Exits the nav help screen."
@@ -176,11 +195,6 @@ directories."
   "Displays the help screen."
   (interactive)
   (switch-to-buffer-other-window "*nav-help*")
-  (let ((map (make-sparse-keymap)))
-    (use-local-map map)
-    (define-key map "q" 'nav-quit-help))
-  (setq display-hourglass nil
-        buffer-undo-list t)
   (insert "\
 Nav Key Bindings
 ================
@@ -219,9 +233,6 @@ w\t Shrink-wrap Nav's window to fit the longest filename in the current director
 ?\t Show this help screen.
 -\t Narrow Nav window by one character.
 +\t Widen Nav window by one character.
-
-                Press 'q' to quit help
-
 ")
   (nav-goto-line 1)
   (view-mode -1)
@@ -328,10 +339,9 @@ visited. A value of 1 would start the cursor off on ../.")
   "Returns the currently selected window."
   (get-buffer-window (current-buffer)))
 
-;; (defun nav-open-file-under-cursor-other-window ()
-;;   "Finds the file under the cursor, in another window."
-;;   (interactive)
-;;   (let ((filename (nav-get-cur-line-str))
+(defun nav-get-current-window-width ()
+  "Returns the width of the currently selected window."
+  (window-width (nav-get-current-window)))
 
 (defun nav-go-up-one-dir ()
   "Points Nav to ../."
@@ -480,9 +490,15 @@ This works like a web browser's back button."
 (defun nav-set-window-width (n)
   (let ((n (max n window-min-width)))
     (if (> (window-width) n)
-	(shrink-window-horizontally (- (window-width) n)))
+	(nav-shrink-window-horizontally (- (window-width) n)))
     (if (< (window-width) n)
-	(enlarge-window-horizontally (- n (window-width))))))
+	(nav-enlarge-window-horizontally (- n (window-width))))))
+
+(defun nav-save-window-width ()
+  "Saves the width of the current window as the default width for Nav."
+  (interactive)
+  (let ((width (window-width (nav-get-current-window))))
+    (customize-save-variable 'nav-width width)))
 
 (defun nav-get-working-dir ()
   (file-name-as-directory (file-truename default-directory)))
