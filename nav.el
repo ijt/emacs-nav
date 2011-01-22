@@ -159,10 +159,15 @@ window-width - delta' = max(window-min-width, window-width - delta)
   (let ((delta (- (window-width)
 		  (max window-min-width
 		       (- (window-width) delta)))))
-    (shrink-window-horizontally delta)))
+    (shrink-window-horizontally delta)
+    (nav-remember-current-width-during-this-session)))
 
 (defun nav-enlarge-window-horizontally (delta)
-  (enlarge-window-horizontally delta))
+  (enlarge-window-horizontally delta)
+  (nav-remember-current-width-during-this-session))
+
+(defun nav-remember-current-width-during-this-session ()
+  (customize-set-variable 'nav-width (window-width)))
 
 (defun nav-shrink-a-bit ()
   "Decreases the width of the nav window by one character."
@@ -172,7 +177,7 @@ window-width - delta' = max(window-min-width, window-width - delta)
 (defun nav-expand-a-bit ()
   "Increases the width of the nav window by one character."
   (interactive)
-  (enlarge-window-horizontally 1))
+  (nav-enlarge-window-horizontally 1))
 
 (defun nav-quit-help ()
   "Exits the nav help screen."
