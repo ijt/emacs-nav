@@ -669,16 +669,22 @@ opening files in a large frame."
   (setq split-width-threshold most-positive-fixnum)
   (setq split-height-threshold most-positive-fixnum))
 
+(defun nav-in-place ()
+  "Starts Nav in the current window."
+  (interactive)
+  (switch-to-buffer (generate-new-buffer-name nav-buffer-name))
+  (nav-mode)
+  (nav-refresh))
+
 ;; The next line is for ELPA, the Emacs Lisp Package Archive.
 ;;;###autoload
 (defun nav ()
+  "Opens Nav in a new window to the left of the current one."
   (interactive)
   (let ((default-directory (nav-get-working-dir)))
     (split-window-horizontally)
-    (switch-to-buffer (generate-new-buffer-name nav-buffer-name))
-    (nav-mode)
-    (nav-set-window-width nav-width)
-    (nav-refresh)))
+    (nav-in-place)
+    (nav-set-window-width nav-width)))
 
 (provide 'nav)
 
