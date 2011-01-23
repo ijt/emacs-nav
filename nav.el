@@ -521,7 +521,7 @@ This works like a web browser's back button."
 (defun nav-quit ()
   "Exits Nav."
   (interactive)
-  (kill-buffer (current-buffer)))
+  (delete-window))
 
 (defun nav-jump-to-home ()
   "Show home directory in Nav."
