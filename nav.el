@@ -55,7 +55,7 @@
   :group 'applications)
 
 (defcustom nav-filtered-p t
-  "*If true, nav will filter out files and directories such as
+  "*If true, Nav will filter out files and directories such as
 hidden files, backups and .elc files.  The result depends on
 `nav-boring-file-regexps'.
 "
@@ -63,7 +63,7 @@ hidden files, backups and .elc files.  The result depends on
   :group 'nav)
 
 (defcustom nav-width 25
-  "*If non-nil, nav will change its width to this when it opens files in
+  "*If non-nil, Nav will change its width to this when it opens files in
 other windows.
 "
   :type 'integer
@@ -674,8 +674,10 @@ opening files in a large frame."
 (defun nav ()
   (interactive)
   (let ((default-directory (nav-get-working-dir)))
+    (split-window-horizontally)
     (switch-to-buffer (generate-new-buffer-name nav-buffer-name))
     (nav-mode)
+    (nav-set-window-width nav-width)
     (nav-refresh)))
 
 (provide 'nav)
