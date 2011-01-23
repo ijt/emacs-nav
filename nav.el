@@ -125,7 +125,7 @@ directories."
     (define-key keymap "o" 'nav-open-file-under-cursor)
     (define-key keymap "p" 'nav-pop-dir)
     (define-key keymap "P" 'nav-print-current-dir)
-    (define-key keymap "q" 'nav-quit)
+    (define-key keymap "q" 'delete-window)
     (define-key keymap "r" 'nav-refresh)
     (define-key keymap "s" 'nav-shell)
     (define-key keymap "u" 'nav-go-up-one-dir)
@@ -517,11 +517,6 @@ This works like a web browser's back button."
   (interactive)
   (nav-show-dir ".")
   (nav-restore-cursor-line))
-
-(defun nav-quit ()
-  "Exits Nav."
-  (interactive)
-  (delete-window))
 
 (defun nav-jump-to-home ()
   "Show home directory in Nav."
