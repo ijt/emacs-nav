@@ -546,10 +546,6 @@ This works like a web browser's back button."
 	  )
   )
 
-(defun nav-this-is-a-microsoft-os ()
-  (or (string= system-type "windows-nt")
-      (string= system-type "ms-dos")))
-
 (defun nav-delete-file-or-dir (filename)
   (nav-save-cursor-line)
   (if (and (file-directory-p filename)
@@ -588,12 +584,7 @@ This works like a web browser's back button."
   "Moves a file or directory."
   (interactive "FMove to: ")
   (let ((filename (nav-get-cur-line-str)))
-    (if (nav-this-is-a-microsoft-os)
-        (rename-file filename target-name)
-      (if (nav-ok-to-overwrite target-name)
-          (shell-command (format "mv '%s' '%s'"
-                                 (expand-file-name filename)
-                                 (expand-file-name target-name))))))
+    (rename-file filename target-name))
   (nav-refresh))
 
 (defun nav-append-slashes-to-dir-names (names)
