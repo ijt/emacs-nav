@@ -139,15 +139,7 @@ directories."
     (define-key keymap "+" 'nav-expand-a-bit)
     (define-key keymap "=" 'nav-expand-a-bit)
     (define-key keymap " " 'nav-jump-to-name)
-
-    ;; Avoid [(tab)] and [(shift tab)] because they don't always work.
-    (define-key keymap "\t" 'forward-button)
-    (define-key keymap [backtab] 'backward-button)
-
-    (define-key keymap [(down)] 'forward-button)
-    (define-key keymap [(up)] 'backward-button)
-    (define-key keymap [(control ?n)] 'forward-button)
-    (define-key keymap [(control ?p)] 'backward-button)
+    (define-key keymap [(control ?x) (control ?f)] 'find-file-other-window)
     keymap))
 
 (defun nav-shrink-window-horizontally (delta)
