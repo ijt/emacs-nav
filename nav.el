@@ -550,17 +550,12 @@ This works like a web browser's back button."
   (or (string= system-type "windows-nt")
       (string= system-type "ms-dos")))
 
-(defun nav-make-remove-dir-command (dirname)
-  (if (nav-this-is-a-microsoft-os)
-      (format "rmdir /S /Q \"%s\"" dirname)
-    (format "rm -rf '%s'" dirname)))
-
 (defun nav-delete-file-or-dir (filename)
   (nav-save-cursor-line)
   (if (and (file-directory-p filename)
            (not (file-symlink-p (directory-file-name filename))))
       (when (yes-or-no-p (format "Really delete directory %s ?" filename))
-        (shell-command (nav-make-remove-dir-command filename))
+	(delete-directory filename t)
         (nav-refresh))
       ;; We first use directory-file-name to strip the trailing slash
       ;; if it's a symlink to a directory.
@@ -575,26 +570,13 @@ This works like a web browser's back button."
   (interactive)
   (nav-delete-file-or-dir (nav-get-cur-line-str)))
 
-(defun nav-ok-to-overwrite (target-name)
-  "Returns non-nil if it's ok to overwrite or create a file.
-
-That is, if a file with the given name doesn't exist, is a
-directory, or if the user says it's ok."
-  (or (not (file-exists-p target-name))
-      (file-directory-p target-name)
-      (y-or-n-p (format "Really overwrite %s ? " target-name))))
-
 (defun nav-copy-file-or-dir (target-name)
   "Copies a file or directory."
   (interactive "FCopy to: ")
   (let ((filename (nav-get-cur-line-str)))
-    (if (nav-this-is-a-microsoft-os)
-        (copy-file filename target-name)
-      (if (nav-ok-to-overwrite target-name)
-          (let ((maybe-dash-r (if (file-directory-p filename) "-r" "")))
-            (shell-command (format "cp %s '%s' '%s'" maybe-dash-r
-                                   (expand-file-name filename)
-                                   (expand-file-name target-name)))))))
+    (if (file-directory-p filename)
+	(copy-directory filename target-name)
+      (copy-file filename target-name)))
   (nav-refresh))
 
 (defun nav-customize ()
