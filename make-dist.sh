@@ -11,7 +11,9 @@ for file in $dist_files; do
     cp $file.el $dist_dir
     mv $file.elc $dist_dir
 done
-cp ack $dist_dir
+for file in ack README.md; do
+    cp $file $dist_dir
+done
 
 tar czvf $dist_dir.tar.gz $dist_dir
 rm -rf $dist_dir
