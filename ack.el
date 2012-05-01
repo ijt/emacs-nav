@@ -73,12 +73,22 @@ in the --type argument to the ack command")
   nil)
 
 ;;;###autoload
-(defun ack (command-args)
-  (interactive
-   (list (read-shell-command "Run ack (like this): "
-                             (ack-build-command)
-                             'ack-history
-                             nil)))
-  (compilation-start command-args 'ack-mode))
+(defvar ack-history nil)
+(defvar ack-host-defaults-alist nil)
+(defun ack ()
+  "Like grep, but using ack-command as the default"
+  (interactive)
+  ; Make sure grep has been initialized
+  (if (>= emacs-major-version 22)
+      (require 'grep)
+    (require 'compile))
+  ; Close STDIN to keep ack from going into filter mode
+  (let ((null-device (format "< %s" null-device))
+        (grep-command ack-command)
+        (grep-history ack-history)
+        (grep-host-defaults-alist ack-host-defaults-alist))
+    (call-interactively 'grep)
+    (setq ack-history             grep-history
+          ack-host-defaults-alist grep-host-defaults-alist)))
 
 (provide 'ack)
