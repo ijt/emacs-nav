@@ -45,10 +45,11 @@
 
 ;;; Code:
 
-(condition-case err
-    (require 'ack)
-  (error
-   (message "Could not load ack.")))
+(if (not (featurep 'full-ack))
+    (condition-case err
+	(require 'ack)
+      (error
+       (message "Could not load ack."))))
 
 (defgroup nav nil
   "A lightweight filesystem navigator."
