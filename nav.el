@@ -620,6 +620,7 @@ http://code.google.com/p/emacs-nav/issues/detail?id=78
   (setq buffer-read-only t)
   (setq truncate-lines t)
   (setq font-lock-defaults '(nav-font-lock-keywords))
+  (set-window-dedicated-p (selected-window) t)
   (nav-refresh))
 
 (defun nav-disable-emacs23-window-splitting ()
