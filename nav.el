@@ -140,6 +140,7 @@ directories."
     (define-key keymap "=" 'nav-expand-a-bit)
     (define-key keymap " " 'nav-jump-to-name)
     (define-key keymap [(control ?x) (control ?f)] 'find-file-other-window)
+    (define-key keymap [(control ?x) ?b] 'switch-to-buffer-other-window)
     keymap))
 
 (defun nav-shrink-window-horizontally (delta)
