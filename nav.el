@@ -21,7 +21,7 @@
 ;; limitations under the License.
 
 ;;; Commentary:
-;; 
+;;
 ;; To use this file, put something like the following in your
 ;; ~/.emacs:
 ;;
@@ -116,7 +116,7 @@ directories."
     (define-key keymap "c" 'nav-copy-file-or-dir)
     (define-key keymap "C" 'nav-customize)
     (define-key keymap "d" 'nav-delete-file-or-dir-on-this-line)
-    (define-key keymap "e" 'nav-invoke-dired)  
+    (define-key keymap "e" 'nav-invoke-dired)
     (define-key keymap "f" 'nav-find-files)
     (define-key keymap "g" 'grep-find)
     (define-key keymap "h" 'nav-jump-to-home)
@@ -126,7 +126,7 @@ directories."
     (define-key keymap "o" 'nav-open-file-under-cursor)
     (define-key keymap "p" 'nav-pop-dir)
     (define-key keymap "P" 'nav-print-current-dir)
-    (define-key keymap "q" 'delete-window)
+    (define-key keymap "q" 'nav-unsplit-window-horizontally)
     (define-key keymap "r" 'nav-refresh)
     (define-key keymap "s" 'nav-shell)
     (define-key keymap "u" 'nav-go-up-one-dir)
@@ -147,7 +147,7 @@ directories."
 (defun nav-shrink-window-horizontally (delta)
   "First, compute a new value for the delta to make sure we don't
 make the window too small, according to the following equation:
-  
+
 window-width - delta' = max(window-min-width, window-width - delta)
 "
   (let ((delta (- (window-width)
@@ -254,7 +254,7 @@ visited. A value of 1 would start the cursor off on ../.")
   (mapconcat 'identity string-list sep))
 
 (defun nav-toggle-hidden-files ()
-  (interactive) 
+  (interactive)
   (setq nav-filtered-p (not nav-filtered-p))
   (nav-refresh))
 
@@ -271,7 +271,7 @@ visited. A value of 1 would start the cursor off on ../.")
 	(mapcar (lambda (x) (and (funcall condp x) x)) lst)))
 
 (defun nav-filter-out-boring-filenames (filenames boring-regexps)
-  (nav-filter 
+  (nav-filter
    (lambda (filename)
      (not (nav-filename-matches-some-regexp filename boring-regexps)))
    filenames))
@@ -412,7 +412,7 @@ This works like a web browser's back button."
     (if (= 1 (count-windows))
 	(split-window-horizontally))
     (nav-open-file-other-window (button-label button))
-    
+
     (if nav-width
 	(let ((other-window (nav-get-current-window)))
 	  (select-window window-with-nav)
@@ -441,7 +441,7 @@ This works like a web browser's back button."
 			 'face nav-button-face
 			 'help-echo nil))
 	  (forward-line 1)))
-    (error 
+    (error
      ;; This can happen for versions of emacs that don't have
      ;; make-button defined.
      'failed)))
@@ -529,11 +529,11 @@ This works like a web browser's back button."
   (nav-push-dir dirname))
 
 (defun nav-make-mode-line (mode dir)
-  (concat "-(nav)" 
+  (concat "-(nav)"
 	  (nav-dir-suffix (file-truename dir))
 	  "/"
 	  " "
-	  (format "[%s]" 
+	  (format "[%s]"
 		  (if nav-filtered-p
 		      "filtered"
 		    "unfiltered"))
@@ -571,7 +571,7 @@ This works like a web browser's back button."
 
 (defun nav-customize ()
   "Starts customization for Nav."
-  (interactive) 
+  (interactive)
   (customize-group "nav"))
 
 (defun nav-move-file-or-dir (target-name)
@@ -615,7 +615,7 @@ http://code.google.com/p/emacs-nav/issues/detail?id=78
   (interactive)
   (print default-directory))
 
-(define-derived-mode nav-mode fundamental-mode 
+(define-derived-mode nav-mode fundamental-mode
   "Nav mode navigates filesystems."
   (setq mode-name "Nav")
   (use-local-map nav-mode-map)
@@ -631,6 +631,61 @@ opening files in a large frame."
   (interactive)
   (setq split-width-threshold most-positive-fixnum)
   (setq split-height-threshold most-positive-fixnum))
+
+(defun nav-window-width-with-chrome ()
+  "Width of the current window, including decoration."
+  (let ((edges (window-edges))) (- (nth 2 edges) (nth 0 edges))))
+
+(defun nav-current-window-has-left-window-neighbor ()
+  "Returns non-nil of the current window is not the leftmost."
+  (> (nth 0 (window-edges)) 0))
+
+(defun nav-width-of-window-to-left ()
+  "Returns the width of the window to the left, or 0 if there is
+none."
+  (if (nav-current-window-has-left-window-neighbor)
+      (save-selected-window
+	(windmove-left)
+	(window-width))
+    0))
+
+(defun nav-unsplit-window-horizontally ()
+  "Attempts to reverse the effect of split-window-horizontally."
+  ;; If it's not the leftmost window
+  ;;   Enlarge the window to the right
+  ;;   Kill the window
+  (interactive)
+  (let ((nav-width (nav-window-width-with-chrome))
+	(left-width (nav-width-of-window-to-left)))
+    (delete-window)
+    (let* ((new-left-width (nav-width-of-window-to-left))
+	   (left-window-expanded (> new-left-width left-width)))
+      (if left-window-expanded
+	  (enlarge-window-horizontally nav-width)))))
+
+(defun nav-current-buffer-is-nav ()
+  "Returns non-nil if the current buffer is a Nav instance."
+  (string-prefix-p nav-buffer-name (buffer-name)))
+
+(defun nav-left-neighbor-is-nav ()
+  "Returns non-nil if there is a window to the left with a Nav
+instance."
+  (when (nav-current-window-has-left-window-neighbor)
+    (windmove-left)
+    (let ((is-nav (nav-current-buffer-is-nav)))
+      (windmove-right)
+      is-nav)))
+
+(defun nav-toggle ()
+  "Toggles the nav panel."
+  (interactive)
+  (if (nav-current-buffer-is-nav)
+      (nav-unsplit-window-horizontally)
+    (if (nav-left-neighbor-is-nav)
+	(progn
+	  (windmove-left)
+	  (nav-unsplit-window-horizontally))
+      (nav))))
 
 (defun nav-in-place ()
   "Starts Nav in the current window."
