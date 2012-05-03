@@ -651,9 +651,6 @@ none."
 
 (defun nav-unsplit-window-horizontally ()
   "Attempts to reverse the effect of split-window-horizontally."
-  ;; If it's not the leftmost window
-  ;;   Enlarge the window to the right
-  ;;   Kill the window
   (interactive)
   (let ((nav-width (nav-window-width-with-chrome))
 	(left-width (nav-width-of-window-to-left)))
