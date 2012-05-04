@@ -27,6 +27,7 @@
 ;;
 ;; (add-to-list 'load-path "/directory/containing/nav/")
 ;; (require 'nav)
+;; (nav-disable-overeager-window-splitting)
 ;;
 ;; Type M-x nav to start navigating.
 ;;
@@ -625,7 +626,7 @@ http://code.google.com/p/emacs-nav/issues/detail?id=78
   (set-window-dedicated-p (selected-window) t)
   (nav-refresh))
 
-(defun nav-disable-emacs23-window-splitting ()
+(defun nav-disable-overeager-window-splitting ()
   "Turns off the new feature where Emacs 23 automatically splits windows when
 opening files in a large frame."
   (interactive)
