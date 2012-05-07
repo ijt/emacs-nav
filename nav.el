@@ -140,8 +140,8 @@ directories."
     (define-key keymap "+" 'nav-expand-a-bit)
     (define-key keymap "=" 'nav-expand-a-bit)
     (define-key keymap " " 'nav-jump-to-name)
-    (define-key keymap [(control ?x) (control ?f)] 'find-file-other-window)
-    (define-key keymap [(control ?x) ?b] 'switch-to-buffer-other-window)
+    (define-key keymap [(control ?x) (control ?f)] 'nav-find-file-other-window)
+    (define-key keymap [(control ?x) ?b] 'nav-switch-to-buffer-other-window)
     keymap))
 
 (defun nav-shrink-window-horizontally (delta)
@@ -315,9 +315,19 @@ visited. A value of 1 would start the cursor off on ../.")
   (if (file-directory-p filename)
       (nav-push-dir filename)
     (let ((path (concat default-directory filename)))
-      (message path)
-      (nav-must-windmove-right)
-      (find-file path))))
+      (nav-find-file-other-window path))))
+
+(defun nav-find-file-other-window (filename)
+  "Opens the file FILENAME in the window to the right."
+  (interactive "FFilename:")
+  (message filename)
+  (nav-must-windmove-right)
+  (find-file filename))
+
+(defun nav-switch-to-buffer-other-window (buffer-name)
+  (interactive "bSwitch to buffer:")
+  (nav-must-windmove-right)
+  (switch-to-buffer buffer-name))
 
 (defun nav-must-windmove-right ()
   "Moves point to the window to the right of the current one.
