@@ -132,7 +132,6 @@ directories."
     (define-key keymap "s" 'nav-shell)
     (define-key keymap "u" 'nav-go-up-one-dir)
     (define-key keymap "w" 'nav-shrink-wrap)
-    (define-key keymap "W" 'nav-save-window-width)
     (define-key keymap "!" 'nav-shell-command)
     (define-key keymap "." 'nav-toggle-hidden-files)
     (define-key keymap "?" 'nav-help-screen)
