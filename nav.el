@@ -650,7 +650,7 @@ none."
 	(window-width))
     0))
 
-;; copied from subr.el
+;; Copied from subr.el
 (defmacro nav-ignore-errors (&rest body)
   "Execute BODY; if an error occurs, return nil.
 Otherwise, return result of last form in BODY."
@@ -671,7 +671,7 @@ Otherwise, return result of last form in BODY."
       (if left-window-expanded
 	  (enlarge-window-horizontally nav-width)))))
 
-;; Copied from subr.el in emacs 24
+;; Copied from subr.el
 (defun nav-string-prefix-p (str1 str2 &optional ignore-case)
   "Returns non-nil if STR1 is a prefix of STR2.
 If IGNORE-CASE is non-nil, the comparison is done without paying attention

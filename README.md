@@ -16,11 +16,14 @@ Put something like this in your ~/.emacs:
 (add-to-list 'load-path "/directory/containing/nav/")
 (require 'nav)
 (nav-disable-overeager-window-splitting)
-(global-set-key [f8] 'nav-toggle)
+;; Optional: set up a quick key to toggle nav
+;; (global-set-key [f8] 'nav-toggle)
 
 # Navigate!
 Type M-x nav to start navigating.
 
-To set options for Nav, type M-x customize, then select
-Applications, Nav.
+In the nav window, hit ? to get help on keyboard shortcuts.
+
+To set options for Nav, type M-x customize, then select Applications,
+Nav.
 
