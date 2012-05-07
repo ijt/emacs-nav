@@ -3,7 +3,7 @@
 ;; Copyright 2010 Google Inc. All Rights Reserved.
 ;;
 ;; Author: issactrotts@google.com (Issac Trotts)
-;; Version: 20120506a
+;; Version: 20120506b
 ;;
 
 ;;; License:
