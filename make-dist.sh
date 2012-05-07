@@ -11,7 +11,7 @@ for file in $dist_files; do
     cp $file.el $dist_dir
     mv $file.elc $dist_dir
 done
-for file in ack README.md; do
+for file in ack README.md LICENSE; do
     cp $file $dist_dir
 done
 
