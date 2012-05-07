@@ -661,9 +661,17 @@ none."
       (if left-window-expanded
 	  (enlarge-window-horizontally nav-width)))))
 
+;; Copied from subr.el in emacs 24
+(defun nav-string-prefix-p (str1 str2 &optional ignore-case)
+  "Returns non-nil if STR1 is a prefix of STR2.
+If IGNORE-CASE is non-nil, the comparison is done without paying attention
+to case differences."
+  (eq t (compare-strings str1 nil nil
+                         str2 0 (length str1) ignore-case)))
+
 (defun nav-current-buffer-is-nav ()
   "Returns non-nil if the current buffer is a Nav instance."
-  (string-prefix-p nav-buffer-name (buffer-name)))
+  (nav-string-prefix-p nav-buffer-name (buffer-name)))
 
 (defun nav-left-neighbor-is-nav ()
   "Returns non-nil if there is a window to the left with a Nav
