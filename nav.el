@@ -315,7 +315,20 @@ visited. A value of 1 would start the cursor off on ../.")
   (interactive "FFilename:")
   (if (file-directory-p filename)
       (nav-push-dir filename)
-    (find-file-other-window filename)))
+    (let ((path (concat default-directory filename)))
+      (message path)
+      (nav-must-windmove-right)
+      (find-file path))))
+
+(defun nav-must-windmove-right ()
+  "Moves point to the window to the right of the current one.
+If there is no such window, it first splits the current window
+and then moves to the new window just formed on the right."
+  (condition-case err
+      (windmove-right)
+    (error
+     (split-window-horizontally)
+     (windmove-right))))
 
 (defun nav-open-file-under-cursor ()
   "Finds the file under the cursor."
