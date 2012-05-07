@@ -650,12 +650,22 @@ none."
 	(window-width))
     0))
 
+;; copied from subr.el
+(defmacro nav-ignore-errors (&rest body)
+  "Execute BODY; if an error occurs, return nil.
+Otherwise, return result of last form in BODY."
+  (declare (debug t) (indent 0))
+  `(condition-case nil (progn ,@body) (error nil)))
+
 (defun nav-unsplit-window-horizontally ()
   "Attempts to reverse the effect of split-window-horizontally."
   (interactive)
   (let ((nav-width (nav-window-width-with-chrome))
-	(left-width (nav-width-of-window-to-left)))
-    (delete-window)
+	(left-width (nav-width-of-window-to-left))
+	(buf (current-buffer)))
+    (nav-ignore-errors
+     (windmove-right))
+    (kill-buffer buf)
     (let* ((new-left-width (nav-width-of-window-to-left))
 	   (left-window-expanded (> new-left-width left-width)))
       (if left-window-expanded
