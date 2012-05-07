@@ -1,4 +1,4 @@
-0.1
+Release 49 (going back to non-datestamp release numbers)
 * Fixed issue 96: C-xC-f and C-xC-b not opening the file or buffer in the window
   to the right of nav
 
